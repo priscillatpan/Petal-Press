@@ -141,10 +141,11 @@ export default function Home() {
         </motion.div>
       </main>
 
-      {/* FAB */}
+      {/* FAB — constrained to mobile shell on desktop */}
       <Link href="/capture">
         <button
-          className="fixed bottom-8 right-5 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 flex items-center justify-center hover:bg-primary/90 active:scale-95 transition-all z-20"
+          className="fixed bottom-8 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/25 flex items-center justify-center hover:bg-primary/90 active:scale-95 transition-all z-20"
+          style={{ right: "max(20px, calc(50vw - 215px + 20px))" }}
           data-testid="button-capture"
         >
           <Plus className="w-6 h-6" />

@@ -318,7 +318,11 @@ export default function CaptureFlow() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto px-5 pb-8 pt-4 bg-background/90 backdrop-blur-md border-t border-border/30 z-20"
+            className="fixed bottom-0 px-5 pb-8 pt-4 bg-background/90 backdrop-blur-md border-t border-border/30 z-20"
+            style={{
+              left: "max(0px, calc(50vw - 215px))",
+              right: "max(0px, calc(50vw - 215px))",
+            }}
           >
             <button
               onClick={handleSave}

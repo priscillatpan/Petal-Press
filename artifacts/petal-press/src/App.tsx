@@ -46,9 +46,19 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <GardenProvider>
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <Router />
-          </WouterRouter>
+          {/* Full-screen background */}
+          <div className="min-h-screen bg-muted/40 flex justify-center">
+            {/* Mobile shell — constrains all content to phone width */}
+            <div
+              className="relative w-full bg-background min-h-screen"
+              style={{ maxWidth: 430 }}
+              id="mobile-shell"
+            >
+              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <Router />
+              </WouterRouter>
+            </div>
+          </div>
         </GardenProvider>
         <Toaster />
       </TooltipProvider>
