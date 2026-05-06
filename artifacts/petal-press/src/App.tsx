@@ -1,43 +1,57 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { GardenProvider } from "@/context/GardenContext";
-import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import EntryCard from "@/pages/EntryCard";
 import CaptureFlow from "@/pages/CaptureFlow";
 import BouquetView from "@/pages/BouquetView";
+import Welcome from "@/pages/Welcome";
+import NotFound from "@/pages/not-found";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
+function GateToWelcome({ children }: { children: React.ReactNode }) {
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    const seen = localStorage.getItem("petal-press-seen");
+    if (!seen) {
+      setLocation("/welcome");
+    }
+  }, [setLocation]);
+
+  return <>{children}</>;
+}
+
 function Router() {
   return (
-    <div className="w-full max-w-[430px] mx-auto min-h-[100dvh] bg-background relative shadow-2xl">
+    <GateToWelcome>
       <Switch>
+        <Route path="/welcome" component={Welcome} />
         <Route path="/" component={Home} />
         <Route path="/flower/:id" component={EntryCard} />
         <Route path="/capture" component={CaptureFlow} />
         <Route path="/bouquet" component={BouquetView} />
         <Route component={NotFound} />
       </Switch>
-    </div>
+    </GateToWelcome>
   );
 }
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <GardenProvider>
-        <TooltipProvider>
-          <WouterRouter base={import.meta.env.BASE_URL?.replace(/\/$/, "") || ""}>
-            <div className="min-h-screen bg-muted/30 flex justify-center w-full">
-              <Router />
-            </div>
+      <TooltipProvider>
+        <GardenProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <Router />
           </WouterRouter>
-          <Toaster />
-        </TooltipProvider>
-      </GardenProvider>
+        </GardenProvider>
+        <Toaster />
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }
