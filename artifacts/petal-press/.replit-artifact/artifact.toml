@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Petal Press"
+version = "1.0.0"
+id = "artifacts/petal-press"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24137
+
+[services.development]
+run = "pnpm --filter @workspace/petal-press run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/petal-press", "run", "build" ]
+publicDir = "artifacts/petal-press/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24137"
+BASE_PATH = "/"

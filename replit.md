@@ -1,45 +1,55 @@
-# [Project name]
+# Petal Press
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A mobile-first personal flower diary — photograph flowers on neighborhood walks, get them identified and given floriography meanings, and collect them in a beautiful garden index.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/petal-press run dev` — run the React frontend (reads PORT env var)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Frontend: React + Vite, Tailwind CSS, Framer Motion, wouter
+- No backend yet — all state is in-memory React context
+- Fonts: Fraunces (serif display), system sans
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/petal-press/` — the main React app
+- `artifacts/petal-press/src/data/flowers.ts` — mock flower data (source of truth for sample entries)
+- `artifacts/petal-press/src/context/GardenContext.tsx` — global in-memory state
+- `artifacts/petal-press/src/pages/` — Home (garden grid), EntryCard, CaptureFlow, BouquetView
+- `artifacts/petal-press/src/index.css` — theme tokens (Fraunces font, cream/petal palette)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- No backend on first build — all state lives in GardenContext (React context). Wire up Pl@ntNet + Claude API later.
+- Router base path reads from `import.meta.env.BASE_URL` for proxy compatibility
+- Flower images are AI-generated botanical photography (generate_image), stored as URLs in mock data
+- Paper texture achieved via CSS noise overlay in index.css
+- Capture flow uses local step state + Framer Motion transitions (not separate routes per step)
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- **Garden Index** — grid of pressed flowers with color filters, "4 of 5 pressed" counter, undiscovered silhouette slot
+- **Entry Card** — full editorial view: name, Latin name, nickname, floriography meaning, date, location, editable notes, bouquet toggle
+- **Capture Flow** — multi-step: upload → identifying animation → ID candidates → confirm & save
+- **Bouquet View** — curated scattered layout of selected flowers, shareable gift design
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Working title "Petal Press" (alternatives: "Pressed", "Bloomdex")
+- Pl@ntNet for plant ID API, Claude for floriography meanings — to be wired up later
+- Aesthetic: pressed-flower scrapbook meets indie game, NOT sleek SaaS
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Google Font @import must be the very first line in index.css (before @import "tailwindcss") or PostCSS silently fails
+- All CSS custom property placeholders ("red") must be replaced with real HSL values before components render
 
 ## Pointers
 
 - See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- Pl@ntNet API docs: https://my.plantnet.org/doc/openapi

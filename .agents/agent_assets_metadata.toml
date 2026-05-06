@@ -1,0 +1,26 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "TIVLTLacrOn6JYUA2Is3a"
+uri = "file://artifacts/petal-press/public/images/forget-me-not.png"
+type = "image"
+title = "Forget-me-not flower photography"
+
+[[generated]]
+id = "ya5capuo7MmYqPPYmJ_WY"
+uri = "file://artifacts/petal-press/public/images/california-poppy.png"
+type = "image"
+title = "California Poppy photography"
+
+[[generated]]
+id = "A0YfWkO4zTBQ-TBuDZjXU"
+uri = "file://artifacts/petal-press/public/images/star-jasmine.png"
+type = "image"
+title = "Star Jasmine photography"
+
+[[generated]]
+id = "Sv617K8aNgTt0z4hS_w8i"
+uri = "file://artifacts/petal-press/public/images/hydrangea.png"
+type = "image"
+title = "Hydrangea photography"
