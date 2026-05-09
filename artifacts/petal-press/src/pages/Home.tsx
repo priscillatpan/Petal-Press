@@ -18,7 +18,7 @@ const container = {
 
 const cell = {
   hidden: { opacity: 0, scale: 0.85 },
-  show: { opacity: 1, scale: 1, transition: { type: "spring", stiffness: 220, damping: 20 } }
+  show: { opacity: 1, scale: 1, transition: { type: "spring" as const, stiffness: 220, damping: 20 } }
 };
 
 const ALL_STATUSES: NativeStatus[] = ["native", "naturalized", "cultivated", "unknown"];

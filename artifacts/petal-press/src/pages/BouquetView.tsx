@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function BouquetView() {
   const { flowers } = useGarden();
   const { toast } = useToast();
-  const bouquetFlowers = flowers.filter(f => f.inBouquet);
+  const bouquetFlowers = flowers;
 
   const handleShare = () => {
     toast({
