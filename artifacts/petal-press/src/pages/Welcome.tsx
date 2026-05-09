@@ -21,13 +21,15 @@ export default function Welcome() {
   }
 
   return (
+    // Use overflow-y-auto so it scrolls on short screens; dvh accounts for mobile browser chrome
     <div
-      className="min-h-screen bg-background flex flex-col px-6"
+      className="bg-background flex flex-col px-6"
+      style={{ minHeight: "100dvh" }}
       data-testid="welcome-screen"
     >
       {/* Scattered photos */}
-      <div className="flex-shrink-0 flex items-center justify-center pt-16 pb-4">
-        <div className="relative w-72 h-52">
+      <div className="flex-shrink-0 flex items-center justify-center pt-14 pb-2">
+        <div className="relative w-72 h-48">
           {sampleImages.map((src, i) => (
             <motion.div
               key={i}
@@ -43,7 +45,7 @@ export default function Welcome() {
             >
               <div
                 className="rounded-lg overflow-hidden shadow-md border-2 border-background"
-                style={{ width: 100, height: 118 }}
+                style={{ width: 96, height: 112 }}
               >
                 <img src={src} alt="" className="w-full h-full object-cover" />
               </div>
@@ -56,8 +58,8 @@ export default function Welcome() {
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.45 }}
-        className="flex-shrink-0 text-center px-2 mt-4"
+        transition={{ delay: 0.4 }}
+        className="flex-shrink-0 text-center px-2 mt-6"
       >
         <h1 className="font-serif text-5xl text-foreground leading-tight mb-3">
           Petal<br />Press
@@ -70,15 +72,15 @@ export default function Welcome() {
         </p>
       </motion.div>
 
-      {/* Spacer */}
-      <div className="flex-1 min-h-[40px]" />
+      {/* Spacer — collapses on short screens */}
+      <div className="flex-1" style={{ minHeight: 32 }} />
 
-      {/* CTA always visible at bottom */}
-      <div className="flex-shrink-0 pb-14 pt-2">
+      {/* CTA */}
+      <div className="flex-shrink-0 pb-12 pt-4">
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.4 }}
+          transition={{ delay: 0.55, duration: 0.35 }}
         >
           <button
             onClick={handleEnter}
