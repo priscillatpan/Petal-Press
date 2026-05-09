@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Camera, AlertCircle } from "lucide-react";
 import { useGarden } from "@/context/GardenContext";
 import { Flower } from "@/data/types";
+import { supabase } from "@/lib/supabase";
 
 type Candidate = { commonName: string; scientificName: string; score: number; family: string };
 type Step = 1 | 2 | 3 | 4;
@@ -104,7 +105,28 @@ export default function CaptureFlow() {
     setStep(4);
   }
 
-  function handleSave() {
+  const [saving, setSaving] = useState(false);
+
+  async function handleSave() {
+    if (saving) return;
+    setSaving(true);
+
+    let finalImageUrl = imagePreview ?? "";
+
+    const file = selectedFileRef.current;
+    if (file) {
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("flower-images")
+        .upload(path, file, { contentType: file.type, upsert: false });
+
+      if (!uploadError) {
+        const { data } = supabase.storage.from("flower-images").getPublicUrl(path);
+        finalImageUrl = data.publicUrl;
+      }
+    }
+
     const newFlower: Flower = {
       id: `f${Date.now()}`,
       commonName,
@@ -116,11 +138,16 @@ export default function CaptureFlow() {
       datePressed: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
       location: locationInput || "Unknown location",
       spottedCount: 1,
-      imageUrl: imagePreview!,
+      imageUrl: finalImageUrl,
       inBouquet: false,
     };
-    addFlower(newFlower);
-    setLocation("/");
+
+    try {
+      await addFlower(newFlower);
+      setLocation("/");
+    } catch {
+      setSaving(false);
+    }
   }
 
   return (
@@ -387,10 +414,11 @@ export default function CaptureFlow() {
           >
             <button
               onClick={handleSave}
-              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-serif text-lg shadow-md shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all"
+              disabled={saving}
+              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-serif text-lg shadow-md shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               data-testid="button-save-flower"
             >
-              Press this flower
+              {saving ? "Pressing…" : "Press this flower"}
             </button>
           </motion.div>
         )}

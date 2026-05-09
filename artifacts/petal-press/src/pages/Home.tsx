@@ -22,7 +22,7 @@ const cell = {
 const COLORS = ["blue", "orange", "white", "purple", "pink", "yellow", "red"];
 
 export default function Home() {
-  const { flowers } = useGarden();
+  const { flowers, loading } = useGarden();
   const [filterColor, setFilterColor] = useState<string | null>(null);
 
   const presentColors = useMemo(() => {
