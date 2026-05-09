@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useRoute, Link } from "wouter";
 import { motion } from "framer-motion";
-import { ChevronLeft, Heart, MapPin, Calendar, Edit2, Check } from "lucide-react";
+import { ChevronLeft, Calendar, Edit2, Check } from "lucide-react";
 import { useGarden } from "@/context/GardenContext";
 import { Button } from "@/components/ui/button";
+import { NATIVE_STATUS_LABELS, NATIVE_STATUS_COLORS } from "@/data/nativeStatus";
 
 export default function EntryCard() {
   const [, params] = useRoute("/flower/:id");
   const id = params?.id;
-  const { flowers, updateFlower, toggleBouquet } = useGarden();
+  const { flowers, updateFlower } = useGarden();
   const flower = flowers.find(f => f.id === id);
 
   const [isEditingNotes, setIsEditingNotes] = useState(false);
@@ -30,6 +31,9 @@ export default function EntryCard() {
     setIsEditingNotes(false);
   };
 
+  const statusLabel = NATIVE_STATUS_LABELS[flower.nativeStatus];
+  const statusColors = NATIVE_STATUS_COLORS[flower.nativeStatus];
+
   return (
     <div className="min-h-screen bg-background pb-12">
       {/* Header Actions */}
@@ -39,26 +43,17 @@ export default function EntryCard() {
             <ChevronLeft className="w-5 h-5" />
           </Button>
         </Link>
-        <Button 
-          variant="secondary" 
-          size="icon" 
-          className={`rounded-full bg-background/80 backdrop-blur-sm shadow-sm transition-colors ${flower.inBouquet ? 'text-primary' : 'text-muted-foreground'}`}
-          onClick={() => toggleBouquet(flower.id)}
-          data-testid="button-toggle-bouquet"
-        >
-          <Heart className={`w-5 h-5 ${flower.inBouquet ? 'fill-current' : ''}`} />
-        </Button>
       </div>
 
       {/* Hero Image */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="w-full aspect-[4/5] relative rounded-b-[2rem] overflow-hidden shadow-lg"
       >
-        <img 
-          src={flower.imageUrl} 
-          alt={flower.commonName} 
+        <img
+          src={flower.imageUrl}
+          alt={flower.commonName}
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
@@ -66,34 +61,41 @@ export default function EntryCard() {
 
       {/* Content */}
       <main className="px-6 pt-8 pb-12">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="text-center mb-8"
         >
           <h1 className="font-serif text-4xl text-foreground mb-1">{flower.commonName}</h1>
-          <p className="italic text-muted-foreground text-sm font-serif mb-4">{flower.latinName}</p>
-          
-          <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-accent/30 text-accent-foreground text-xs font-medium tracking-wide mb-6">
+          <p className="italic text-muted-foreground text-sm font-serif mb-3">{flower.latinName}</p>
+
+          <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-accent/30 text-accent-foreground text-xs font-medium tracking-wide mb-4">
             "{flower.nickname}"
           </div>
 
-          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground mb-8">
-            <div className="flex items-center gap-1">
+          <div className="flex items-center justify-center gap-3 flex-wrap mb-2">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Calendar className="w-3.5 h-3.5" />
               <span>{flower.datePressed}</span>
             </div>
-            <span>·</span>
-            <div className="flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5" />
-              <span>{flower.location}</span>
-            </div>
+            {flower.plantFamily && (
+              <>
+                <span className="text-muted-foreground/40">·</span>
+                <span className="text-xs text-muted-foreground italic">{flower.plantFamily}</span>
+              </>
+            )}
+          </div>
+
+          <div className="flex justify-center mt-3">
+            <span className={`text-xs font-medium px-3 py-1 rounded-full ${statusColors}`}>
+              {statusLabel}
+            </span>
           </div>
         </motion.div>
 
         {/* Meaning Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -108,11 +110,11 @@ export default function EntryCard() {
         </motion.div>
 
         {/* Notes Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-card rounded-2xl p-5 shadow-sm border border-card-border relative"
+          className="bg-card rounded-2xl p-5 shadow-sm border border-card-border"
         >
           <div className="flex justify-between items-center mb-3">
             <h3 className="font-serif text-lg text-foreground">Field Notes</h3>
@@ -126,7 +128,7 @@ export default function EntryCard() {
               </Button>
             )}
           </div>
-          
+
           {isEditingNotes ? (
             <textarea
               className="w-full bg-transparent border-none focus:ring-0 resize-none text-foreground/80 leading-relaxed min-h-[100px] text-sm"
@@ -140,10 +142,6 @@ export default function EntryCard() {
               {flower.blurb || "No notes added yet."}
             </p>
           )}
-
-          <div className="absolute -bottom-3 right-5 bg-background border border-border px-3 py-1 rounded-full text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-            Spotted {flower.spottedCount} {flower.spottedCount === 1 ? 'time' : 'times'}
-          </div>
         </motion.div>
       </main>
     </div>

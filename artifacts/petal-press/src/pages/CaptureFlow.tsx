@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Camera, AlertCircle } from "lucide-react";
 import { useGarden } from "@/context/GardenContext";
 import { Flower } from "@/data/types";
+import { getNativeStatus } from "@/data/nativeStatus";
 import { supabase } from "@/lib/supabase";
 
 type Candidate = { commonName: string; scientificName: string; score: number; family: string };
@@ -50,8 +51,9 @@ export default function CaptureFlow() {
   const [latinName, setLatinName] = useState("");
   const [nickname, setNickname] = useState("");
   const [meaning, setMeaning] = useState("");
-  const [locationInput, setLocationInput] = useState("");
+  const [plantFamily, setPlantFamily] = useState("");
   const [notes, setNotes] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const identifyPhoto = useCallback(async (file: File) => {
     setStep(2);
@@ -88,7 +90,6 @@ export default function CaptureFlow() {
     const objectUrl = URL.createObjectURL(file);
     setImagePreview(objectUrl);
     identifyPhoto(file);
-    // Reset input so same file can be picked again
     e.target.value = "";
   }
 
@@ -100,12 +101,11 @@ export default function CaptureFlow() {
     const flori = getFloriography(candidate.commonName || candidate.scientificName);
     setCommonName(candidate.commonName);
     setLatinName(candidate.scientificName);
+    setPlantFamily(candidate.family || "");
     setNickname(flori.nickname);
     setMeaning(flori.meaning);
     setStep(4);
   }
-
-  const [saving, setSaving] = useState(false);
 
   async function handleSave() {
     if (saving) return;
@@ -136,10 +136,9 @@ export default function CaptureFlow() {
       blurb: notes,
       color: "unknown",
       datePressed: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-      location: locationInput || "Unknown location",
-      spottedCount: 1,
+      plantFamily,
+      nativeStatus: getNativeStatus(latinName),
       imageUrl: finalImageUrl,
-      inBouquet: false,
     };
 
     try {
@@ -362,7 +361,6 @@ export default function CaptureFlow() {
                   {([
                     { label: "Nickname", value: nickname, setter: setNickname, testId: "input-nickname", placeholder: "Give it a name..." },
                     { label: "Meaning", value: meaning, setter: setMeaning, testId: "input-meaning", placeholder: "Floriography meaning..." },
-                    { label: "Where found", value: locationInput, setter: setLocationInput, testId: "input-location", placeholder: "Dolores Park, Valencia St..." },
                   ] as const).map(({ label, value, setter, testId, placeholder }) => (
                     <div key={testId}>
                       <label className="block text-xs uppercase tracking-widest text-muted-foreground font-medium mb-1.5">

@@ -1,3 +1,5 @@
+import { NativeStatus } from "./nativeStatus";
+
 export type Flower = {
   id: string;
   commonName: string;
@@ -7,8 +9,7 @@ export type Flower = {
   blurb: string;
   color: string;
   datePressed: string;
-  location: string;
-  spottedCount: number;
+  plantFamily: string;
+  nativeStatus: NativeStatus;
   imageUrl: string;
-  inBouquet: boolean;
 };
