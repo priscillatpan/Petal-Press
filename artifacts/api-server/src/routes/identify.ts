@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import multer from "multer";
+import sharp from "sharp";
 import { logger } from "../lib/logger";
 
 const router: IRouter = Router();
@@ -20,9 +21,16 @@ router.post("/identify", upload.single("image"), async (req, res) => {
   }
 
   try {
+    // Convert to JPEG regardless of source format (handles HEIC/HEIF from iPhone,
+    // WebP, PNG, etc.) — Pl@ntNet only accepts JPEG and PNG.
+    const jpegBuffer = await sharp(req.file.buffer)
+      .rotate() // auto-rotate based on EXIF orientation
+      .jpeg({ quality: 85 })
+      .toBuffer();
+
     const formData = new FormData();
-    const blob = new Blob([req.file.buffer], { type: req.file.mimetype });
-    formData.append("images", blob, req.file.originalname || "flower.jpg");
+    const blob = new Blob([jpegBuffer], { type: "image/jpeg" });
+    formData.append("images", blob, "flower.jpg");
     formData.append("organs", "flower");
 
     const response = await fetch(`${PLANTNET_API}?api-key=${apiKey}&lang=en&nb-results=5`, {
