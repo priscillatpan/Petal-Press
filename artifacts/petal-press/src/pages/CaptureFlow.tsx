@@ -46,6 +46,7 @@ export default function CaptureFlow() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [fileReceived, setFileReceived] = useState(false);
 
   const [commonName, setCommonName] = useState("");
   const [latinName, setLatinName] = useState("");
@@ -86,15 +87,12 @@ export default function CaptureFlow() {
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    setFileReceived(true);
+    setError(null);
     selectedFileRef.current = file;
     const objectUrl = URL.createObjectURL(file);
     setImagePreview(objectUrl);
     identifyPhoto(file);
-    e.target.value = "";
-  }
-
-  function handlePickPhoto() {
-    fileInputRef.current?.click();
   }
 
   function handleSelectCandidate(candidate: Candidate) {
@@ -151,16 +149,13 @@ export default function CaptureFlow() {
 
   return (
     <div className="bg-background flex flex-col" style={{ minHeight: "100dvh" }}>
-      {/*
-        iOS fix: do NOT use capture="environment" — that forces the camera
-        and disables the photo library picker on iOS Safari.
-        accept="image/*" alone opens the full iOS sheet (Camera / Photo Library / Files).
-      */}
+      {/* Hidden file input — triggered via label for maximum iOS compatibility */}
       <input
+        id="flower-photo-input"
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        className="hidden"
+        className="sr-only"
         onChange={handleFileChange}
         data-testid="input-file"
       />
@@ -206,25 +201,43 @@ export default function CaptureFlow() {
               </div>
 
               {error && (
-                <div className="w-full bg-destructive/10 border border-destructive/20 rounded-xl p-3 flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
-                  <p className="text-destructive text-sm">{error}</p>
+                <div className="w-full bg-destructive/15 border-2 border-destructive/40 rounded-2xl p-4 flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
+                    <p className="text-destructive font-medium text-sm">Couldn't identify this photo</p>
+                  </div>
+                  <p className="text-destructive/80 text-xs pl-7">{error}</p>
+                  <button
+                    className="ml-7 mt-1 text-xs text-primary underline underline-offset-2 text-left"
+                    onClick={() => { setError(null); setStep(4); }}
+                  >
+                    Enter the name manually instead →
+                  </button>
                 </div>
               )}
 
-              <button
-                onClick={handlePickPhoto}
-                className="w-full aspect-[3/4] max-h-[52vh] border-2 border-dashed border-primary/25 rounded-3xl flex flex-col items-center justify-center gap-4 bg-primary/[0.04] hover:bg-primary/[0.08] active:scale-[0.98] transition-all"
+              <label
+                htmlFor="flower-photo-input"
+                className={`w-full aspect-[3/4] max-h-[52vh] border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-4 transition-all cursor-pointer active:scale-[0.98] ${
+                  fileReceived
+                    ? "border-primary/60 bg-primary/10"
+                    : "border-primary/25 bg-primary/[0.04] hover:bg-primary/[0.08]"
+                }`}
                 data-testid="upload-area"
               >
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <Camera className="w-7 h-7" />
+                  {fileReceived
+                    ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }}><Camera className="w-7 h-7" /></motion.div>
+                    : <Camera className="w-7 h-7" />
+                  }
                 </div>
                 <div className="text-center px-4">
-                  <p className="text-primary font-medium">Tap to choose a photo</p>
+                  <p className="text-primary font-medium">
+                    {fileReceived ? "Got it, identifying…" : "Tap to choose a photo"}
+                  </p>
                   <p className="text-muted-foreground text-sm mt-1">Camera · Photo Library · Files</p>
                 </div>
-              </button>
+              </label>
 
               <p className="text-muted-foreground/60 text-xs text-center max-w-[240px]">
                 We'll send it to Pl@ntNet to identify the species automatically.
