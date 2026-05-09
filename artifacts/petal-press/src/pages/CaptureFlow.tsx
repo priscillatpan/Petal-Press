@@ -266,8 +266,8 @@ export default function CaptureFlow() {
                 </div>
               )}
 
-              <h3 className="font-serif text-xl text-center text-foreground mb-1">We found some matches</h3>
-              <p className="text-muted-foreground text-xs text-center mb-5">Tap the one that looks right — or your best guess</p>
+              <h3 className="font-serif text-xl text-center text-foreground mb-1">We think this might be…</h3>
+              <p className="text-muted-foreground text-xs text-center mb-5">Tap to confirm, or pick a different match</p>
 
               <div className="space-y-3">
                 {candidates.map((match, i) => (
@@ -277,19 +277,20 @@ export default function CaptureFlow() {
                     className="w-full bg-card border border-border p-4 rounded-2xl flex items-center justify-between text-left hover:border-primary/50 hover:bg-primary/[0.04] active:scale-[0.98] transition-all"
                     data-testid={`select-match-${i}`}
                   >
-                    <div className="flex-1 min-w-0 pr-3">
-                      <div className="font-medium text-foreground text-sm">{match.commonName}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className={`font-serif text-foreground ${i === 0 ? "text-lg" : "text-sm"}`}>
+                        {match.commonName}
+                      </div>
                       <div className="text-xs text-muted-foreground italic mt-0.5 truncate">{match.scientificName}</div>
                       {match.family && (
-                        <div className="text-[10px] text-muted-foreground/60 mt-0.5">{match.family} family</div>
+                        <div className="text-[10px] text-muted-foreground/50 mt-0.5">{match.family} family</div>
                       )}
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <div className="h-1.5 rounded-full bg-primary/20 overflow-hidden" style={{ width: 36 }}>
-                        <div className="h-full bg-primary rounded-full" style={{ width: `${match.score}%` }} />
+                    {i === 0 && (
+                      <div className="shrink-0 ml-3 text-[10px] font-medium uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                        Best match
                       </div>
-                      <span className="text-xs text-primary font-medium w-8 text-right">{match.score}%</span>
-                    </div>
+                    )}
                   </button>
                 ))}
 
