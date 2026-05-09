@@ -1,62 +1,106 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Camera } from "lucide-react";
+import { X, Camera, AlertCircle } from "lucide-react";
 import { useGarden } from "@/context/GardenContext";
 import { Flower } from "@/data/types";
 
-const CANDIDATES = [
-  { name: "California Bluebell", latin: "Phacelia campanularia", conf: 91 },
-  { name: "Forget-me-not", latin: "Myosotis sylvatica", conf: 7 },
-  { name: "Borage", latin: "Borago officinalis", conf: 2 },
-];
-
+type Candidate = { commonName: string; scientificName: string; score: number; family: string };
 type Step = 1 | 2 | 3 | 4;
+
+const FLORIOGRAPHY: Record<string, { meaning: string; nickname: string }> = {
+  default: { meaning: "beauty, wonder", nickname: "Found Beauty" },
+  rose: { meaning: "love, passion, beauty", nickname: "Heart's Bloom" },
+  tulip: { meaning: "perfect love, elegance", nickname: "Spring's Promise" },
+  daisy: { meaning: "innocence, purity, new beginnings", nickname: "Little Sunshine" },
+  lavender: { meaning: "devotion, serenity, grace", nickname: "Purple Peace" },
+  poppy: { meaning: "rest, sleep, imagination", nickname: "Golden Hour" },
+  jasmine: { meaning: "grace, elegance, attachment", nickname: "Night Perfume" },
+  hydrangea: { meaning: "heartfelt emotion, gratitude, understanding", nickname: "Mrs. Weatherglass" },
+  forget: { meaning: "remembrance, true love", nickname: "Little Blue Reminder" },
+  sunflower: { meaning: "adoration, loyalty, longevity", nickname: "Sun Chaser" },
+  violet: { meaning: "faithfulness, humility, modesty", nickname: "Shy Gem" },
+  lily: { meaning: "purity, refined beauty, rebirth", nickname: "White Whisper" },
+  orchid: { meaning: "rare beauty, strength, love", nickname: "Exotic Heart" },
+  camellia: { meaning: "admiration, perfection, gratitude", nickname: "Quiet Grace" },
+  magnolia: { meaning: "dignity, nobility, perseverance", nickname: "Ancient Glory" },
+};
+
+function getFloriography(name: string) {
+  const lower = name.toLowerCase();
+  for (const [key, val] of Object.entries(FLORIOGRAPHY)) {
+    if (lower.includes(key)) return val;
+  }
+  return FLORIOGRAPHY.default;
+}
 
 export default function CaptureFlow() {
   const [, setLocation] = useLocation();
   const { addFlower } = useGarden();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const selectedFileRef = useRef<File | null>(null);
 
   const [step, setStep] = useState<Step>(1);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
-  const [commonName, setCommonName] = useState("California Bluebell");
-  const [latinName, setLatinName] = useState("Phacelia campanularia");
-  const [nickname, setNickname] = useState("Desert Sky");
-  const [meaning, setMeaning] = useState("humility, delicate beauty");
+  const [commonName, setCommonName] = useState("");
+  const [latinName, setLatinName] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [meaning, setMeaning] = useState("");
   const [locationInput, setLocationInput] = useState("");
   const [notes, setNotes] = useState("");
+
+  const identifyPhoto = useCallback(async (file: File) => {
+    setStep(2);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const res = await fetch("/api/identify", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(body.error || `Server error ${res.status}`);
+      }
+
+      const data = await res.json() as { results: Candidate[] };
+      setCandidates(data.results || []);
+      setStep(3);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Identification failed";
+      setError(msg);
+      setStep(1);
+    }
+  }, []);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    selectedFileRef.current = file;
     const objectUrl = URL.createObjectURL(file);
     setImagePreview(objectUrl);
-    setStep(2);
+    identifyPhoto(file);
+    // Reset input so same file can be picked again
+    e.target.value = "";
   }
 
   function handlePickPhoto() {
     fileInputRef.current?.click();
   }
 
-  useEffect(() => {
-    if (step !== 2) return;
-    const t = setTimeout(() => setStep(3), 2500);
-    return () => clearTimeout(t);
-  }, [step]);
-
-  useEffect(() => {
-    return () => {
-      if (imagePreview && imagePreview.startsWith("blob:")) {
-        URL.revokeObjectURL(imagePreview);
-      }
-    };
-  }, [imagePreview]);
-
-  function handleSelectCandidate(name: string, latin: string) {
-    setCommonName(name);
-    setLatinName(latin);
+  function handleSelectCandidate(candidate: Candidate) {
+    const flori = getFloriography(candidate.commonName || candidate.scientificName);
+    setCommonName(candidate.commonName);
+    setLatinName(candidate.scientificName);
+    setNickname(flori.nickname);
+    setMeaning(flori.meaning);
     setStep(4);
   }
 
@@ -68,7 +112,7 @@ export default function CaptureFlow() {
       nickname,
       meaning,
       blurb: notes,
-      color: "blue",
+      color: "unknown",
       datePressed: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
       location: locationInput || "Unknown location",
       spottedCount: 1,
@@ -80,13 +124,16 @@ export default function CaptureFlow() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Hidden real file input — accepts photos and videos */}
+    <div className="bg-background flex flex-col" style={{ minHeight: "100dvh" }}>
+      {/*
+        iOS fix: do NOT use capture="environment" — that forces the camera
+        and disables the photo library picker on iOS Safari.
+        accept="image/*" alone opens the full iOS sheet (Camera / Photo Library / Files).
+      */}
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/*,video/*"
-        capture="environment"
+        accept="image/*"
         className="hidden"
         onChange={handleFileChange}
         data-testid="input-file"
@@ -105,14 +152,12 @@ export default function CaptureFlow() {
         <div className="w-9" />
       </div>
 
-      {/* Step indicator */}
-      <div className="flex gap-1.5 px-6 pt-4 pb-0">
+      {/* Step progress */}
+      <div className="flex gap-1.5 px-6 pt-4">
         {[1, 2, 3, 4].map(s => (
           <div
             key={s}
-            className={`flex-1 h-0.5 rounded-full transition-colors duration-300 ${
-              step >= s ? "bg-primary" : "bg-border"
-            }`}
+            className={`flex-1 h-0.5 rounded-full transition-colors duration-300 ${step >= s ? "bg-primary" : "bg-border"}`}
           />
         ))}
       </div>
@@ -120,24 +165,30 @@ export default function CaptureFlow() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <AnimatePresence mode="wait">
 
-          {/* Step 1 — Photo picker */}
+          {/* Step 1 — Pick photo */}
           {step === 1 && (
             <motion.div
               key="step1"
               initial={{ opacity: 0, x: 24 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -24 }}
-              className="flex-1 flex flex-col items-center justify-center px-6 gap-6"
+              className="flex-1 flex flex-col items-center justify-center px-6 gap-5"
             >
-              <div className="text-center mb-2">
+              <div className="text-center">
                 <h2 className="font-serif text-2xl text-foreground mb-1">What did you find?</h2>
-                <p className="text-muted-foreground text-sm">Upload a photo from your walk</p>
+                <p className="text-muted-foreground text-sm">Choose a photo from your walk</p>
               </div>
 
-              {/* Main upload area */}
+              {error && (
+                <div className="w-full bg-destructive/10 border border-destructive/20 rounded-xl p-3 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                  <p className="text-destructive text-sm">{error}</p>
+                </div>
+              )}
+
               <button
                 onClick={handlePickPhoto}
-                className="w-full aspect-[3/4] max-h-[52vh] border-2 border-dashed border-primary/25 rounded-3xl flex flex-col items-center justify-center gap-4 bg-primary/4 hover:bg-primary/8 active:scale-[0.98] transition-all cursor-pointer relative overflow-hidden"
+                className="w-full aspect-[3/4] max-h-[52vh] border-2 border-dashed border-primary/25 rounded-3xl flex flex-col items-center justify-center gap-4 bg-primary/[0.04] hover:bg-primary/[0.08] active:scale-[0.98] transition-all"
                 data-testid="upload-area"
               >
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
@@ -145,12 +196,12 @@ export default function CaptureFlow() {
                 </div>
                 <div className="text-center px-4">
                   <p className="text-primary font-medium">Tap to choose a photo</p>
-                  <p className="text-muted-foreground text-sm mt-1">or video from your library</p>
+                  <p className="text-muted-foreground text-sm mt-1">Camera · Photo Library · Files</p>
                 </div>
               </button>
 
-              <p className="text-muted-foreground/60 text-xs text-center max-w-[220px]">
-                Works with any flower photo you've taken — on your walk, in your camera roll, wherever.
+              <p className="text-muted-foreground/60 text-xs text-center max-w-[240px]">
+                We'll send it to Pl@ntNet to identify the species automatically.
               </p>
             </motion.div>
           )}
@@ -169,32 +220,29 @@ export default function CaptureFlow() {
                   <img src={imagePreview} alt="" className="w-full h-full object-cover opacity-15 blur-xl scale-110" />
                 </div>
               )}
-              <div className="z-10 flex flex-col items-center text-center gap-4">
-                {/* Pulsing flower icon */}
-                <div className="relative">
+              <div className="z-10 flex flex-col items-center text-center gap-5">
+                <motion.div
+                  animate={{ scale: [1, 1.12, 1] }}
+                  transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+                  className="w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center"
+                >
                   <motion.div
-                    animate={{ scale: [1, 1.15, 1] }}
-                    transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
-                    className="w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center"
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
                   >
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
-                    >
-                      <svg viewBox="0 0 32 32" className="w-8 h-8 text-primary" fill="currentColor">
-                        <ellipse cx="16" cy="8" rx="4" ry="7" opacity="0.9" />
-                        <ellipse cx="16" cy="24" rx="4" ry="7" opacity="0.9" />
-                        <ellipse cx="8" cy="16" rx="7" ry="4" opacity="0.9" />
-                        <ellipse cx="24" cy="16" rx="7" ry="4" opacity="0.9" />
-                        <ellipse cx="10.3" cy="10.3" rx="4" ry="7" transform="rotate(-45 10.3 10.3)" opacity="0.7" />
-                        <ellipse cx="21.7" cy="21.7" rx="4" ry="7" transform="rotate(-45 21.7 21.7)" opacity="0.7" />
-                        <ellipse cx="21.7" cy="10.3" rx="4" ry="7" transform="rotate(45 21.7 10.3)" opacity="0.7" />
-                        <ellipse cx="10.3" cy="21.7" rx="4" ry="7" transform="rotate(45 10.3 21.7)" opacity="0.7" />
-                        <circle cx="16" cy="16" r="4" fill="hsl(48 60% 75%)" />
-                      </svg>
-                    </motion.div>
+                    <svg viewBox="0 0 32 32" className="w-10 h-10 text-primary" fill="currentColor">
+                      <ellipse cx="16" cy="8" rx="4" ry="7" opacity="0.9" />
+                      <ellipse cx="16" cy="24" rx="4" ry="7" opacity="0.9" />
+                      <ellipse cx="8" cy="16" rx="7" ry="4" opacity="0.9" />
+                      <ellipse cx="24" cy="16" rx="7" ry="4" opacity="0.9" />
+                      <ellipse cx="10.3" cy="10.3" rx="4" ry="7" transform="rotate(-45 10.3 10.3)" opacity="0.7" />
+                      <ellipse cx="21.7" cy="21.7" rx="4" ry="7" transform="rotate(-45 21.7 21.7)" opacity="0.7" />
+                      <ellipse cx="21.7" cy="10.3" rx="4" ry="7" transform="rotate(45 21.7 10.3)" opacity="0.7" />
+                      <ellipse cx="10.3" cy="21.7" rx="4" ry="7" transform="rotate(45 10.3 21.7)" opacity="0.7" />
+                      <circle cx="16" cy="16" r="4" fill="hsl(48 60% 75%)" />
+                    </svg>
                   </motion.div>
-                </div>
+                </motion.div>
                 <div>
                   <h3 className="font-serif text-2xl text-foreground mb-1">Identifying...</h3>
                   <p className="text-muted-foreground text-sm">Consulting the floriography archives</p>
@@ -203,7 +251,7 @@ export default function CaptureFlow() {
             </motion.div>
           )}
 
-          {/* Step 3 — Pick a match */}
+          {/* Step 3 — Results from Pl@ntNet */}
           {step === 3 && (
             <motion.div
               key="step3"
@@ -213,48 +261,60 @@ export default function CaptureFlow() {
               className="flex-1 flex flex-col px-5 pt-6 pb-8 overflow-y-auto"
             >
               {imagePreview && (
-                <div className="w-24 h-24 rounded-2xl overflow-hidden mx-auto mb-6 shadow-md ring-2 ring-background">
+                <div className="w-24 h-24 rounded-2xl overflow-hidden mx-auto mb-5 shadow-md ring-2 ring-background">
                   <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
                 </div>
               )}
 
-              <h3 className="font-serif text-xl text-center text-foreground mb-1">Select the best match</h3>
-              <p className="text-muted-foreground text-xs text-center mb-6">Which one looks right to you?</p>
+              <h3 className="font-serif text-xl text-center text-foreground mb-1">We found some matches</h3>
+              <p className="text-muted-foreground text-xs text-center mb-5">Tap the one that looks right — or your best guess</p>
 
               <div className="space-y-3">
-                {CANDIDATES.map((match, i) => (
+                {candidates.map((match, i) => (
                   <button
                     key={i}
-                    onClick={() => handleSelectCandidate(match.name, match.latin)}
-                    className="w-full bg-card border border-border p-4 rounded-2xl flex items-center justify-between text-left hover:border-primary/50 hover:bg-primary/4 active:scale-[0.98] transition-all"
+                    onClick={() => handleSelectCandidate(match)}
+                    className="w-full bg-card border border-border p-4 rounded-2xl flex items-center justify-between text-left hover:border-primary/50 hover:bg-primary/[0.04] active:scale-[0.98] transition-all"
                     data-testid={`select-match-${i}`}
                   >
-                    <div>
-                      <div className="font-medium text-foreground text-sm">{match.name}</div>
-                      <div className="text-xs text-muted-foreground italic mt-0.5">{match.latin}</div>
+                    <div className="flex-1 min-w-0 pr-3">
+                      <div className="font-medium text-foreground text-sm">{match.commonName}</div>
+                      <div className="text-xs text-muted-foreground italic mt-0.5 truncate">{match.scientificName}</div>
+                      {match.family && (
+                        <div className="text-[10px] text-muted-foreground/60 mt-0.5">{match.family} family</div>
+                      )}
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="h-1.5 rounded-full bg-primary/20 overflow-hidden" style={{ width: 40 }}>
-                        <div
-                          className="h-full bg-primary rounded-full"
-                          style={{ width: `${match.conf}%` }}
-                        />
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <div className="h-1.5 rounded-full bg-primary/20 overflow-hidden" style={{ width: 36 }}>
+                        <div className="h-full bg-primary rounded-full" style={{ width: `${match.score}%` }} />
                       </div>
-                      <span className="text-xs text-primary font-medium w-8 text-right">{match.conf}%</span>
+                      <span className="text-xs text-primary font-medium w-8 text-right">{match.score}%</span>
                     </div>
                   </button>
                 ))}
+
+                {candidates.length === 0 && (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground text-sm">No strong matches found.</p>
+                    <button
+                      onClick={() => setStep(1)}
+                      className="mt-3 text-primary text-sm underline underline-offset-2"
+                    >
+                      Try a different photo
+                    </button>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
 
-          {/* Step 4 — Fill in details */}
+          {/* Step 4 — Confirm & save */}
           {step === 4 && (
             <motion.div
               key="step4"
               initial={{ opacity: 0, x: 24 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex-1 flex flex-col overflow-y-auto pb-28"
+              className="flex-1 flex flex-col overflow-y-auto pb-32"
             >
               {imagePreview && (
                 <div className="w-full aspect-video relative flex-shrink-0">
@@ -271,11 +331,11 @@ export default function CaptureFlow() {
                 </div>
 
                 <div className="space-y-4">
-                  {[
+                  {([
                     { label: "Nickname", value: nickname, setter: setNickname, testId: "input-nickname", placeholder: "Give it a name..." },
                     { label: "Meaning", value: meaning, setter: setMeaning, testId: "input-meaning", placeholder: "Floriography meaning..." },
                     { label: "Where found", value: locationInput, setter: setLocationInput, testId: "input-location", placeholder: "Dolores Park, Valencia St..." },
-                  ].map(({ label, value, setter, testId, placeholder }) => (
+                  ] as const).map(({ label, value, setter, testId, placeholder }) => (
                     <div key={testId}>
                       <label className="block text-xs uppercase tracking-widest text-muted-foreground font-medium mb-1.5">
                         {label}
@@ -311,7 +371,7 @@ export default function CaptureFlow() {
         </AnimatePresence>
       </div>
 
-      {/* Bottom CTA — only on step 4 */}
+      {/* Save button — step 4 only */}
       <AnimatePresence>
         {step === 4 && (
           <motion.div
