@@ -143,7 +143,7 @@ export default function CaptureFlow() {
 
     const file = selectedFileRef.current;
     if (file) {
-      const pixelBlob = await pixelateImage(file, 48, 288);
+      const pixelBlob = await pixelateImage(file, 32, 288);
       const path = `${Date.now()}.png`;
       const { error: uploadError } = await supabase.storage
         .from("flower-images")
