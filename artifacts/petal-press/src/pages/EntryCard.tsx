@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useRoute, Link } from "wouter";
 import { motion } from "framer-motion";
-import { ChevronLeft, Calendar, Edit2, Check } from "lucide-react";
+import { ChevronLeft, Edit2, Check } from "lucide-react";
 import { useGarden } from "@/context/GardenContext";
 import { Button } from "@/components/ui/button";
 import { NATIVE_STATUS_LABELS, NATIVE_STATUS_COLORS } from "@/data/nativeStatus";
@@ -35,112 +35,150 @@ export default function EntryCard() {
   const statusColors = NATIVE_STATUS_COLORS[flower.nativeStatus];
 
   return (
-    <div className="min-h-screen bg-background pb-12">
-      {/* Header Actions */}
-      <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-10">
+    <div className="min-h-screen bg-background pb-16 overflow-y-auto">
+      {/* Topbar */}
+      <div className="px-4 pt-4 pb-2 flex items-center justify-between">
         <Link href="/">
-          <Button variant="secondary" size="icon" className="rounded-full bg-background/80 backdrop-blur-sm text-foreground hover:bg-background shadow-sm" data-testid="button-back">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full text-muted-foreground hover:text-foreground"
+            data-testid="button-back"
+          >
             <ChevronLeft className="w-5 h-5" />
           </Button>
         </Link>
+        <span className="text-xs text-muted-foreground/50 font-mono tracking-widest">
+          {flower.datePressed}
+        </span>
+        <div className="w-9" />
       </div>
 
-      {/* Hero Image */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full aspect-[4/5] relative rounded-b-[2rem] overflow-hidden shadow-lg"
-      >
-        <img
-          src={flower.imageUrl}
-          alt={flower.commonName}
-          className="w-full h-full object-cover"
-          style={{ imageRendering: "pixelated" }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-      </motion.div>
-
-      {/* Content */}
-      <main className="px-6 pt-8 pb-12">
+      <main className="px-6 flex flex-col items-center gap-5">
+        {/* Photo — small square card */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="text-center mb-8"
+          className="w-48 h-48 rounded-2xl overflow-hidden shadow-md border border-border/30 bg-muted shrink-0"
         >
-          <h1 className="font-serif text-4xl text-foreground mb-1">{flower.commonName}</h1>
-          <p className="italic text-muted-foreground text-sm font-serif mb-3">{flower.latinName}</p>
+          {flower.imageUrl ? (
+            <img
+              src={flower.imageUrl}
+              alt={flower.commonName}
+              className="w-full h-full object-cover"
+              style={{ imageRendering: "pixelated" }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-4xl opacity-30">🌸</div>
+          )}
+        </motion.div>
 
-          <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-accent/30 text-accent-foreground text-xs font-medium tracking-wide mb-4">
+        {/* Name block */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="text-center w-full"
+        >
+          <h1 className="font-serif text-3xl text-foreground leading-tight mb-0.5">
+            {flower.commonName}
+          </h1>
+          <p className="italic text-muted-foreground text-sm font-serif mb-2">
+            {flower.latinName}
+          </p>
+          <p className="text-primary text-xs tracking-widest uppercase font-medium">
             "{flower.nickname}"
-          </div>
+          </p>
+        </motion.div>
 
-          <div className="flex items-center justify-center gap-3 flex-wrap mb-2">
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>{flower.datePressed}</span>
-            </div>
-            {flower.plantFamily && (
-              <>
-                <span className="text-muted-foreground/40">·</span>
-                <span className="text-xs text-muted-foreground italic">{flower.plantFamily}</span>
-              </>
-            )}
-          </div>
+        {/* Meaning */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="w-full"
+        >
+          <p className="text-center text-[10px] tracking-[0.2em] text-muted-foreground/60 uppercase mb-2">
+            · It means ·
+          </p>
+          <p className="text-center font-serif italic text-foreground/85 text-base leading-snug">
+            {flower.meaning}
+          </p>
+        </motion.div>
 
-          <div className="flex justify-center mt-3">
-            <span className={`text-xs font-medium px-3 py-1 rounded-full ${statusColors}`}>
+        {/* Blurb */}
+        {flower.blurb && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.12 }}
+            className="text-sm text-foreground/70 leading-relaxed text-center"
+          >
+            {flower.blurb}
+          </motion.p>
+        )}
+
+        {/* Meta strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="w-full bg-card border border-border/40 rounded-2xl px-5 py-4 flex justify-between items-center gap-4"
+        >
+          <div>
+            <p className="text-[10px] tracking-widest text-muted-foreground/50 uppercase mb-0.5">Family</p>
+            <p className="text-sm font-medium text-foreground">
+              {flower.plantFamily || "Unknown"}
+            </p>
+          </div>
+          <div className="h-8 w-px bg-border/40" />
+          <div className="text-right">
+            <p className="text-[10px] tracking-widest text-muted-foreground/50 uppercase mb-0.5">Status</p>
+            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColors}`}>
               {statusLabel}
             </span>
           </div>
         </motion.div>
 
-        {/* Meaning Section */}
+        {/* Field notes */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-10 text-center px-4"
+          transition={{ delay: 0.18 }}
+          className="w-full bg-card border border-border/40 rounded-2xl px-5 py-4"
         >
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="h-px bg-border flex-1" />
-            <span className="text-primary text-lg font-serif italic">Meaning</span>
-            <div className="h-px bg-border flex-1" />
-          </div>
-          <p className="text-foreground/90 leading-relaxed">{flower.meaning}</p>
-        </motion.div>
-
-        {/* Notes Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-card rounded-2xl p-5 shadow-sm border border-card-border"
-        >
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="font-serif text-lg text-foreground">Field Notes</h3>
+          <div className="flex justify-between items-center mb-2">
+            <p className="text-[10px] tracking-widest text-muted-foreground/50 uppercase">· Notes ·</p>
             {!isEditingNotes ? (
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground" onClick={() => setIsEditingNotes(true)} data-testid="button-edit-notes">
-                <Edit2 className="w-4 h-4" />
-              </Button>
+              <button
+                className="text-muted-foreground hover:text-foreground"
+                onClick={() => setIsEditingNotes(true)}
+                data-testid="button-edit-notes"
+              >
+                <Edit2 className="w-3.5 h-3.5" />
+              </button>
             ) : (
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={handleSaveNotes} data-testid="button-save-notes">
-                <Check className="w-4 h-4" />
-              </Button>
+              <button
+                className="text-primary"
+                onClick={handleSaveNotes}
+                data-testid="button-save-notes"
+              >
+                <Check className="w-3.5 h-3.5" />
+              </button>
             )}
           </div>
 
           {isEditingNotes ? (
             <textarea
-              className="w-full bg-transparent border-none focus:ring-0 resize-none text-foreground/80 leading-relaxed min-h-[100px] text-sm"
+              className="w-full bg-transparent border-none focus:ring-0 resize-none text-foreground/80 leading-relaxed min-h-[80px] text-sm font-serif italic"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               autoFocus
               data-testid="input-notes"
             />
           ) : (
-            <p className="text-foreground/80 leading-relaxed text-sm whitespace-pre-wrap">
-              {flower.blurb || "No notes added yet."}
+            <p className="text-foreground/80 leading-relaxed text-sm font-serif italic whitespace-pre-wrap">
+              {flower.blurb || "No notes yet."}
             </p>
           )}
         </motion.div>
