@@ -7,6 +7,7 @@ type GardenContextType = {
   flowers: Flower[];
   loading: boolean;
   addFlower: (flower: Flower) => Promise<void>;
+  addPhotoToFlower: (id: string, imageUrl: string) => Promise<void>;
   updateFlower: (id: string, updates: Partial<Flower>) => Promise<void>;
 };
 
@@ -24,10 +25,15 @@ type FlowerRow = {
   plant_family: string;
   native_status: string;
   image_url: string;
+  image_urls: string[];
   created_at: string;
 };
 
 function rowToFlower(row: FlowerRow): Flower {
+  // Support both legacy (image_url only) and new (image_urls array) rows
+  const urls: string[] = row.image_urls?.length
+    ? row.image_urls
+    : row.image_url ? [row.image_url] : [];
   return {
     id: row.id,
     commonName: row.common_name,
@@ -39,7 +45,8 @@ function rowToFlower(row: FlowerRow): Flower {
     datePressed: row.date_pressed,
     plantFamily: row.plant_family,
     nativeStatus: row.native_status as NativeStatus,
-    imageUrl: row.image_url,
+    imageUrl: urls[0] ?? "",
+    imageUrls: urls,
   };
 }
 
@@ -55,7 +62,8 @@ function flowerToRow(flower: Flower): Omit<FlowerRow, "created_at"> {
     date_pressed: flower.datePressed,
     plant_family: flower.plantFamily,
     native_status: flower.nativeStatus,
-    image_url: flower.imageUrl,
+    image_url: flower.imageUrls[0] ?? "",
+    image_urls: flower.imageUrls,
   };
 }
 
@@ -89,6 +97,25 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     setFlowers((prev) => [...prev, flower]);
   };
 
+  const addPhotoToFlower = async (id: string, imageUrl: string) => {
+    const flower = flowers.find((f) => f.id === id);
+    if (!flower) return;
+    const newUrls = [...flower.imageUrls, imageUrl];
+    const { error } = await supabase
+      .from("flowers")
+      .update({ image_urls: newUrls, image_url: newUrls[0] })
+      .eq("id", id);
+    if (error) {
+      console.error("Failed to add photo:", error.message);
+      throw error;
+    }
+    setFlowers((prev) =>
+      prev.map((f) =>
+        f.id === id ? { ...f, imageUrls: newUrls, imageUrl: newUrls[0] } : f
+      )
+    );
+  };
+
   const updateFlower = async (id: string, updates: Partial<Flower>) => {
     const dbUpdates: Partial<Omit<FlowerRow, "created_at">> = {};
     if (updates.commonName !== undefined) dbUpdates.common_name = updates.commonName;
@@ -100,7 +127,10 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     if (updates.datePressed !== undefined) dbUpdates.date_pressed = updates.datePressed;
     if (updates.plantFamily !== undefined) dbUpdates.plant_family = updates.plantFamily;
     if (updates.nativeStatus !== undefined) dbUpdates.native_status = updates.nativeStatus;
-    if (updates.imageUrl !== undefined) dbUpdates.image_url = updates.imageUrl;
+    if (updates.imageUrls !== undefined) {
+      dbUpdates.image_urls = updates.imageUrls;
+      dbUpdates.image_url = updates.imageUrls[0] ?? "";
+    }
 
     const { error } = await supabase.from("flowers").update(dbUpdates).eq("id", id);
     if (error) {
@@ -111,7 +141,7 @@ export function GardenProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <GardenContext.Provider value={{ flowers, loading, addFlower, updateFlower }}>
+    <GardenContext.Provider value={{ flowers, loading, addFlower, addPhotoToFlower, updateFlower }}>
       {children}
     </GardenContext.Provider>
   );

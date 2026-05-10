@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRoute, Link } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Edit2, Check } from "lucide-react";
 import { useGarden } from "@/context/GardenContext";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ export default function EntryCard() {
 
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notes, setNotes] = useState(flower?.blurb || "");
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const [dragDir, setDragDir] = useState(0);
 
   if (!flower) {
     return (
@@ -33,6 +35,14 @@ export default function EntryCard() {
 
   const statusLabel = NATIVE_STATUS_LABELS[flower.nativeStatus];
   const statusColors = NATIVE_STATUS_COLORS[flower.nativeStatus];
+
+  const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
+  const hasMultiple = photos.length > 1;
+
+  function goTo(dir: 1 | -1) {
+    setDragDir(dir);
+    setPhotoIndex(i => (i + dir + photos.length) % photos.length);
+  }
 
   return (
     <div className="min-h-screen bg-background pb-16 overflow-y-auto">
@@ -55,20 +65,56 @@ export default function EntryCard() {
       </div>
 
       <main className="px-6 flex flex-col items-center gap-5">
-        {/* Photo — small square card */}
+        {/* Photo carousel */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-48 h-48 rounded-2xl overflow-hidden shadow-md border border-border/30 bg-muted shrink-0"
+          className="flex flex-col items-center gap-2"
         >
-          {flower.imageUrl ? (
-            <img
-              src={flower.imageUrl}
-              alt={flower.commonName}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center text-4xl opacity-30">🌸</div>
+          <div className="w-48 h-48 rounded-2xl overflow-hidden shadow-md border border-border/30 bg-muted shrink-0 relative">
+            {photos.length > 0 ? (
+              <AnimatePresence mode="wait" custom={dragDir}>
+                <motion.img
+                  key={photoIndex}
+                  src={photos[photoIndex]}
+                  alt={flower.commonName}
+                  className="w-full h-full object-cover absolute inset-0"
+                  custom={dragDir}
+                  initial={{ x: dragDir * 60, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: dragDir * -60, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  drag={hasMultiple ? "x" : false}
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.2}
+                  onDragEnd={(_, info) => {
+                    if (info.offset.x < -40) goTo(1);
+                    else if (info.offset.x > 40) goTo(-1);
+                  }}
+                />
+              </AnimatePresence>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-4xl opacity-30">🌸</div>
+            )}
+          </div>
+
+          {/* Dot indicators */}
+          {hasMultiple && (
+            <div className="flex gap-1.5 items-center">
+              {photos.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => { setDragDir(i > photoIndex ? 1 : -1); setPhotoIndex(i); }}
+                  className={`rounded-full transition-all ${i === photoIndex ? "w-3 h-1.5 bg-primary" : "w-1.5 h-1.5 bg-border"}`}
+                />
+              ))}
+            </div>
+          )}
+
+          {hasMultiple && (
+            <p className="text-[10px] text-muted-foreground/50 tracking-wide">
+              {photos.length} sightings · swipe to browse
+            </p>
           )}
         </motion.div>
 

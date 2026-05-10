@@ -12,4 +12,5 @@ export type Flower = {
   plantFamily: string;
   nativeStatus: NativeStatus;
   imageUrl: string;
+  imageUrls: string[];
 };

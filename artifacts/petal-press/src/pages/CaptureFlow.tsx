@@ -39,7 +39,7 @@ function getFloriography(name: string) {
 
 export default function CaptureFlow() {
   const [, setLocation] = useLocation();
-  const { addFlower } = useGarden();
+  const { flowers, addFlower, addPhotoToFlower } = useGarden();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selectedFileRef = useRef<File | null>(null);
 
@@ -110,10 +110,8 @@ export default function CaptureFlow() {
     if (saving) return;
     setSaving(true);
 
-    // Never fall back to a blob URL — those are ephemeral and die on page close.
-    // We only save a Supabase public URL, or empty string if upload fails.
+    // Upload photo — never fall back to blob URLs (ephemeral)
     let finalImageUrl = "";
-
     const file = selectedFileRef.current;
     if (file) {
       try {
@@ -134,23 +132,35 @@ export default function CaptureFlow() {
       }
     }
 
-    const newFlower: Flower = {
-      id: `f${Date.now()}`,
-      commonName,
-      latinName,
-      nickname,
-      meaning,
-      blurb: notes,
-      color: "unknown",
-      datePressed: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-      plantFamily,
-      nativeStatus: getNativeStatus(latinName),
-      imageUrl: finalImageUrl,
-    };
+    // Check if the same species already exists — if so, just add the photo
+    const existing = flowers.find(
+      f => f.latinName.toLowerCase() === latinName.toLowerCase()
+    );
 
     try {
-      await addFlower(newFlower);
-      setLocation("/");
+      if (existing) {
+        if (finalImageUrl) {
+          await addPhotoToFlower(existing.id, finalImageUrl);
+        }
+        setLocation(`/flower/${existing.id}`);
+      } else {
+        const newFlower: Flower = {
+          id: `f${Date.now()}`,
+          commonName,
+          latinName,
+          nickname,
+          meaning,
+          blurb: notes,
+          color: "unknown",
+          datePressed: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+          plantFamily,
+          nativeStatus: getNativeStatus(latinName),
+          imageUrl: finalImageUrl,
+          imageUrls: finalImageUrl ? [finalImageUrl] : [],
+        };
+        await addFlower(newFlower);
+        setLocation("/");
+      }
     } catch {
       setSaving(false);
     }
