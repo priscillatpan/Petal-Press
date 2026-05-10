@@ -24,3 +24,99 @@ id = "Sv617K8aNgTt0z4hS_w8i"
 uri = "file://artifacts/petal-press/public/images/hydrangea.png"
 type = "image"
 title = "Hydrangea photography"
+
+[[generated]]
+id = "5jIQg6hFfU52qboqaZRWx"
+uri = "file://artifacts/mockup-sandbox/public/images/journal-rose.png"
+type = "image"
+title = "Rose polaroid photo"
+
+[[generated]]
+id = "GQmCcWH62m-YWdjdVXOkd"
+uri = "file://artifacts/mockup-sandbox/public/images/journal-lavender.png"
+type = "image"
+title = "Lavender polaroid photo"
+
+[[generated]]
+id = "p0GDUCjHWdGjcTACMnav3"
+uri = "file://artifacts/mockup-sandbox/public/images/journal-poppy.png"
+type = "image"
+title = "California Poppy photo"
+
+[[generated]]
+id = "pJoJgzEULPLbpck-BDrCi"
+uri = "file://artifacts/mockup-sandbox/public/images/journal-jasmine.png"
+type = "image"
+title = "Jasmine polaroid photo"
+
+[[generated]]
+id = "_GbC4zkUNhrDT0uNdEzux"
+uri = "file://artifacts/mockup-sandbox/public/images/journal-forgetmenot.png"
+type = "image"
+title = "Forget-me-not polaroid photo"
+
+[[generated]]
+id = "9nBxVUtZKcUvmHcJNCqAE"
+uri = "file://artifacts/mockup-sandbox/public/images/critterdex-rose.png"
+type = "image"
+title = "Red rose flower botanical photo"
+
+[[generated]]
+id = "OXV-t7jqRc0BVjH6xm7dv"
+uri = "file://artifacts/mockup-sandbox/public/images/critterdex-lavender.png"
+type = "image"
+title = "Lavender flowers botanical photo"
+
+[[generated]]
+id = "GD9d5b4HlCN-iUPu68WdQ"
+uri = "file://artifacts/mockup-sandbox/public/images/critterdex-poppy.png"
+type = "image"
+title = "California poppy botanical photo"
+
+[[generated]]
+id = "9ocXXq0_2L4X1BdsO0bNT"
+uri = "file://artifacts/mockup-sandbox/public/images/critterdex-jasmine.png"
+type = "image"
+title = "Jasmine flower botanical photo"
+
+[[generated]]
+id = "Zj-TjsCF_2zqCG1i9vXXA"
+uri = "file://artifacts/mockup-sandbox/public/images/critterdex-forgetmenot.png"
+type = "image"
+title = "Forget-me-not botanical photo"
+
+[[generated]]
+id = "6AeSlQJzM_BLFNuIKkX2g"
+uri = "file://artifacts/mockup-sandbox/public/images/critterdex-magnolia.png"
+type = "image"
+title = "Magnolia flower botanical photo"
+
+[[generated]]
+id = "L9lelFNVOcwUtuDCPGiXV"
+uri = "file://artifacts/mockup-sandbox/public/images/herbarium-rose.png"
+type = "image"
+title = "pressed rose illustration"
+
+[[generated]]
+id = "IRUnOXP4CmXmeZMR9eEVn"
+uri = "file://artifacts/mockup-sandbox/public/images/herbarium-lavender.png"
+type = "image"
+title = "pressed lavender illustration"
+
+[[generated]]
+id = "lagQ716vVfMStB0RBmn4D"
+uri = "file://artifacts/mockup-sandbox/public/images/herbarium-poppy.png"
+type = "image"
+title = "pressed california poppy"
+
+[[generated]]
+id = "Gqq4CkZwY5GyTCkeom-Ik"
+uri = "file://artifacts/mockup-sandbox/public/images/herbarium-jasmine.png"
+type = "image"
+title = "pressed star jasmine"
+
+[[generated]]
+id = "3iCJnWStKQLtBCpwK_zqW"
+uri = "file://artifacts/mockup-sandbox/public/images/herbarium-forgetmenot.png"
+type = "image"
+title = "pressed forget me not"
