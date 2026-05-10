@@ -36,35 +36,6 @@ function getFloriography(name: string) {
   return FLORIOGRAPHY.default;
 }
 
-function pixelateImage(file: File, gridSize: number, outputSize: number): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => {
-      // Step 1: draw tiny (grid × grid) — this is the "pixel" resolution
-      const small = document.createElement("canvas");
-      small.width = gridSize;
-      small.height = gridSize;
-      const ctx1 = small.getContext("2d")!;
-      ctx1.imageSmoothingEnabled = false;
-      ctx1.drawImage(img, 0, 0, gridSize, gridSize);
-
-      // Step 2: scale back up with smoothing OFF to keep hard pixel edges
-      const big = document.createElement("canvas");
-      big.width = outputSize;
-      big.height = outputSize;
-      const ctx2 = big.getContext("2d")!;
-      ctx2.imageSmoothingEnabled = false;
-      ctx2.drawImage(small, 0, 0, outputSize, outputSize);
-
-      big.toBlob(blob => {
-        if (blob) resolve(blob);
-        else reject(new Error("Canvas toBlob failed"));
-      }, "image/png");
-    };
-    img.onerror = reject;
-    img.src = URL.createObjectURL(file);
-  });
-}
 
 export default function CaptureFlow() {
   const [, setLocation] = useLocation();
@@ -146,11 +117,11 @@ export default function CaptureFlow() {
     const file = selectedFileRef.current;
     if (file) {
       try {
-        const pixelBlob = await pixelateImage(file, 32, 288);
-        const path = `${Date.now()}.png`;
+        const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+        const path = `${Date.now()}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from("flower-images")
-          .upload(path, pixelBlob, { contentType: "image/png", upsert: false });
+          .upload(path, file, { contentType: file.type, upsert: false });
 
         if (uploadError) {
           console.error("Image upload failed:", uploadError.message);

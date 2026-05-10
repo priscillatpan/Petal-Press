@@ -66,7 +66,6 @@ export default function EntryCard() {
               src={flower.imageUrl}
               alt={flower.commonName}
               className="w-full h-full object-cover"
-              style={{ imageRendering: "pixelated" }}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-4xl opacity-30">🌸</div>
