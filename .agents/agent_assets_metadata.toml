@@ -120,3 +120,45 @@ id = "3iCJnWStKQLtBCpwK_zqW"
 uri = "file://artifacts/mockup-sandbox/public/images/herbarium-forgetmenot.png"
 type = "image"
 title = "pressed forget me not"
+
+[[generated]]
+id = "ocewtmkTkSRB128xjrQdl"
+uri = "file://artifacts/mockup-sandbox/public/images/herbarium-entry-rose.png"
+type = "image"
+title = "vintage watercolor wild rose"
+
+[[generated]]
+id = "CzYYJcgcb85mtF9OkHACT"
+uri = "file://artifacts/mockup-sandbox/public/images/critterdex-entry-rose.png"
+type = "image"
+title = "botanical photo of a red rose"
+
+[[generated]]
+id = "Khhm-4WUw29_YvYPehQHS"
+uri = "file://artifacts/mockup-sandbox/public/images/buga-rose.png"
+type = "image"
+title = "Red rose cutout on white"
+
+[[generated]]
+id = "oID37276nVokdn_h2Hbcu"
+uri = "file://artifacts/mockup-sandbox/public/images/buga-lavender.png"
+type = "image"
+title = "Lavender sprig cutout on white"
+
+[[generated]]
+id = "HeTcygf9GMKjLq5K1lDOr"
+uri = "file://artifacts/mockup-sandbox/public/images/buga-poppy.png"
+type = "image"
+title = "California poppy cutout white"
+
+[[generated]]
+id = "29TAVRmQbhON5BNFCdb3t"
+uri = "file://artifacts/mockup-sandbox/public/images/buga-jasmine.png"
+type = "image"
+title = "Jasmine flowers cutout white"
+
+[[generated]]
+id = "EUHbNtJPGUYY-eGomFaqK"
+uri = "file://artifacts/mockup-sandbox/public/images/buga-forgetmenot.png"
+type = "image"
+title = "Forget-me-not cutout white"
