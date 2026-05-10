@@ -139,19 +139,27 @@ export default function CaptureFlow() {
     if (saving) return;
     setSaving(true);
 
-    let finalImageUrl = imagePreview ?? "";
+    // Never fall back to a blob URL — those are ephemeral and die on page close.
+    // We only save a Supabase public URL, or empty string if upload fails.
+    let finalImageUrl = "";
 
     const file = selectedFileRef.current;
     if (file) {
-      const pixelBlob = await pixelateImage(file, 32, 288);
-      const path = `${Date.now()}.png`;
-      const { error: uploadError } = await supabase.storage
-        .from("flower-images")
-        .upload(path, pixelBlob, { contentType: "image/png", upsert: false });
+      try {
+        const pixelBlob = await pixelateImage(file, 32, 288);
+        const path = `${Date.now()}.png`;
+        const { error: uploadError } = await supabase.storage
+          .from("flower-images")
+          .upload(path, pixelBlob, { contentType: "image/png", upsert: false });
 
-      if (!uploadError) {
-        const { data } = supabase.storage.from("flower-images").getPublicUrl(path);
-        finalImageUrl = data.publicUrl;
+        if (uploadError) {
+          console.error("Image upload failed:", uploadError.message);
+        } else {
+          const { data } = supabase.storage.from("flower-images").getPublicUrl(path);
+          finalImageUrl = data.publicUrl;
+        }
+      } catch (err) {
+        console.error("Image processing failed:", err);
       }
     }
 
