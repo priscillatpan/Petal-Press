@@ -17,7 +17,7 @@ function latinToSlug(latinName: string): string {
 }
 
 router.post("/illustrate", async (req, res) => {
-  const { latinName, commonName } = req.body as { latinName?: string; commonName?: string };
+  const { latinName, commonName, force } = req.body as { latinName?: string; commonName?: string; force?: boolean };
 
   if (!latinName || !commonName) {
     res.status(400).json({ error: "latinName and commonName are required" });
@@ -25,38 +25,41 @@ router.post("/illustrate", async (req, res) => {
   }
 
   const slug = latinToSlug(latinName);
-  const storagePath = `illustrations/${slug}.png`;
+  // v2 = playful watercolor style; v1 = old formal botanical style
+  const storagePath = `illustrations/v2/${slug}.png`;
 
   try {
     const supabase = getSupabase();
 
-    // Check if illustration already cached in Supabase storage
-    const { data: existing } = await supabase.storage
-      .from("flower-images")
-      .list("illustrations", { search: `${slug}.png` });
-
-    if (existing && existing.length > 0) {
-      const { data: urlData } = supabase.storage
+    // Return cached version unless force=true
+    if (!force) {
+      const { data: existing } = await supabase.storage
         .from("flower-images")
-        .getPublicUrl(storagePath);
-      res.json({ illustrationUrl: urlData.publicUrl, cached: true });
-      return;
+        .list("illustrations/v2", { search: `${slug}.png` });
+
+      if (existing && existing.length > 0) {
+        const { data: urlData } = supabase.storage
+          .from("flower-images")
+          .getPublicUrl(storagePath);
+        res.json({ illustrationUrl: urlData.publicUrl, cached: true });
+        return;
+      }
     }
 
-    // Generate botanical watercolor illustration
+    // Generate playful watercolor illustration
     const prompt =
-      `Vintage botanical watercolor illustration of ${commonName} (${latinName}). ` +
-      `19th century scientific botanical print style, detailed and botanically accurate. ` +
-      `Shows stem, leaves, and flowers in soft watercolor technique. ` +
-      `Cream parchment background. No text, no labels, no borders.`;
+      `Whimsical, joyful watercolor illustration of ${commonName} (${latinName}). ` +
+      `Loose expressive brushwork, vivid botanical colors, soft washes with visible brushstrokes. ` +
+      `Playful and charming, like a beloved illustrated nature book. ` +
+      `Full plant shown — stem, leaves, and flowers. Pure white background. No text, no labels, no frames.`;
 
     logger.info({ latinName }, "Generating botanical illustration");
     const buffer = await generateImageBuffer(prompt, "1024x1024");
 
-    // Upload to Supabase storage
+    // Upload to Supabase storage (new path = no overwrite conflict)
     const { error: uploadError } = await supabase.storage
       .from("flower-images")
-      .upload(storagePath, buffer, { contentType: "image/png", upsert: true });
+      .upload(storagePath, buffer, { contentType: "image/png", upsert: false });
 
     if (uploadError) {
       throw new Error(`Storage upload failed: ${uploadError.message}`);

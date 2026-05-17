@@ -14,7 +14,7 @@ const SEASONS: Season[] = ['spring', 'summer', 'fall', 'winter'];
 
 function illustrationUrl(latinName: string): string {
   const slug = latinName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  return `${SUPABASE_URL}/storage/v1/object/public/flower-images/illustrations/${slug}.png`;
+  return `${SUPABASE_URL}/storage/v1/object/public/flower-images/illustrations/v2/${slug}.png`;
 }
 
 const container = {
@@ -50,7 +50,7 @@ export default function Home() {
   return (
     <div className="min-h-screen pb-28 relative" style={{ backgroundColor: '#F5EFD8' }}>
       <header
-        className="px-5 pt-10 pb-3 sticky top-0 z-10"
+        className="px-5 pt-10 pb-3 sticky top-0 z-20"
         style={{
           backgroundColor: 'rgba(245,239,216,0.95)',
           backdropFilter: 'blur(8px)',
@@ -165,8 +165,8 @@ export default function Home() {
                             <img
                               src={illUrl}
                               alt={flower.commonName}
-                              className="w-full h-full object-cover"
-                              style={{ mixBlendMode: 'multiply', opacity: 0.92 }}
+                              className="w-full h-full object-contain"
+                              style={{ mixBlendMode: 'multiply', opacity: 0.92, padding: '4px' }}
                               onError={() => handleIllError(flower.id)}
                             />
                           )}
@@ -174,13 +174,12 @@ export default function Home() {
                         <p
                           className="text-center truncate px-0.5"
                           style={{
-                            fontSize: '8px',
+                            fontSize: '9px',
                             fontFamily: 'Fraunces, serif',
-                            fontStyle: 'italic',
                             color: '#736959',
                           }}
                         >
-                          {flower.latinName}
+                          {flower.commonName}
                         </p>
                       </div>
                     </div>

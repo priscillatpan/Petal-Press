@@ -6,7 +6,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 
 function illustrationUrl(latinName: string): string {
   const slug = latinName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  return `${SUPABASE_URL}/storage/v1/object/public/flower-images/illustrations/${slug}.png`;
+  return `${SUPABASE_URL}/storage/v1/object/public/flower-images/illustrations/v2/${slug}.png`;
 }
 
 const ROTATIONS = [-9, 6, -5, 8];
