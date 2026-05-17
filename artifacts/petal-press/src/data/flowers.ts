@@ -13,6 +13,7 @@ export const initialFlowers: Flower[] = [
     plantFamily: "Boraginaceae",
     nativeStatus: "naturalized",
     imageUrl: "/images/forget-me-not.png",
+    imageUrls: ["/images/forget-me-not.png"],
   },
   {
     id: "f2",
@@ -26,6 +27,7 @@ export const initialFlowers: Flower[] = [
     plantFamily: "Papaveraceae",
     nativeStatus: "native",
     imageUrl: "/images/california-poppy.png",
+    imageUrls: ["/images/california-poppy.png"],
   },
   {
     id: "f3",
@@ -39,6 +41,7 @@ export const initialFlowers: Flower[] = [
     plantFamily: "Apocynaceae",
     nativeStatus: "cultivated",
     imageUrl: "/images/star-jasmine.png",
+    imageUrls: ["/images/star-jasmine.png"],
   },
   {
     id: "f4",
@@ -52,5 +55,6 @@ export const initialFlowers: Flower[] = [
     plantFamily: "Hydrangeaceae",
     nativeStatus: "cultivated",
     imageUrl: "/images/hydrangea.png",
+    imageUrls: ["/images/hydrangea.png"],
   },
 ];

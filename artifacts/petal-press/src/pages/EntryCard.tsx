@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { useRoute, Link } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, Edit2, Check } from "lucide-react";
+import { motion } from "framer-motion";
+import { ChevronLeft, Edit2, Check, Camera, Flower2 } from "lucide-react";
 import { useGarden } from "@/context/GardenContext";
-import { Button } from "@/components/ui/button";
-import { NATIVE_STATUS_LABELS, NATIVE_STATUS_COLORS } from "@/data/nativeStatus";
+import { getSeasonFromDate, SEASON_MONTH_INDICES, ALL_MONTHS_SHORT } from "@/data/season";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+
+function illustrationUrl(latinName: string): string {
+  const slug = latinName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return `${SUPABASE_URL}/storage/v1/object/public/flower-images/illustrations/${slug}.png`;
+}
 
 export default function EntryCard() {
   const [, params] = useRoute("/flower/:id");
@@ -13,199 +19,282 @@ export default function EntryCard() {
   const flower = flowers.find(f => f.id === id);
 
   const [isEditingNotes, setIsEditingNotes] = useState(false);
-  const [notes, setNotes] = useState(flower?.blurb || "");
-  const [photoIndex, setPhotoIndex] = useState(0);
-  const [dragDir, setDragDir] = useState(0);
+  const [notes, setNotes] = useState(flower?.blurb ?? "");
+  const [showingPhoto, setShowingPhoto] = useState(false);
+  const [illError, setIllError] = useState(false);
 
   if (!flower) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center">
-        <h2 className="font-serif text-2xl text-foreground mb-4">Flower not found</h2>
+      <div
+        className="min-h-screen flex flex-col items-center justify-center p-6 text-center"
+        style={{ backgroundColor: '#F5EFD8' }}
+      >
+        <h2
+          className="text-2xl mb-4"
+          style={{ fontFamily: 'Fraunces, serif', color: '#3D362D' }}
+        >
+          Specimen not found
+        </h2>
         <Link href="/">
-          <Button variant="outline" data-testid="button-back-home">Return to Garden</Button>
+          <button
+            className="text-sm underline underline-offset-2"
+            style={{ color: '#986E5D' }}
+            data-testid="button-back-home"
+          >
+            Return to Herbarium
+          </button>
         </Link>
       </div>
     );
   }
+
+  const season = getSeasonFromDate(flower.datePressed);
+  const bloomMonths = SEASON_MONTH_INDICES[season] ?? [];
+  const illUrl = illustrationUrl(flower.latinName);
+  const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
+  const hasPhoto = photos.length > 0;
+  const showIllustration = !showingPhoto && !illError;
 
   const handleSaveNotes = () => {
     updateFlower(flower.id, { blurb: notes });
     setIsEditingNotes(false);
   };
 
-  const statusLabel = NATIVE_STATUS_LABELS[flower.nativeStatus];
-  const statusColors = NATIVE_STATUS_COLORS[flower.nativeStatus];
-
-  const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
-  const hasMultiple = photos.length > 1;
-
-  function goTo(dir: 1 | -1) {
-    setDragDir(dir);
-    setPhotoIndex(i => (i + dir + photos.length) % photos.length);
-  }
-
   return (
-    <div className="min-h-screen bg-background pb-16 overflow-y-auto">
-      {/* Topbar */}
-      <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+    <div className="min-h-screen pb-20 overflow-y-auto" style={{ backgroundColor: '#F5EFD8' }}>
+      <div
+        className="px-4 pt-10 pb-3 flex items-center justify-between sticky top-0 z-10"
+        style={{
+          backgroundColor: 'rgba(245,239,216,0.95)',
+          backdropFilter: 'blur(8px)',
+          borderBottom: '1px solid #E8DCC0',
+        }}
+      >
         <Link href="/">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full text-muted-foreground hover:text-foreground"
+          <button
+            className="w-9 h-9 rounded-full flex items-center justify-center"
+            style={{ color: '#9A8F7F' }}
             data-testid="button-back"
           >
             <ChevronLeft className="w-5 h-5" />
-          </Button>
+          </button>
         </Link>
-        <span className="text-xs text-muted-foreground/50 font-mono tracking-widest">
-          {flower.datePressed}
+        <span
+          className="text-xs tracking-widest"
+          style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: '#9A8F7F' }}
+        >
+          Herbarium
         </span>
         <div className="w-9" />
       </div>
 
-      <main className="px-6 flex flex-col items-center gap-5">
-        {/* Photo carousel */}
+      <main className="px-5 pt-5 flex flex-col gap-5">
+        {/* Illustration / Photo hero */}
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center gap-2"
+          className="flex flex-col items-center gap-3"
         >
-          <div className="w-48 h-48 rounded-2xl overflow-hidden shadow-md border border-border/30 bg-muted shrink-0 relative">
-            {photos.length > 0 ? (
-              <AnimatePresence mode="wait" custom={dragDir}>
-                <motion.img
-                  key={photoIndex}
-                  src={photos[photoIndex]}
+          <div
+            className="relative w-full"
+            style={{
+              padding: '12px',
+              backgroundColor: '#FCFBF7',
+              border: '1px solid #E8DCC0',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.07), inset 0 0 20px rgba(139,115,85,0.04)',
+            }}
+          >
+            {/* Washi tape top */}
+            <div
+              className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-12 h-3"
+              style={{
+                backgroundColor: 'rgba(255,255,255,0.6)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                border: '1px solid rgba(0,0,0,0.05)',
+              }}
+            />
+
+            <div
+              style={{
+                height: '240px',
+                border: '1px solid #E8DCC0',
+                overflow: 'hidden',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#FAF7EF',
+              }}
+            >
+              {showIllustration ? (
+                <img
+                  src={illUrl}
                   alt={flower.commonName}
-                  className="w-full h-full object-cover absolute inset-0"
-                  custom={dragDir}
-                  initial={{ x: dragDir * 60, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: dragDir * -60, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  drag={hasMultiple ? "x" : false}
-                  dragConstraints={{ left: 0, right: 0 }}
-                  dragElastic={0.2}
-                  onDragEnd={(_, info) => {
-                    if (info.offset.x < -40) goTo(1);
-                    else if (info.offset.x > 40) goTo(-1);
-                  }}
+                  className="w-full h-full object-contain"
+                  style={{ mixBlendMode: 'multiply', opacity: 0.92 }}
+                  onError={() => setIllError(true)}
                 />
-              </AnimatePresence>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-4xl opacity-30">🌸</div>
-            )}
+              ) : hasPhoto ? (
+                <img
+                  src={photos[0]}
+                  alt={flower.commonName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <Flower2 className="w-20 h-20 opacity-20" style={{ color: '#9A8F7F' }} />
+              )}
+            </div>
+
+            {/* Museum number */}
+            <p
+              className="absolute bottom-3 right-4 text-lg"
+              style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: '#D4CBB3', opacity: 0.8 }}
+            >
+              {flower.latinName.split(' ')[0].charAt(0)}. {flower.latinName.split(' ')[1]}
+            </p>
           </div>
 
-          {/* Dot indicators */}
-          {hasMultiple && (
-            <div className="flex gap-1.5 items-center">
-              {photos.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => { setDragDir(i > photoIndex ? 1 : -1); setPhotoIndex(i); }}
-                  className={`rounded-full transition-all ${i === photoIndex ? "w-3 h-1.5 bg-primary" : "w-1.5 h-1.5 bg-border"}`}
-                />
-              ))}
-            </div>
-          )}
-
-          {hasMultiple && (
-            <p className="text-[10px] text-muted-foreground/50 tracking-wide">
-              {photos.length} sightings · swipe to browse
-            </p>
+          {/* Toggle illustration / photo */}
+          {(hasPhoto || illError) && (
+            <button
+              onClick={() => setShowingPhoto(!showingPhoto)}
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-colors"
+              style={{
+                color: '#9A8F7F',
+                borderColor: '#D4CBB3',
+                backgroundColor: 'rgba(252,251,247,0.8)',
+              }}
+            >
+              {showingPhoto ? (
+                <>
+                  <Flower2 className="w-3 h-3" />
+                  <span>See illustration</span>
+                </>
+              ) : (
+                <>
+                  <Camera className="w-3 h-3" />
+                  <span>See your photo</span>
+                </>
+              )}
+            </button>
           )}
         </motion.div>
 
         {/* Name block */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="text-center w-full"
+          className="text-center"
         >
-          <h1 className="font-serif text-3xl text-foreground leading-tight mb-0.5">
+          <h1
+            className="leading-tight mb-1"
+            style={{ fontFamily: 'Fraunces, serif', fontSize: '28px', color: '#2C2721' }}
+          >
             {flower.commonName}
           </h1>
-          <p className="italic text-muted-foreground text-sm font-serif mb-2">
+          <p style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: '14px', color: '#736959' }}>
             {flower.latinName}
           </p>
-          <p className="text-primary text-xs tracking-widest uppercase font-medium">
-            "{flower.nickname}"
-          </p>
+          {flower.nickname && (
+            <p className="mt-1.5 text-xs tracking-widest uppercase" style={{ color: '#986E5D' }}>
+              "{flower.nickname}"
+            </p>
+          )}
         </motion.div>
 
-        {/* Meaning */}
+        {/* Divider */}
+        <div style={{ height: '1px', backgroundColor: '#E8DCC0' }} />
+
+        {/* Floriography */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="w-full"
+          transition={{ delay: 0.08 }}
         >
-          <p className="text-center text-[10px] tracking-[0.2em] text-muted-foreground/60 uppercase mb-2">
-            · It means ·
+          <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#9A8F7F' }}>
+            Language of Flowers
           </p>
-          <p className="text-center font-serif italic text-foreground/85 text-base leading-snug">
+          <p style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: '16px', color: '#986E5D' }}>
             {flower.meaning}
           </p>
         </motion.div>
 
-        {/* Blurb */}
-        {flower.blurb && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.12 }}
-            className="text-sm text-foreground/70 leading-relaxed text-center"
-          >
-            {flower.blurb}
-          </motion.p>
-        )}
-
-        {/* Meta strip */}
+        {/* Found info */}
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="w-full bg-card border border-border/40 rounded-2xl px-5 py-4 flex justify-between items-center gap-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="flex gap-6"
         >
           <div>
-            <p className="text-[10px] tracking-widest text-muted-foreground/50 uppercase mb-0.5">Family</p>
-            <p className="text-sm font-medium text-foreground">
-              {flower.plantFamily || "Unknown"}
-            </p>
+            <p className="text-xs uppercase tracking-widest mb-0.5" style={{ color: '#9A8F7F' }}>Pressed</p>
+            <p className="text-sm" style={{ color: '#5C5346' }}>{flower.datePressed}</p>
           </div>
-          <div className="h-8 w-px bg-border/40" />
-          <div className="text-right">
-            <p className="text-[10px] tracking-widest text-muted-foreground/50 uppercase mb-0.5">Status</p>
-            <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${statusColors}`}>
-              {statusLabel}
-            </span>
+          {flower.plantFamily && (
+            <div>
+              <p className="text-xs uppercase tracking-widest mb-0.5" style={{ color: '#9A8F7F' }}>Family</p>
+              <p className="text-sm" style={{ color: '#5C5346' }}>{flower.plantFamily}</p>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Season row */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.12 }}
+        >
+          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#9A8F7F' }}>In Bloom</p>
+          <div className="flex gap-1.5">
+            {ALL_MONTHS_SHORT.map((m, i) => {
+              const active = bloomMonths.includes(i);
+              return (
+                <div key={i} className="flex flex-col items-center gap-1">
+                  <span
+                    className="uppercase"
+                    style={{ fontSize: '8px', color: active ? '#986E5D' : '#C4BBA5' }}
+                  >
+                    {m}
+                  </span>
+                  <div
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: active ? '#986E5D' : '#E8DCC0' }}
+                  />
+                </div>
+              );
+            })}
           </div>
         </motion.div>
 
         {/* Field notes */}
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.18 }}
-          className="w-full bg-card border border-border/40 rounded-2xl px-5 py-4"
+          transition={{ delay: 0.14 }}
+          className="rounded"
+          style={{
+            backgroundColor: '#FCFBF7',
+            border: '1px solid #E8DCC0',
+            padding: '16px',
+            boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.03)',
+          }}
         >
           <div className="flex justify-between items-center mb-2">
-            <p className="text-[10px] tracking-widest text-muted-foreground/50 uppercase">· Notes ·</p>
+            <p className="text-xs uppercase tracking-widest" style={{ color: '#9A8F7F' }}>
+              Field Notes
+            </p>
             {!isEditingNotes ? (
               <button
-                className="text-muted-foreground hover:text-foreground"
                 onClick={() => setIsEditingNotes(true)}
+                style={{ color: '#9A8F7F' }}
                 data-testid="button-edit-notes"
               >
                 <Edit2 className="w-3.5 h-3.5" />
               </button>
             ) : (
               <button
-                className="text-primary"
                 onClick={handleSaveNotes}
+                style={{ color: '#986E5D' }}
                 data-testid="button-save-notes"
               >
                 <Check className="w-3.5 h-3.5" />
@@ -215,14 +304,24 @@ export default function EntryCard() {
 
           {isEditingNotes ? (
             <textarea
-              className="w-full bg-transparent border-none focus:ring-0 resize-none text-foreground/80 leading-relaxed min-h-[80px] text-sm font-serif italic"
+              className="w-full bg-transparent resize-none focus:outline-none text-sm"
+              style={{
+                fontFamily: 'Fraunces, serif',
+                fontStyle: 'italic',
+                color: '#5C5346',
+                minHeight: '80px',
+                borderBottom: '1px solid #D4CBB3',
+              }}
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={e => setNotes(e.target.value)}
               autoFocus
               data-testid="input-notes"
             />
           ) : (
-            <p className="text-foreground/80 leading-relaxed text-sm font-serif italic whitespace-pre-wrap">
+            <p
+              className="text-sm leading-relaxed whitespace-pre-wrap"
+              style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: '#5C5346' }}
+            >
               {flower.blurb || "No notes yet."}
             </p>
           )}

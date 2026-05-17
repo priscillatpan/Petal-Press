@@ -29,7 +29,7 @@ router.post("/identify", upload.single("image"), async (req, res) => {
       .toBuffer();
 
     const formData = new FormData();
-    const blob = new Blob([jpegBuffer], { type: "image/jpeg" });
+    const blob = new Blob([new Uint8Array(jpegBuffer)], { type: "image/jpeg" });
     formData.append("images", blob, "flower.jpg");
     formData.append("organs", "flower");
 
