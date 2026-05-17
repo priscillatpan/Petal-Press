@@ -2,6 +2,13 @@ import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useGarden } from "@/context/GardenContext";
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+
+function illustrationUrl(latinName: string): string {
+  const slug = latinName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return `${SUPABASE_URL}/storage/v1/object/public/flower-images/illustrations/${slug}.png`;
+}
+
 const ROTATIONS = [-9, 6, -5, 8];
 const POSITIONS = [
   { top: 10, left: 4 },
@@ -13,7 +20,7 @@ const POSITIONS = [
 export default function Welcome() {
   const [, setLocation] = useLocation();
   const { flowers } = useGarden();
-  const sampleImages = flowers.slice(0, 4).map(f => f.imageUrl);
+  const sampleFlowers = flowers.slice(0, 4);
 
   function handleEnter() {
     localStorage.setItem("petal-press-seen", "1");
@@ -21,18 +28,17 @@ export default function Welcome() {
   }
 
   return (
-    // Use overflow-y-auto so it scrolls on short screens; dvh accounts for mobile browser chrome
     <div
       className="bg-background flex flex-col px-6"
       style={{ minHeight: "100dvh" }}
       data-testid="welcome-screen"
     >
-      {/* Scattered photos */}
+      {/* Scattered illustration cards */}
       <div className="flex-shrink-0 flex items-center justify-center pt-14 pb-2">
         <div className="relative w-72 h-48">
-          {sampleImages.map((src, i) => (
+          {sampleFlowers.map((flower, i) => (
             <motion.div
-              key={i}
+              key={flower.id}
               initial={{ opacity: 0, scale: 0.75 }}
               animate={{ opacity: 1, scale: 1, rotate: ROTATIONS[i] }}
               transition={{ delay: i * 0.1, type: "spring", stiffness: 200, damping: 20 }}
@@ -44,10 +50,24 @@ export default function Welcome() {
               }}
             >
               <div
-                className="rounded-lg overflow-hidden shadow-md border-2 border-background"
-                style={{ width: 96, height: 112 }}
+                className="overflow-hidden shadow-md"
+                style={{
+                  width: 96,
+                  height: 112,
+                  backgroundColor: '#FCFBF7',
+                  border: '2px solid rgba(255,255,255,0.9)',
+                  borderRadius: 6,
+                }}
               >
-                <img src={src} alt="" className="w-full h-full object-cover" />
+                <img
+                  src={illustrationUrl(flower.latinName)}
+                  alt={flower.commonName}
+                  className="w-full h-full object-cover"
+                  style={{ mixBlendMode: 'multiply', opacity: 0.92 }}
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = 'none';
+                  }}
+                />
               </div>
             </motion.div>
           ))}
@@ -72,7 +92,7 @@ export default function Welcome() {
         </p>
       </motion.div>
 
-      {/* Spacer — collapses on short screens */}
+      {/* Spacer */}
       <div className="flex-1" style={{ minHeight: 32 }} />
 
       {/* CTA */}

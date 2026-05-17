@@ -159,8 +159,8 @@ export default function Home() {
                             <img
                               src={displayImage}
                               alt={flower.commonName}
-                              className="w-full h-full object-contain"
-                              style={{ mixBlendMode: 'multiply', opacity: 0.9 }}
+                              className="w-full h-full object-cover"
+                              style={{ mixBlendMode: 'multiply', opacity: 0.92, imageRendering: 'auto' }}
                               onError={() => !showPhoto && handleImgError(flower.id)}
                             />
                           ) : (
