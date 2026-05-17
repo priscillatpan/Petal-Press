@@ -29,7 +29,7 @@ const cell = {
 export default function Home() {
   const { flowers, loading } = useGarden();
   const [seasonFilter, setSeasonFilter] = useState<SeasonFilter>(null);
-  const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
+  const [illErrors, setIllErrors] = useState<Set<string>>(new Set());
 
   const seasonsPresent = useMemo(() => {
     const set = new Set(flowers.map(f => getSeasonFromDate(f.datePressed)));
@@ -43,8 +43,8 @@ export default function Home() {
 
   const ghostCount = Math.max(0, TOTAL_SLOTS - filtered.length);
 
-  function handleImgError(flowerId: string) {
-    setImgErrors(prev => new Set([...prev, flowerId]));
+  function handleIllError(flowerId: string) {
+    setIllErrors(prev => new Set([...prev, flowerId]));
   }
 
   return (
@@ -128,8 +128,7 @@ export default function Home() {
           >
             {filtered.map(flower => {
               const illUrl = illustrationUrl(flower.latinName);
-              const showPhoto = imgErrors.has(flower.id);
-              const displayImage = showPhoto ? flower.imageUrl : illUrl;
+              const illFailed = illErrors.has(flower.id);
 
               return (
                 <motion.div key={flower.id} variants={cell}>
@@ -155,21 +154,21 @@ export default function Home() {
                           className="flex-1 mb-1.5 overflow-hidden"
                           style={{ border: '1px solid #EDE5CC' }}
                         >
-                          {displayImage ? (
-                            <img
-                              src={displayImage}
-                              alt={flower.commonName}
-                              className="w-full h-full object-cover"
-                              style={{ mixBlendMode: 'multiply', opacity: 0.92, imageRendering: 'auto' }}
-                              onError={() => !showPhoto && handleImgError(flower.id)}
-                            />
-                          ) : (
+                          {illFailed ? (
                             <div className="w-full h-full flex items-center justify-center" style={{ color: '#D4CBB3' }}>
                               <svg viewBox="0 0 40 55" fill="none" className="w-7 h-9">
                                 <ellipse cx="20" cy="15" rx="8" ry="13" stroke="currentColor" strokeWidth="1.5" />
                                 <line x1="20" y1="28" x2="20" y2="52" stroke="currentColor" strokeWidth="1.5" />
                               </svg>
                             </div>
+                          ) : (
+                            <img
+                              src={illUrl}
+                              alt={flower.commonName}
+                              className="w-full h-full object-cover"
+                              style={{ mixBlendMode: 'multiply', opacity: 0.92 }}
+                              onError={() => handleIllError(flower.id)}
+                            />
                           )}
                         </div>
                         <p
