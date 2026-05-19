@@ -9,7 +9,7 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 
 function illustrationUrl(latinName: string): string {
   const slug = latinName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  return `${SUPABASE_URL}/storage/v1/object/public/flower-images/illustrations/${slug}.png`;
+  return `${SUPABASE_URL}/storage/v1/object/public/flower-images/illustrations/v2/${slug}.png`;
 }
 
 export default function EntryCard() {
@@ -20,7 +20,6 @@ export default function EntryCard() {
 
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notes, setNotes] = useState(flower?.blurb ?? "");
-  const [showingPhoto, setShowingPhoto] = useState(false);
   const [illError, setIllError] = useState(false);
 
   if (!flower) {
@@ -52,8 +51,7 @@ export default function EntryCard() {
   const bloomMonths = SEASON_MONTH_INDICES[season] ?? [];
   const illUrl = illustrationUrl(flower.latinName);
   const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
-  const hasPhoto = photos.length > 0;
-  const showIllustration = !showingPhoto && !illError;
+  const hasPhoto = photos.length > 0 && !photos[0].startsWith('blob:');
 
   const handleSaveNotes = () => {
     updateFlower(flower.id, { blurb: notes });
@@ -89,12 +87,13 @@ export default function EntryCard() {
       </div>
 
       <main className="px-5 pt-5 flex flex-col gap-5">
-        {/* Illustration / Photo hero */}
+        {/* Hero: illustration + photo shown together */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col items-center gap-3"
+          className="flex flex-col gap-3"
         >
+          {/* Main illustration frame */}
           <div
             className="relative w-full"
             style={{
@@ -104,7 +103,7 @@ export default function EntryCard() {
               boxShadow: '0 4px 20px rgba(0,0,0,0.07), inset 0 0 20px rgba(139,115,85,0.04)',
             }}
           >
-            {/* Washi tape top */}
+            {/* Washi tape */}
             <div
               className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-12 h-3"
               style={{
@@ -113,10 +112,9 @@ export default function EntryCard() {
                 border: '1px solid rgba(0,0,0,0.05)',
               }}
             />
-
             <div
               style={{
-                height: '240px',
+                height: hasPhoto ? '200px' : '240px',
                 border: '1px solid #E8DCC0',
                 overflow: 'hidden',
                 display: 'flex',
@@ -125,7 +123,7 @@ export default function EntryCard() {
                 backgroundColor: '#FAF7EF',
               }}
             >
-              {showIllustration ? (
+              {!illError ? (
                 <img
                   src={illUrl}
                   alt={flower.commonName}
@@ -133,49 +131,64 @@ export default function EntryCard() {
                   style={{ mixBlendMode: 'multiply', opacity: 0.92 }}
                   onError={() => setIllError(true)}
                 />
-              ) : hasPhoto ? (
-                <img
-                  src={photos[0]}
-                  alt={flower.commonName}
-                  className="w-full h-full object-cover"
-                />
               ) : (
                 <Flower2 className="w-20 h-20 opacity-20" style={{ color: '#9A8F7F' }} />
               )}
             </div>
-
-            {/* Museum number */}
             <p
               className="absolute bottom-3 right-4 text-lg"
               style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: '#D4CBB3', opacity: 0.8 }}
             >
               {flower.latinName.split(' ')[0].charAt(0)}. {flower.latinName.split(' ')[1]}
             </p>
+            {/* "Illustration" label */}
+            <p className="mt-2 text-center text-xs uppercase tracking-widest" style={{ color: '#C4BBA5' }}>
+              Illustration
+            </p>
           </div>
 
-          {/* Toggle illustration / photo */}
-          {(hasPhoto || illError) && (
-            <button
-              onClick={() => setShowingPhoto(!showingPhoto)}
-              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-colors"
+          {/* Original photo panel — only shown if a real photo exists */}
+          {hasPhoto && (
+            <div
+              className="relative w-full"
               style={{
-                color: '#9A8F7F',
-                borderColor: '#D4CBB3',
-                backgroundColor: 'rgba(252,251,247,0.8)',
+                padding: '12px',
+                backgroundColor: '#FCFBF7',
+                border: '1px solid #E8DCC0',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.07)',
               }}
             >
-              {showingPhoto ? (
-                <>
-                  <Flower2 className="w-3 h-3" />
-                  <span>See illustration</span>
-                </>
-              ) : (
-                <>
-                  <Camera className="w-3 h-3" />
-                  <span>See your photo</span>
-                </>
-              )}
-            </button>
+              {/* Washi tape */}
+              <div
+                className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-12 h-3"
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.6)',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  border: '1px solid rgba(0,0,0,0.05)',
+                  transform: 'translateX(-50%) rotate(2deg)',
+                }}
+              />
+              <div
+                style={{
+                  height: '180px',
+                  border: '1px solid #E8DCC0',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: '#1a1a1a',
+                }}
+              >
+                <img
+                  src={photos[0]}
+                  alt={`${flower.commonName} — your photo`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <p className="mt-2 text-center text-xs uppercase tracking-widest" style={{ color: '#C4BBA5' }}>
+                Your photo
+              </p>
+            </div>
           )}
         </motion.div>
 
