@@ -361,7 +361,7 @@ export default function CaptureFlow() {
                 <div className="flex flex-col items-center gap-5">
                   {/* Flower-shaped viewfinder */}
                   <div
-                    style={{ width: 240, height: 240, position: 'relative' }}
+                    style={{ width: 360, height: 360, position: 'relative' }}
                     data-testid="upload-area"
                   >
                     {/* Loading shimmer while camera warms up */}
@@ -381,11 +381,11 @@ export default function CaptureFlow() {
                           animate={{ opacity: [0.4, 0.9, 0.4] }}
                           transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
                         >
-                          <FlowerIcon size={64} color="#C4B8A0" />
+                          <FlowerIcon size={96} color="#C4B8A0" />
                         </motion.div>
                       </div>
                     )}
-                    <FlowerVideo videoRef={videoRef} size={240} />
+                    <FlowerVideo videoRef={videoRef} size={360} />
                   </div>
 
                   {/* Capture shutter button */}
