@@ -19,11 +19,11 @@ function FlowerDefs() {
       <defs>
         {/* 5 rounded circles — matches the daisy icon shape, objectBoundingBox so it scales */}
         <clipPath id="flower-clip-photo" clipPathUnits="objectBoundingBox">
-          <circle cx="0.50" cy="0.28" r="0.30" />
-          <circle cx="0.71" cy="0.43" r="0.30" />
-          <circle cx="0.63" cy="0.68" r="0.30" />
-          <circle cx="0.37" cy="0.68" r="0.30" />
-          <circle cx="0.29" cy="0.43" r="0.30" />
+          <circle cx="0.50" cy="0.31" r="0.23" />
+          <circle cx="0.68" cy="0.44" r="0.23" />
+          <circle cx="0.61" cy="0.65" r="0.23" />
+          <circle cx="0.39" cy="0.65" r="0.23" />
+          <circle cx="0.32" cy="0.44" r="0.23" />
         </clipPath>
       </defs>
     </svg>
@@ -469,19 +469,9 @@ export default function CaptureFlow() {
                 >
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
+                    transition={{ repeat: Infinity, duration: 6, ease: "linear" }}
                   >
-                    <svg viewBox="0 0 32 32" className="w-10 h-10 text-primary" fill="currentColor">
-                      <ellipse cx="16" cy="8" rx="4" ry="7" opacity="0.9" />
-                      <ellipse cx="16" cy="24" rx="4" ry="7" opacity="0.9" />
-                      <ellipse cx="8" cy="16" rx="7" ry="4" opacity="0.9" />
-                      <ellipse cx="24" cy="16" rx="7" ry="4" opacity="0.9" />
-                      <ellipse cx="10.3" cy="10.3" rx="4" ry="7" transform="rotate(-45 10.3 10.3)" opacity="0.7" />
-                      <ellipse cx="21.7" cy="21.7" rx="4" ry="7" transform="rotate(-45 21.7 21.7)" opacity="0.7" />
-                      <ellipse cx="21.7" cy="10.3" rx="4" ry="7" transform="rotate(45 21.7 10.3)" opacity="0.7" />
-                      <ellipse cx="10.3" cy="21.7" rx="4" ry="7" transform="rotate(45 10.3 21.7)" opacity="0.7" />
-                      <circle cx="16" cy="16" r="4" fill="hsl(48 60% 75%)" />
-                    </svg>
+                    <FlowerIcon size={40} color="hsl(var(--primary))" />
                   </motion.div>
                 </motion.div>
                 <div>

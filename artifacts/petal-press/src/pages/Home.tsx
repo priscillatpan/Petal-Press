@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { Plus } from "lucide-react";
 import { useGarden } from "@/context/GardenContext";
 import { FlowerIcon } from "@/components/FlowerIcon";
 import { getSeasonFromDate, SEASON_LABELS, type Season } from "@/data/season";
@@ -60,9 +59,10 @@ export default function Home() {
       >
         <div className="flex items-center justify-between mb-0.5">
           <h1
-            className="text-2xl tracking-tight"
+            className="text-2xl tracking-tight flex items-center gap-2"
             style={{ fontFamily: 'Fraunces, serif', color: '#3D362D' }}
           >
+            <FlowerIcon size={20} color="#986E5D" />
             Petal Press
           </h1>
           <span
@@ -270,13 +270,12 @@ export default function Home() {
           className="fixed bottom-8 w-14 h-14 rounded-full flex items-center justify-center active:scale-95 transition-all z-20"
           style={{
             backgroundColor: '#986E5D',
-            color: '#fff',
             right: 'max(20px, calc(50vw - 215px + 20px))',
             boxShadow: '0 4px 16px rgba(152,110,93,0.35)',
           }}
           data-testid="button-capture"
         >
-          <Plus className="w-6 h-6" />
+          <FlowerIcon size={28} color="#fff" />
         </button>
       </Link>
     </div>
