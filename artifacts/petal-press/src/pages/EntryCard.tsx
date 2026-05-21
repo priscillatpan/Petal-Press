@@ -40,7 +40,7 @@ export default function EntryCard() {
             style={{ color: '#986E5D' }}
             data-testid="button-back-home"
           >
-            Return to Herbarium
+            Return to Petal Press
           </button>
         </Link>
       </div>
@@ -81,7 +81,7 @@ export default function EntryCard() {
           className="text-xs tracking-widest"
           style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: '#9A8F7F' }}
         >
-          Herbarium
+          Petal Press
         </span>
         <div className="w-9" />
       </div>

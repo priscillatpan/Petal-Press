@@ -62,7 +62,7 @@ export default function Home() {
             className="text-2xl tracking-tight"
             style={{ fontFamily: 'Fraunces, serif', color: '#3D362D' }}
           >
-            Herbarium
+            Petal Press
           </h1>
           <span
             className="text-xs tracking-widest"
