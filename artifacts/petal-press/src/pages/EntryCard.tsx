@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useRoute, Link } from "wouter";
 import { motion } from "framer-motion";
-import { ChevronLeft, Edit2, Check, Camera, Flower2 } from "lucide-react";
+import { ChevronLeft, Edit2, Check, Camera } from "lucide-react";
+import { FlowerIcon } from "@/components/FlowerIcon";
 import { useGarden } from "@/context/GardenContext";
 import { getSeasonFromDate, SEASON_MONTH_INDICES, ALL_MONTHS_SHORT } from "@/data/season";
 
@@ -137,7 +138,7 @@ export default function EntryCard() {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <Flower2 className="w-20 h-20 opacity-20" style={{ color: '#9A8F7F' }} />
+                  <FlowerIcon size={80} color="#9A8F7F" style={{ opacity: 0.2 }} />
                 </div>
               )}
 

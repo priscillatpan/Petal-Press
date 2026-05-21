@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { useGarden } from "@/context/GardenContext";
+import { FlowerIcon } from "@/components/FlowerIcon";
 import { getSeasonFromDate, SEASON_LABELS, type Season } from "@/data/season";
 
 const TOTAL_SLOTS = 24;
@@ -192,11 +193,8 @@ export default function Home() {
                               )}
                             </>
                           ) : illFailed ? (
-                            <div className="w-full h-full flex items-center justify-center" style={{ color: '#D4CBB3' }}>
-                              <svg viewBox="0 0 40 55" fill="none" className="w-7 h-9">
-                                <ellipse cx="20" cy="15" rx="8" ry="13" stroke="currentColor" strokeWidth="1.5" />
-                                <line x1="20" y1="28" x2="20" y2="52" stroke="currentColor" strokeWidth="1.5" />
-                              </svg>
+                            <div className="w-full h-full flex items-center justify-center">
+                              <FlowerIcon size={36} color="#D4CBB3" />
                             </div>
                           ) : (
                             /* No photo — illustration fills the card */
@@ -246,11 +244,7 @@ export default function Home() {
                       className="flex-1 mb-1.5 flex flex-col items-center justify-center"
                       style={{ border: '1px dashed #E0D7C0' }}
                     >
-                      <svg viewBox="0 0 40 55" fill="none" className="w-7 h-9" style={{ color: '#C4BBA5', opacity: 0.5 }}>
-                        <ellipse cx="20" cy="15" rx="8" ry="13" stroke="currentColor" strokeWidth="1.2" />
-                        <line x1="20" y1="28" x2="20" y2="52" stroke="currentColor" strokeWidth="1.2" />
-                        <line x1="13" y1="39" x2="27" y2="39" stroke="currentColor" strokeWidth="0.8" strokeDasharray="2 2" />
-                      </svg>
+                      <FlowerIcon size={32} color="#C4BBA5" style={{ opacity: 0.5 }} />
                     </div>
                     <p
                       className="text-center"

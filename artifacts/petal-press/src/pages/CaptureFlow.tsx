@@ -1,7 +1,8 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Camera, AlertCircle } from "lucide-react";
+import { FlowerIcon } from "@/components/FlowerIcon";
 import { useGarden } from "@/context/GardenContext";
 import { Flower } from "@/data/types";
 import { getNativeStatus } from "@/data/nativeStatus";
@@ -11,18 +12,27 @@ import { lookupFloriography } from "@/data/floriography";
 type Candidate = { commonName: string; scientificName: string; score: number; family: string };
 type Step = 1 | 2 | 3 | 4 | 5;
 
-// 5-petal flower clip — scales to any square size via objectBoundingBox
+// Shared SVG defs — rendered once, reused by id
+function FlowerDefs() {
+  return (
+    <svg width="0" height="0" style={{ position: 'absolute', pointerEvents: 'none' }}>
+      <defs>
+        {/* 5 rounded circles — matches the daisy icon shape, objectBoundingBox so it scales */}
+        <clipPath id="flower-clip-photo" clipPathUnits="objectBoundingBox">
+          <circle cx="0.50" cy="0.28" r="0.30" />
+          <circle cx="0.71" cy="0.43" r="0.30" />
+          <circle cx="0.63" cy="0.68" r="0.30" />
+          <circle cx="0.37" cy="0.68" r="0.30" />
+          <circle cx="0.29" cy="0.43" r="0.30" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+}
+
 function FlowerPhoto({ src, size = 96, className = "" }: { src: string; size?: number; className?: string }) {
   return (
     <div style={{ width: size, height: size, flexShrink: 0 }} className={className}>
-      <svg width="0" height="0" style={{ position: 'absolute' }}>
-        <defs>
-          <clipPath id="flower-clip-capture" clipPathUnits="objectBoundingBox">
-            {/* 5-petal flower path in 0–1 bounding-box space */}
-            <path d="M0.394,0.354 C0.48,0.14 0.52,0.14 0.606,0.354 C0.84,0.37 0.85,0.41 0.671,0.556 C0.73,0.78 0.70,0.81 0.5,0.68 C0.30,0.81 0.27,0.78 0.329,0.556 C0.15,0.41 0.16,0.37 0.394,0.354 Z" />
-          </clipPath>
-        </defs>
-      </svg>
       <img
         src={src}
         alt=""
@@ -30,7 +40,27 @@ function FlowerPhoto({ src, size = 96, className = "" }: { src: string; size?: n
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          clipPath: 'url(#flower-clip-capture)',
+          clipPath: 'url(#flower-clip-photo)',
+          display: 'block',
+        }}
+      />
+    </div>
+  );
+}
+
+function FlowerVideo({ videoRef, size = 240 }: { videoRef: React.RefObject<HTMLVideoElement | null>; size?: number }) {
+  return (
+    <div style={{ width: size, height: size, flexShrink: 0, position: 'relative' }}>
+      <video
+        ref={videoRef}
+        autoPlay
+        playsInline
+        muted
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          clipPath: 'url(#flower-clip-photo)',
           display: 'block',
         }}
       />
@@ -45,12 +75,16 @@ export default function CaptureFlow() {
   const { flowers, addFlower, addPhotoToFlower } = useGarden();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selectedFileRef = useRef<File | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const [step, setStep] = useState<Step>(1);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [fileReceived, setFileReceived] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [cameraFailed, setCameraFailed] = useState(false);
 
   const [commonName, setCommonName] = useState("");
   const [latinName, setLatinName] = useState("");
@@ -59,6 +93,64 @@ export default function CaptureFlow() {
   const [plantFamily, setPlantFamily] = useState("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Start rear camera on mount; stop when leaving step 1 or unmounting
+  useEffect(() => {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      setCameraFailed(true);
+      return;
+    }
+    let active = true;
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 1280 } } })
+      .then(stream => {
+        if (!active) { stream.getTracks().forEach(t => t.stop()); return; }
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          setCameraReady(true);
+        }
+      })
+      .catch(() => { if (active) setCameraFailed(true); });
+    return () => {
+      active = false;
+      streamRef.current?.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+    };
+  }, []);
+
+  // Stop camera the moment we leave step 1
+  useEffect(() => {
+    if (step !== 1) {
+      streamRef.current?.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+      setCameraReady(false);
+    }
+  }, [step]);
+
+  function captureFromCamera() {
+    const video = videoRef.current;
+    if (!video) return;
+    const canvas = document.createElement("canvas");
+    const side = Math.min(video.videoWidth, video.videoHeight);
+    canvas.width = side;
+    canvas.height = side;
+    const ctx = canvas.getContext("2d")!;
+    const ox = (video.videoWidth - side) / 2;
+    const oy = (video.videoHeight - side) / 2;
+    ctx.drawImage(video, ox, oy, side, side, 0, 0, side, side);
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      const file = new File([blob], `capture-${Date.now()}.jpg`, { type: "image/jpeg" });
+      selectedFileRef.current = file;
+      const objectUrl = URL.createObjectURL(file);
+      setImagePreview(objectUrl);
+      setFileReceived(true);
+      streamRef.current?.getTracks().forEach(t => t.stop());
+      streamRef.current = null;
+      identifyPhoto(file);
+    }, "image/jpeg", 0.92);
+  }
 
   const identifyPhoto = useCallback(async (file: File) => {
     setStep(2);
@@ -189,12 +281,16 @@ export default function CaptureFlow() {
 
   return (
     <div className="bg-background flex flex-col" style={{ minHeight: "100dvh" }}>
-      {/* Hidden file input — triggered via label for maximum iOS compatibility */}
+      {/* Shared flower clip-path definitions — used by FlowerPhoto and FlowerVideo */}
+      <FlowerDefs />
+
+      {/* Hidden file input — triggered via label or programmatically */}
       <input
         id="flower-photo-input"
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        capture="environment"
         className="sr-only"
         onChange={handleFileChange}
         data-testid="input-file"
@@ -226,18 +322,22 @@ export default function CaptureFlow() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <AnimatePresence mode="wait">
 
-          {/* Step 1 — Pick photo */}
+          {/* Step 1 — Camera viewfinder (or file picker fallback) */}
           {step === 1 && (
             <motion.div
               key="step1"
               initial={{ opacity: 0, x: 24 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -24 }}
-              className="flex-1 flex flex-col items-center justify-center px-6 gap-5"
+              className="flex-1 flex flex-col items-center justify-center px-6 gap-6"
             >
               <div className="text-center">
-                <h2 className="font-serif text-2xl text-foreground mb-1">What did you find?</h2>
-                <p className="text-muted-foreground text-sm">Choose a photo from your walk</p>
+                <h2 className="font-serif text-2xl text-foreground mb-1">
+                  {cameraFailed ? "What did you find?" : "Point at a flower"}
+                </h2>
+                <p className="text-muted-foreground text-sm">
+                  {cameraFailed ? "Choose a photo from your walk" : "Hold steady, then tap Capture"}
+                </p>
               </div>
 
               {error && (
@@ -256,32 +356,94 @@ export default function CaptureFlow() {
                 </div>
               )}
 
-              <label
-                htmlFor="flower-photo-input"
-                className={`w-full aspect-[3/4] max-h-[52vh] border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-4 transition-all cursor-pointer active:scale-[0.98] ${
-                  fileReceived
-                    ? "border-primary/60 bg-primary/10"
-                    : "border-primary/25 bg-primary/[0.04] hover:bg-primary/[0.08]"
-                }`}
-                data-testid="upload-area"
-              >
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  {fileReceived
-                    ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }}><Camera className="w-7 h-7" /></motion.div>
-                    : <Camera className="w-7 h-7" />
-                  }
-                </div>
-                <div className="text-center px-4">
-                  <p className="text-primary font-medium">
-                    {fileReceived ? "Got it, identifying…" : "Tap to choose a photo"}
-                  </p>
-                  <p className="text-muted-foreground text-sm mt-1">Camera · Photo Library · Files</p>
-                </div>
-              </label>
+              {/* Live camera viewfinder through flower cutout */}
+              {!cameraFailed && (
+                <div className="flex flex-col items-center gap-5">
+                  {/* Flower-shaped viewfinder */}
+                  <div
+                    style={{ width: 240, height: 240, position: 'relative' }}
+                    data-testid="upload-area"
+                  >
+                    {/* Loading shimmer while camera warms up */}
+                    {!cameraReady && (
+                      <div
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          clipPath: 'url(#flower-clip-photo)',
+                          backgroundColor: '#EDE5CC',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <motion.div
+                          animate={{ opacity: [0.4, 0.9, 0.4] }}
+                          transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+                        >
+                          <FlowerIcon size={64} color="#C4B8A0" />
+                        </motion.div>
+                      </div>
+                    )}
+                    <FlowerVideo videoRef={videoRef} size={240} />
+                  </div>
 
-              <p className="text-muted-foreground/60 text-xs text-center max-w-[240px]">
-                We'll send it to Pl@ntNet to identify the species automatically.
-              </p>
+                  {/* Capture shutter button */}
+                  {cameraReady && (
+                    <button
+                      onClick={captureFromCamera}
+                      className="w-16 h-16 rounded-full flex items-center justify-center active:scale-90 transition-transform"
+                      style={{
+                        backgroundColor: '#986E5D',
+                        boxShadow: '0 0 0 4px #FAF7EF, 0 0 0 6px #986E5D',
+                      }}
+                      aria-label="Capture photo"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-white/20" />
+                    </button>
+                  )}
+
+                  {/* Escape hatch: choose from library */}
+                  <label
+                    htmlFor="flower-photo-input"
+                    className="text-sm text-muted-foreground underline underline-offset-2 cursor-pointer active:opacity-60"
+                  >
+                    or choose from library
+                  </label>
+                </div>
+              )}
+
+              {/* Fallback: file picker (no camera access) */}
+              {cameraFailed && (
+                <label
+                  htmlFor="flower-photo-input"
+                  className={`w-full aspect-[3/4] max-h-[52vh] border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-4 transition-all cursor-pointer active:scale-[0.98] ${
+                    fileReceived
+                      ? "border-primary/60 bg-primary/10"
+                      : "border-primary/25 bg-primary/[0.04] hover:bg-primary/[0.08]"
+                  }`}
+                  data-testid="upload-area"
+                >
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    {fileReceived
+                      ? <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }}><Camera className="w-7 h-7" /></motion.div>
+                      : <Camera className="w-7 h-7" />
+                    }
+                  </div>
+                  <div className="text-center px-4">
+                    <p className="text-primary font-medium">
+                      {fileReceived ? "Got it, identifying…" : "Tap to choose a photo"}
+                    </p>
+                    <p className="text-muted-foreground text-sm mt-1">Camera · Photo Library · Files</p>
+                  </div>
+                </label>
+              )}
+
+              {cameraFailed && (
+                <p className="text-muted-foreground/60 text-xs text-center max-w-[240px]">
+                  We'll send it to Pl@ntNet to identify the species automatically.
+                </p>
+              )}
             </motion.div>
           )}
 
