@@ -87,13 +87,11 @@ export default function EntryCard() {
       </div>
 
       <main className="px-5 pt-5 flex flex-col gap-5">
-        {/* Hero: illustration + photo shown together */}
+        {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col gap-3"
         >
-          {/* Main illustration frame */}
           <div
             className="relative w-full"
             style={{
@@ -112,18 +110,24 @@ export default function EntryCard() {
                 border: '1px solid rgba(0,0,0,0.05)',
               }}
             />
+
+            {/* Main image — photo if available, illustration fallback */}
             <div
               style={{
-                height: hasPhoto ? '200px' : '240px',
+                height: '260px',
                 border: '1px solid #E8DCC0',
                 overflow: 'hidden',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#FAF7EF',
+                position: 'relative',
+                backgroundColor: hasPhoto ? '#1a1a1a' : '#FAF7EF',
               }}
             >
-              {!illError ? (
+              {hasPhoto ? (
+                <img
+                  src={photos[0]}
+                  alt={flower.commonName}
+                  className="w-full h-full object-cover"
+                />
+              ) : !illError ? (
                 <img
                   src={illUrl}
                   alt={flower.commonName}
@@ -132,64 +136,60 @@ export default function EntryCard() {
                   onError={() => setIllError(true)}
                 />
               ) : (
-                <Flower2 className="w-20 h-20 opacity-20" style={{ color: '#9A8F7F' }} />
+                <div className="w-full h-full flex items-center justify-center">
+                  <Flower2 className="w-20 h-20 opacity-20" style={{ color: '#9A8F7F' }} />
+                </div>
               )}
-            </div>
-            <p
-              className="absolute bottom-3 right-4 text-lg"
-              style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: '#D4CBB3', opacity: 0.8 }}
-            >
-              {flower.latinName.split(' ')[0].charAt(0)}. {flower.latinName.split(' ')[1]}
-            </p>
-            {/* "Illustration" label */}
-            <p className="mt-2 text-center text-xs uppercase tracking-widest" style={{ color: '#C4BBA5' }}>
-              Illustration
-            </p>
-          </div>
 
-          {/* Original photo panel — only shown if a real photo exists */}
-          {hasPhoto && (
-            <div
-              className="relative w-full"
-              style={{
-                padding: '12px',
-                backgroundColor: '#FCFBF7',
-                border: '1px solid #E8DCC0',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.07)',
-              }}
-            >
-              {/* Washi tape */}
-              <div
-                className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-12 h-3"
-                style={{
-                  backgroundColor: 'rgba(255,255,255,0.6)',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                  border: '1px solid rgba(0,0,0,0.05)',
-                  transform: 'translateX(-50%) rotate(2deg)',
-                }}
-              />
-              <div
-                style={{
-                  height: '180px',
-                  border: '1px solid #E8DCC0',
-                  overflow: 'hidden',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#1a1a1a',
-                }}
+              {/* Illustration sticker — bottom-right corner, only when photo is showing */}
+              {hasPhoto && !illError && (
+                <div
+                  className="absolute bottom-3 right-3"
+                  style={{ transform: 'rotate(3deg)' }}
+                >
+                  <div
+                    style={{
+                      width: '88px',
+                      height: '88px',
+                      backgroundColor: '#FCFBF7',
+                      border: '3px solid #FCFBF7',
+                      boxShadow: '0 3px 12px rgba(0,0,0,0.25)',
+                      borderRadius: '4px',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <img
+                      src={illUrl}
+                      alt="illustration"
+                      className="w-full h-full object-contain"
+                      style={{ mixBlendMode: 'multiply', opacity: 0.95 }}
+                      onError={() => setIllError(true)}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Museum number watermark */}
+              <p
+                className="absolute bottom-2 left-3 text-sm pointer-events-none"
+                style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: hasPhoto ? 'rgba(255,255,255,0.4)' : '#D4CBB3' }}
               >
-                <img
-                  src={photos[0]}
-                  alt={`${flower.commonName} — your photo`}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <p className="mt-2 text-center text-xs uppercase tracking-widest" style={{ color: '#C4BBA5' }}>
-                Your photo
+                {flower.latinName.split(' ')[0].charAt(0)}. {flower.latinName.split(' ')[1]}
               </p>
             </div>
-          )}
+
+            {/* Label row */}
+            <div className="mt-2 flex justify-between items-center px-0.5">
+              <p className="text-xs uppercase tracking-widest" style={{ color: '#C4BBA5' }}>
+                {hasPhoto ? 'Your photo' : 'Illustration'}
+              </p>
+              {hasPhoto && !illError && (
+                <p className="text-xs uppercase tracking-widest" style={{ color: '#C4BBA5' }}>
+                  Illustration ↘
+                </p>
+              )}
+            </div>
+          </div>
         </motion.div>
 
         {/* Name block */}
