@@ -129,6 +129,8 @@ export default function Home() {
             {filtered.map(flower => {
               const illUrl = illustrationUrl(flower.latinName);
               const illFailed = illErrors.has(flower.id);
+              const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
+              const hasPhoto = photos.length > 0 && !photos[0].startsWith('blob:');
 
               return (
                 <motion.div key={flower.id} variants={cell}>
@@ -150,11 +152,46 @@ export default function Home() {
                           padding: '6px',
                         }}
                       >
+                        {/* Image area */}
                         <div
-                          className="flex-1 mb-1.5 overflow-hidden"
-                          style={{ border: '1px solid #EDE5CC' }}
+                          className="flex-1 mb-1.5 overflow-hidden relative"
+                          style={{ border: '1px solid #EDE5CC', backgroundColor: hasPhoto ? '#1a1a1a' : '#FAF7EF' }}
                         >
-                          {illFailed ? (
+                          {hasPhoto ? (
+                            <>
+                              {/* Main: real photo */}
+                              <img
+                                src={photos[0]}
+                                alt={flower.commonName}
+                                className="w-full h-full object-cover"
+                              />
+                              {/* Illustration sticker bottom-right */}
+                              {!illFailed && (
+                                <div
+                                  className="absolute bottom-1 right-1"
+                                  style={{ transform: 'rotate(3deg)' }}
+                                >
+                                  <div style={{
+                                    width: '32px',
+                                    height: '32px',
+                                    backgroundColor: '#FCFBF7',
+                                    border: '2px solid #FCFBF7',
+                                    borderRadius: '2px',
+                                    boxShadow: '0 2px 6px rgba(0,0,0,0.28)',
+                                    overflow: 'hidden',
+                                  }}>
+                                    <img
+                                      src={illUrl}
+                                      alt=""
+                                      className="w-full h-full object-contain"
+                                      style={{ mixBlendMode: 'multiply', opacity: 0.95 }}
+                                      onError={() => handleIllError(flower.id)}
+                                    />
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          ) : illFailed ? (
                             <div className="w-full h-full flex items-center justify-center" style={{ color: '#D4CBB3' }}>
                               <svg viewBox="0 0 40 55" fill="none" className="w-7 h-9">
                                 <ellipse cx="20" cy="15" rx="8" ry="13" stroke="currentColor" strokeWidth="1.5" />
@@ -162,6 +199,7 @@ export default function Home() {
                               </svg>
                             </div>
                           ) : (
+                            /* No photo — illustration fills the card */
                             <img
                               src={illUrl}
                               alt={flower.commonName}
@@ -171,6 +209,7 @@ export default function Home() {
                             />
                           )}
                         </div>
+
                         <p
                           className="text-center truncate px-0.5"
                           style={{
