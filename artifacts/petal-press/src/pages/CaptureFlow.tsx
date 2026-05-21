@@ -284,7 +284,7 @@ export default function CaptureFlow() {
       {/* Shared flower clip-path definitions — used by FlowerPhoto and FlowerVideo */}
       <FlowerDefs />
 
-      {/* Hidden file input — triggered via label or programmatically */}
+      {/* Camera input — opens rear camera directly */}
       <input
         id="flower-photo-input"
         ref={fileInputRef}
@@ -294,6 +294,14 @@ export default function CaptureFlow() {
         className="sr-only"
         onChange={handleFileChange}
         data-testid="input-file"
+      />
+      {/* Library input — no capture attribute, opens photo picker */}
+      <input
+        id="flower-library-input"
+        type="file"
+        accept="image/*"
+        className="sr-only"
+        onChange={handleFileChange}
       />
 
       {/* Topbar */}
@@ -405,7 +413,7 @@ export default function CaptureFlow() {
 
                   {/* Escape hatch: choose from library */}
                   <label
-                    htmlFor="flower-photo-input"
+                    htmlFor="flower-library-input"
                     className="text-sm text-muted-foreground underline underline-offset-2 cursor-pointer active:opacity-60"
                   >
                     or choose from library
