@@ -38,21 +38,54 @@ function FlowerPhoto({ src, size = 96, className = "" }: { src: string; size?: n
 }
 
 const FLORIOGRAPHY: Record<string, { meaning: string; nickname: string }> = {
-  default: { meaning: "beauty, wonder", nickname: "Found Beauty" },
-  rose: { meaning: "love, passion, beauty", nickname: "Heart's Bloom" },
-  tulip: { meaning: "perfect love, elegance", nickname: "Spring's Promise" },
-  daisy: { meaning: "innocence, purity, new beginnings", nickname: "Little Sunshine" },
-  lavender: { meaning: "devotion, serenity, grace", nickname: "Purple Peace" },
-  poppy: { meaning: "rest, sleep, imagination", nickname: "Golden Hour" },
-  jasmine: { meaning: "grace, elegance, attachment", nickname: "Night Perfume" },
-  hydrangea: { meaning: "heartfelt emotion, gratitude, understanding", nickname: "Mrs. Weatherglass" },
-  forget: { meaning: "remembrance, true love", nickname: "Little Blue Reminder" },
-  sunflower: { meaning: "adoration, loyalty, longevity", nickname: "Sun Chaser" },
-  violet: { meaning: "faithfulness, humility, modesty", nickname: "Shy Gem" },
-  lily: { meaning: "purity, refined beauty, rebirth", nickname: "White Whisper" },
-  orchid: { meaning: "rare beauty, strength, love", nickname: "Exotic Heart" },
-  camellia: { meaning: "admiration, perfection, gratitude", nickname: "Quiet Grace" },
-  magnolia: { meaning: "dignity, nobility, perseverance", nickname: "Ancient Glory" },
+  default:      { meaning: "beauty, wonder",                          nickname: "Found Beauty" },
+  // Roses & classics
+  rose:         { meaning: "love, passion, beauty",                   nickname: "Heart's Bloom" },
+  camellia:     { meaning: "admiration, perfection, longing",         nickname: "Quiet Grace" },
+  peony:        { meaning: "prosperity, romance, compassion",         nickname: "Full Heart" },
+  // Spring bulbs
+  tulip:        { meaning: "perfect love, declaration of feeling",    nickname: "Spring's Promise" },
+  daffodil:     { meaning: "new beginnings, hope, unrequited love",   nickname: "First Light" },
+  narcissus:    { meaning: "vanity, self-love, new beginnings",       nickname: "Mirror Bloom" },
+  crocus:       { meaning: "youthful joy, cheerfulness, foresight",   nickname: "Early Riser" },
+  hyacinth:     { meaning: "constancy, sincerity, sport",             nickname: "Blue Bell" },
+  // Wildflowers & meadow
+  daisy:        { meaning: "innocence, purity, loyal love",           nickname: "Little Sunshine" },
+  poppy:        { meaning: "consolation, rest, forgetfulness",        nickname: "Golden Hour" },
+  cornflower:   { meaning: "delicacy, hope, anticipation",            nickname: "Blue Hour" },
+  buttercup:    { meaning: "cheerfulness, childlikeness, ingratitude",nickname: "Bright Button" },
+  clover:       { meaning: "good fortune, industry, promise",         nickname: "Lucky Patch" },
+  dandelion:    { meaning: "faithfulness, happiness, wishes",         nickname: "Wish-Maker" },
+  // Aromatics
+  lavender:     { meaning: "devotion, serenity, distrust",            nickname: "Purple Peace" },
+  jasmine:      { meaning: "amiability, grace, attachment",           nickname: "Night Perfume" },
+  geranium:     { meaning: "preference, comfort, gentility",          nickname: "Sweet Comfort" },
+  pelargonium:  { meaning: "preference, comfort, gentility",          nickname: "Sweet Comfort" },
+  rosemary:     { meaning: "remembrance, fidelity, love",             nickname: "Memory Keeper" },
+  // Trees & shrubs
+  magnolia:     { meaning: "dignity, nobility, love of nature",       nickname: "Ancient Glory" },
+  wisteria:     { meaning: "steadfast love, longing, romance",        nickname: "Purple Dream" },
+  lilac:        { meaning: "first love, youthful innocence, memory",  nickname: "First Crush" },
+  azalea:       { meaning: "temperance, passion, take care of yourself", nickname: "Soft Fire" },
+  bougainvillea:{ meaning: "passion, welcome, freedom",               nickname: "Paper Bloom" },
+  jacaranda:    { meaning: "wisdom, good luck, rebirth",              nickname: "Wish Tree" },
+  // Summer blooms
+  sunflower:    { meaning: "adoration, loyalty, longevity",           nickname: "Sun Chaser" },
+  hydrangea:    { meaning: "heartfelt emotion, gratitude, understanding", nickname: "Mrs. Weatherglass" },
+  marigold:     { meaning: "grief, jealousy, creativity",             nickname: "Sun's Sorrow" },
+  zinnia:       { meaning: "lasting affection, friendship, constancy",nickname: "True Friend" },
+  aster:        { meaning: "patience, elegance, daintiness",          nickname: "Star Petal" },
+  cosmos:       { meaning: "harmony, tranquility, innocence",         nickname: "Quiet Universe" },
+  dahlia:       { meaning: "dignity, elegance, commitment",           nickname: "Bold Beauty" },
+  hibiscus:     { meaning: "delicate beauty, fleeting love, joy",     nickname: "One-Day Wonder" },
+  chrysanthemum:{ meaning: "loyalty, longevity, joy",                 nickname: "Autumn Gold" },
+  // Water & shade
+  iris:         { meaning: "faith, hope, wisdom, courage",            nickname: "Rainbow's Edge" },
+  forget:       { meaning: "remembrance, true love, constancy",       nickname: "Little Blue Reminder" },
+  lily:         { meaning: "purity, majesty, refined beauty",         nickname: "White Whisper" },
+  // Exotic
+  orchid:       { meaning: "rare beauty, refinement, love",           nickname: "Exotic Heart" },
+  violet:       { meaning: "faithfulness, humility, modesty",         nickname: "Shy Gem" },
 };
 
 function getFloriography(name: string) {
