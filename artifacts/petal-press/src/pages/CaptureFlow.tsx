@@ -10,6 +10,33 @@ import { supabase } from "@/lib/supabase";
 type Candidate = { commonName: string; scientificName: string; score: number; family: string };
 type Step = 1 | 2 | 3 | 4 | 5;
 
+// 5-petal flower clip — scales to any square size via objectBoundingBox
+function FlowerPhoto({ src, size = 96, className = "" }: { src: string; size?: number; className?: string }) {
+  return (
+    <div style={{ width: size, height: size, flexShrink: 0 }} className={className}>
+      <svg width="0" height="0" style={{ position: 'absolute' }}>
+        <defs>
+          <clipPath id="flower-clip-capture" clipPathUnits="objectBoundingBox">
+            {/* 5-petal flower path in 0–1 bounding-box space */}
+            <path d="M0.394,0.354 C0.48,0.14 0.52,0.14 0.606,0.354 C0.84,0.37 0.85,0.41 0.671,0.556 C0.73,0.78 0.70,0.81 0.5,0.68 C0.30,0.81 0.27,0.78 0.329,0.556 C0.15,0.41 0.16,0.37 0.394,0.354 Z" />
+          </clipPath>
+        </defs>
+      </svg>
+      <img
+        src={src}
+        alt=""
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          clipPath: 'url(#flower-clip-capture)',
+          display: 'block',
+        }}
+      />
+    </div>
+  );
+}
+
 const FLORIOGRAPHY: Record<string, { meaning: string; nickname: string }> = {
   default: { meaning: "beauty, wonder", nickname: "Found Beauty" },
   rose: { meaning: "love, passion, beauty", nickname: "Heart's Bloom" },
@@ -337,8 +364,10 @@ export default function CaptureFlow() {
               className="flex-1 flex flex-col px-5 pt-6 pb-8 overflow-y-auto"
             >
               {imagePreview && (
-                <div className="w-24 h-24 rounded-2xl overflow-hidden mx-auto mb-5 shadow-md ring-2 ring-background">
-                  <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
+                <div className="flex justify-center mb-5">
+                  <div style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.22))' }}>
+                    <FlowerPhoto src={imagePreview} size={112} />
+                  </div>
                 </div>
               )}
 
@@ -394,13 +423,14 @@ export default function CaptureFlow() {
               className="flex-1 flex flex-col overflow-y-auto pb-32"
             >
               {imagePreview && (
-                <div className="w-full aspect-video relative flex-shrink-0">
-                  <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent" />
+                <div className="flex justify-center pt-8 pb-4" style={{ backgroundColor: 'rgba(245,239,216,0.6)' }}>
+                  <div style={{ filter: 'drop-shadow(0 6px 18px rgba(0,0,0,0.28))' }}>
+                    <FlowerPhoto src={imagePreview} size={180} />
+                  </div>
                 </div>
               )}
 
-              <div className="px-5 -mt-10 relative z-10 space-y-5">
+              <div className="px-5 pt-2 space-y-5">
                 <div>
                   <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-0.5">Identified as</p>
                   <h2 className="font-serif text-2xl text-foreground leading-tight">{commonName}</h2>
