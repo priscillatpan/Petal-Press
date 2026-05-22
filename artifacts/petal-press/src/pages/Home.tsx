@@ -192,49 +192,32 @@ export default function Home() {
       </main>
 
       <Link href="/capture" style={{ display: 'block' }}>
-        {/* Outer container sized to hold button + curved label text */}
+        {/* FAB pill button */}
         <div
           className="fixed z-20 active:scale-95 transition-all"
           style={{
-            bottom: '16px',
-            right: 'max(0px, calc(50vw - 215px))',
-            width: '96px',
-            height: '96px',
+            bottom: '20px',
+            right: 'max(16px, calc(50vw - 215px))',
           }}
           data-testid="button-capture"
         >
-          {/* Curved "add flower" text arcing over the top */}
-          <svg
-            width="96" height="96" viewBox="0 0 96 96"
-            className="absolute inset-0 pointer-events-none"
-            aria-hidden
-          >
-            <defs>
-              {/* Arc from left (8,48) counterclockwise through top to right (88,48) */}
-              <path id="fab-arc" d="M 8,48 A 40,40 0 0,0 88,48" />
-            </defs>
-            <text
-              fill="#c5d07d"
-              fontSize="7.5"
-              fontFamily="Fraunces, serif"
-              letterSpacing="2.5"
-              textAnchor="middle"
-            >
-              <textPath href="#fab-arc" startOffset="50%">
-                ✿ add flower ✿
-              </textPath>
-            </text>
-          </svg>
-
-          {/* The actual circle button, centered in the container */}
           <button
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center"
+            className="flex items-center gap-2.5 h-14 px-5 rounded-full"
             style={{
               backgroundColor: '#c5d07d',
-              boxShadow: '0 4px 16px rgba(197,208,125,0.45)',
+              boxShadow: '0 4px 20px rgba(197,208,125,0.55)',
             }}
           >
-            <FlowerIcon size={28} color="#3D362D" />
+            <FlowerIcon size={22} color="#3D362D" />
+            <span style={{
+              fontFamily: 'Fraunces, serif',
+              fontStyle: 'italic',
+              fontSize: '15px',
+              color: '#3D362D',
+              letterSpacing: '0.01em',
+            }}>
+              add flower
+            </span>
           </button>
         </div>
       </Link>
