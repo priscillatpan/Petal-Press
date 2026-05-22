@@ -112,7 +112,7 @@ export default function Home() {
             variants={container}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-3 gap-2"
+            className="grid grid-cols-2 gap-3"
           >
             {filtered.map((flower, idx) => {
               const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
