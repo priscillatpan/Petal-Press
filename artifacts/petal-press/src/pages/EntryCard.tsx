@@ -3,6 +3,7 @@ import { useRoute, Link } from "wouter";
 import { motion } from "framer-motion";
 import { ChevronLeft, Edit2, Check, Camera } from "lucide-react";
 import { FlowerIcon } from "@/components/FlowerIcon";
+import { BlobFrame } from "@/components/BlobFrame";
 import { useGarden } from "@/context/GardenContext";
 import { getSeasonFromDate, SEASON_MONTH_INDICES, ALL_MONTHS_SHORT } from "@/data/season";
 
@@ -53,6 +54,8 @@ export default function EntryCard() {
   const illUrl = illustrationUrl(flower.latinName);
   const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
   const hasPhoto = photos.length > 0 && !photos[0].startsWith('blob:');
+  // Consistent blob shape per flower derived from its id
+  const blobIndex = flower.id.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
 
   const handleSaveNotes = () => {
     updateFlower(flower.id, { blurb: notes });
@@ -88,38 +91,18 @@ export default function EntryCard() {
       </div>
 
       <main className="px-5 pt-5 flex flex-col gap-5">
-        {/* Hero */}
+        {/* Hero — blob-shaped photo/illustration */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div
-            className="relative w-full"
-            style={{
-              padding: '12px',
-              backgroundColor: '#FCFBF7',
-              border: '1px solid #E8DCC0',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.07), inset 0 0 20px rgba(139,115,85,0.04)',
-            }}
-          >
-            {/* Washi tape */}
-            <div
-              className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-12 h-3"
+          <div className="relative w-full" style={{ paddingBottom: '100%' }}>
+            <BlobFrame
+              blobIndex={blobIndex}
+              className="absolute inset-0"
               style={{
-                backgroundColor: 'rgba(255,255,255,0.6)',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                border: '1px solid rgba(0,0,0,0.05)',
-              }}
-            />
-
-            {/* Main image — photo if available, illustration fallback */}
-            <div
-              style={{
-                height: '260px',
-                border: '1px solid #E8DCC0',
-                overflow: 'hidden',
-                position: 'relative',
                 backgroundColor: hasPhoto ? '#1a1a1a' : '#FAF7EF',
+                boxShadow: '0 6px 28px rgba(0,0,0,0.13)',
               }}
             >
               {hasPhoto ? (
@@ -133,7 +116,7 @@ export default function EntryCard() {
                   src={illUrl}
                   alt={flower.commonName}
                   className="w-full h-full object-contain"
-                  style={{ mixBlendMode: 'multiply', opacity: 0.92 }}
+                  style={{ mixBlendMode: 'multiply', opacity: 0.92, padding: '16px' }}
                   onError={() => setIllError(true)}
                 />
               ) : (
@@ -142,16 +125,16 @@ export default function EntryCard() {
                 </div>
               )}
 
-              {/* Illustration sticker — bottom-right corner, only when photo is showing */}
+              {/* Illustration sticker — bottom-right, only when photo is showing */}
               {hasPhoto && !illError && (
                 <div
-                  className="absolute bottom-3 right-3"
+                  className="absolute bottom-4 right-4"
                   style={{ transform: 'rotate(3deg)' }}
                 >
                   <div
                     style={{
-                      width: '88px',
-                      height: '88px',
+                      width: '76px',
+                      height: '76px',
                       backgroundColor: '#FCFBF7',
                       border: '3px solid #FCFBF7',
                       boxShadow: '0 3px 12px rgba(0,0,0,0.25)',
@@ -170,26 +153,14 @@ export default function EntryCard() {
                 </div>
               )}
 
-              {/* Museum number watermark */}
+              {/* Latin name watermark */}
               <p
-                className="absolute bottom-2 left-3 text-sm pointer-events-none"
-                style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: hasPhoto ? 'rgba(255,255,255,0.4)' : '#D4CBB3' }}
+                className="absolute bottom-3 left-4 text-xs pointer-events-none"
+                style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: hasPhoto ? 'rgba(255,255,255,0.45)' : '#D4CBB3' }}
               >
                 {flower.latinName.split(' ')[0].charAt(0)}. {flower.latinName.split(' ')[1]}
               </p>
-            </div>
-
-            {/* Label row */}
-            <div className="mt-2 flex justify-between items-center px-0.5">
-              <p className="text-xs uppercase tracking-widest" style={{ color: '#C4BBA5' }}>
-                {hasPhoto ? 'Your photo' : 'Illustration'}
-              </p>
-              {hasPhoto && !illError && (
-                <p className="text-xs uppercase tracking-widest" style={{ color: '#C4BBA5' }}>
-                  Illustration ↘
-                </p>
-              )}
-            </div>
+            </BlobFrame>
           </div>
         </motion.div>
 

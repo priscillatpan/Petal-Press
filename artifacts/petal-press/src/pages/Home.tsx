@@ -6,7 +6,7 @@ import { FlowerIcon } from "@/components/FlowerIcon";
 import { BlobFrame } from "@/components/BlobFrame";
 import { getSeasonFromDate, SEASON_LABELS, type Season } from "@/data/season";
 
-const TOTAL_SLOTS = 24;
+const GHOST_SLOTS = 3;
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 
 type SeasonFilter = Season | null;
@@ -42,7 +42,7 @@ export default function Home() {
     return flowers.filter(f => getSeasonFromDate(f.datePressed) === seasonFilter);
   }, [flowers, seasonFilter]);
 
-  const ghostCount = Math.max(0, TOTAL_SLOTS - filtered.length);
+  const ghostCount = GHOST_SLOTS;
 
   function handleIllError(flowerId: string) {
     setIllErrors(prev => new Set([...prev, flowerId]));
@@ -70,13 +70,11 @@ export default function Home() {
             className="text-xs tracking-widest"
             style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: '#9A8F7F' }}
           >
-            {loading ? '…' : `${flowers.length} / ${TOTAL_SLOTS}`}
+            {loading ? '…' : `${flowers.length} species found`}
           </span>
         </div>
         <p className="text-xs mb-3" style={{ color: '#9A8F7F' }}>
-          {loading
-            ? 'Loading your pressings…'
-            : `${flowers.length} of ${TOTAL_SLOTS} species discovered`}
+          {loading ? 'Loading your pressings…' : 'What flowers will you discover today?'}
         </p>
 
         {!loading && seasonsPresent.length > 0 && (
@@ -200,7 +198,7 @@ export default function Home() {
 
                       <p
                         className="text-center truncate w-full px-0.5 shrink-0"
-                        style={{ fontSize: '9px', fontFamily: 'Fraunces, serif', color: '#736959' }}
+                        style={{ fontSize: '11px', fontFamily: 'Fraunces, serif', color: '#736959' }}
                       >
                         {flower.commonName}
                       </p>
