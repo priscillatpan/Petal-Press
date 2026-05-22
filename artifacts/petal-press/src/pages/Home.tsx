@@ -136,65 +136,67 @@ export default function Home() {
 
               return (
                 <motion.div key={flower.id} variants={cell}>
-                  <Link href={`/flower/${flower.id}`}>
+                  {/* display:block on the <a> so % widths resolve from the grid cell */}
+                  <Link href={`/flower/${flower.id}`} style={{ display: 'block' }}>
                     <div
                       className="flex flex-col items-center gap-1 cursor-pointer active:scale-95 transition-transform duration-150"
                       data-testid={`card-flower-${flower.id}`}
                     >
-                      {/* Blob-shaped image — always 1:1 so paths render undistorted */}
-                      <BlobFrame
-                        blobIndex={idx}
-                        className="relative w-full"
-                        style={{
-                          aspectRatio: '1',
-                          backgroundColor: hasPhoto ? '#2a1f18' : '#FAF7EF',
-                          boxShadow: '0 3px 12px rgba(0,0,0,0.13)',
-                        }}
-                      >
-                        {hasPhoto ? (
-                          <>
-                            <img
-                              src={photos[0]}
-                              alt={flower.commonName}
-                              className="w-full h-full object-cover"
-                            />
-                            {!illFailed && (
-                              <div
-                                className="absolute bottom-1 right-1"
-                                style={{ transform: 'rotate(3deg)' }}
-                              >
-                                <div style={{
-                                  width: '28px', height: '28px',
-                                  backgroundColor: '#FCFBF7',
-                                  border: '2px solid #FCFBF7',
-                                  borderRadius: '2px',
-                                  boxShadow: '0 2px 6px rgba(0,0,0,0.28)',
-                                  overflow: 'hidden',
-                                }}>
-                                  <img
-                                    src={illUrl} alt=""
-                                    className="w-full h-full object-contain"
-                                    style={{ mixBlendMode: 'multiply', opacity: 0.95 }}
-                                    onError={() => handleIllError(flower.id)}
-                                  />
+                      {/* Explicit square container — padding-bottom trick guarantees 1:1 */}
+                      <div className="relative w-full" style={{ paddingBottom: '100%' }}>
+                        <BlobFrame
+                          blobIndex={idx}
+                          className="absolute inset-0"
+                          style={{
+                            backgroundColor: hasPhoto ? '#2a1f18' : '#FAF7EF',
+                            boxShadow: '0 3px 12px rgba(0,0,0,0.13)',
+                          }}
+                        >
+                          {hasPhoto ? (
+                            <>
+                              <img
+                                src={photos[0]}
+                                alt={flower.commonName}
+                                className="w-full h-full object-cover"
+                              />
+                              {!illFailed && (
+                                <div
+                                  className="absolute bottom-1 right-1"
+                                  style={{ transform: 'rotate(3deg)' }}
+                                >
+                                  <div style={{
+                                    width: '28px', height: '28px',
+                                    backgroundColor: '#FCFBF7',
+                                    border: '2px solid #FCFBF7',
+                                    borderRadius: '2px',
+                                    boxShadow: '0 2px 6px rgba(0,0,0,0.28)',
+                                    overflow: 'hidden',
+                                  }}>
+                                    <img
+                                      src={illUrl} alt=""
+                                      className="w-full h-full object-contain"
+                                      style={{ mixBlendMode: 'multiply', opacity: 0.95 }}
+                                      onError={() => handleIllError(flower.id)}
+                                    />
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                          </>
-                        ) : illFailed ? (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <FlowerIcon size={32} color="#D4CBB3" />
-                          </div>
-                        ) : (
-                          <img
-                            src={illUrl}
-                            alt={flower.commonName}
-                            className="w-full h-full object-contain"
-                            style={{ mixBlendMode: 'multiply', opacity: 0.92, padding: '6px' }}
-                            onError={() => handleIllError(flower.id)}
-                          />
-                        )}
-                      </BlobFrame>
+                              )}
+                            </>
+                          ) : illFailed ? (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <FlowerIcon size={32} color="#D4CBB3" />
+                            </div>
+                          ) : (
+                            <img
+                              src={illUrl}
+                              alt={flower.commonName}
+                              className="w-full h-full object-contain"
+                              style={{ mixBlendMode: 'multiply', opacity: 0.92, padding: '6px' }}
+                              onError={() => handleIllError(flower.id)}
+                            />
+                          )}
+                        </BlobFrame>
+                      </div>
 
                       <p
                         className="text-center truncate w-full px-0.5 shrink-0"
@@ -214,16 +216,15 @@ export default function Home() {
                   className="flex flex-col items-center gap-1"
                   data-testid={`slot-undiscovered-${i}`}
                 >
-                  <BlobFrame
-                    blobIndex={filtered.length + i}
-                    className="w-full flex flex-col items-center justify-center"
-                    style={{
-                      aspectRatio: '1',
-                      backgroundColor: 'rgba(232,220,192,0.35)',
-                    }}
-                  >
-                    <FlowerIcon size={28} color="#C4BBA5" style={{ opacity: 0.45 }} />
-                  </BlobFrame>
+                  <div className="relative w-full" style={{ paddingBottom: '100%' }}>
+                    <BlobFrame
+                      blobIndex={filtered.length + i}
+                      className="absolute inset-0 flex items-center justify-center"
+                      style={{ backgroundColor: 'rgba(232,220,192,0.35)' }}
+                    >
+                      <FlowerIcon size={28} color="#C4BBA5" style={{ opacity: 0.45 }} />
+                    </BlobFrame>
+                  </div>
                   <p
                     className="text-center shrink-0"
                     style={{ fontSize: '8px', fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: '#C4BBA5' }}
