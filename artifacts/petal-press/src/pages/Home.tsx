@@ -139,15 +139,14 @@ export default function Home() {
                   <Link href={`/flower/${flower.id}`}>
                     <div
                       className="flex flex-col items-center gap-1 cursor-pointer active:scale-95 transition-transform duration-150"
-                      style={{ aspectRatio: '3/4' }}
                       data-testid={`card-flower-${flower.id}`}
                     >
-                      {/* Blob-shaped image — clips everything inside */}
+                      {/* Blob-shaped image — always 1:1 so paths render undistorted */}
                       <BlobFrame
                         blobIndex={idx}
                         className="relative w-full"
                         style={{
-                          flex: 1,
+                          aspectRatio: '1',
                           backgroundColor: hasPhoto ? '#2a1f18' : '#FAF7EF',
                           boxShadow: '0 3px 12px rgba(0,0,0,0.13)',
                         }}
@@ -213,14 +212,13 @@ export default function Home() {
               <motion.div key={`ghost-${i}`} variants={cell}>
                 <div
                   className="flex flex-col items-center gap-1"
-                  style={{ aspectRatio: '3/4' }}
                   data-testid={`slot-undiscovered-${i}`}
                 >
                   <BlobFrame
                     blobIndex={filtered.length + i}
                     className="w-full flex flex-col items-center justify-center"
                     style={{
-                      flex: 1,
+                      aspectRatio: '1',
                       backgroundColor: 'rgba(232,220,192,0.35)',
                     }}
                   >
