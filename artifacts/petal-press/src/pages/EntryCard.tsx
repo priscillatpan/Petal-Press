@@ -125,41 +125,6 @@ export default function EntryCard() {
                 </div>
               )}
 
-              {/* Illustration sticker — bottom-right, only when photo is showing */}
-              {hasPhoto && !illError && (
-                <div
-                  className="absolute bottom-4 right-4"
-                  style={{ transform: 'rotate(3deg)' }}
-                >
-                  <div
-                    style={{
-                      width: '76px',
-                      height: '76px',
-                      backgroundColor: '#FCFBF7',
-                      border: '3px solid #FCFBF7',
-                      boxShadow: '0 3px 12px rgba(0,0,0,0.25)',
-                      borderRadius: '4px',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <img
-                      src={illUrl}
-                      alt="illustration"
-                      className="w-full h-full object-contain"
-                      style={{ mixBlendMode: 'multiply', opacity: 0.95 }}
-                      onError={() => setIllError(true)}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Latin name watermark */}
-              <p
-                className="absolute bottom-3 left-4 text-xs pointer-events-none"
-                style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: hasPhoto ? 'rgba(255,255,255,0.45)' : '#D4CBB3' }}
-              >
-                {flower.latinName.split(' ')[0].charAt(0)}. {flower.latinName.split(' ')[1]}
-              </p>
             </BlobFrame>
           </div>
         </motion.div>
