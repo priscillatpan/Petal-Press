@@ -630,7 +630,7 @@ export default function CaptureFlow() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-serif text-lg shadow-md shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-sans text-base font-medium tracking-wide shadow-md shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               data-testid="button-save-flower"
             >
               {saving ? "Pressing…" : "Press this flower"}

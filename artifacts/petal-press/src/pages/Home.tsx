@@ -51,7 +51,7 @@ export default function Home() {
             className="text-2xl tracking-tight flex items-center gap-2"
             style={{ fontFamily: 'Fraunces, serif', color: '#3D362D' }}
           >
-            <FlowerIcon size={20} color="#986E5D" />
+            <FlowerIcon size={20} color="#c5d07d" />
             Petal Press
           </h1>
           <span
@@ -214,7 +214,7 @@ export default function Home() {
               <path id="fab-arc" d="M 8,48 A 40,40 0 0,0 88,48" />
             </defs>
             <text
-              fill="#986E5D"
+              fill="#c5d07d"
               fontSize="7.5"
               fontFamily="Fraunces, serif"
               letterSpacing="2.5"
