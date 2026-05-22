@@ -5,7 +5,7 @@ import { ChevronLeft, Edit2, Check, Camera } from "lucide-react";
 import { FlowerIcon } from "@/components/FlowerIcon";
 import { BlobFrame } from "@/components/BlobFrame";
 import { useGarden } from "@/context/GardenContext";
-import { getSeasonFromDate, SEASON_MONTH_INDICES, ALL_MONTHS_SHORT } from "@/data/season";
+import { getSeasonFromDate } from "@/data/season";
 
 export default function EntryCard() {
   const [, params] = useRoute("/flower/:id");
@@ -41,7 +41,6 @@ export default function EntryCard() {
   }
 
   const season = getSeasonFromDate(flower.datePressed);
-  const bloomMonths = SEASON_MONTH_INDICES[season] ?? [];
   const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
   const hasPhoto = photos.length > 0 && !photos[0].startsWith('blob:');
   // Consistent blob shape per flower derived from its id
@@ -80,7 +79,7 @@ export default function EntryCard() {
         <div className="w-9" />
       </div>
 
-      <main className="px-5 pt-5 flex flex-col gap-5">
+      <main className="px-5 pt-5 pb-12 flex flex-col gap-7">
         {/* Hero — blob-shaped photo/illustration */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -170,34 +169,6 @@ export default function EntryCard() {
               <p style={{ fontSize: '14px', color: '#5C5346' }}>{flower.plantFamily}</p>
             </div>
           )}
-        </motion.div>
-
-        {/* Season row */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.12 }}
-        >
-          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#9A8F7F' }}>In Bloom</p>
-          <div className="flex gap-1.5">
-            {ALL_MONTHS_SHORT.map((m, i) => {
-              const active = bloomMonths.includes(i);
-              return (
-                <div key={i} className="flex flex-col items-center gap-1">
-                  <span
-                    className="uppercase"
-                    style={{ fontSize: '8px', color: active ? '#986E5D' : '#C4BBA5' }}
-                  >
-                    {m}
-                  </span>
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: active ? '#986E5D' : '#E8DCC0' }}
-                  />
-                </div>
-              );
-            })}
-          </div>
         </motion.div>
 
         {/* Field notes */}
