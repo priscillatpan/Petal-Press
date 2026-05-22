@@ -151,35 +151,12 @@ export default function Home() {
                           }}
                         >
                           {hasPhoto ? (
-                            <>
-                              <img
-                                src={photos[0]}
-                                alt={flower.commonName}
-                                className="w-full h-full object-cover"
-                              />
-                              {!illFailed && (
-                                <div
-                                  className="absolute bottom-1 right-1"
-                                  style={{ transform: 'rotate(3deg)' }}
-                                >
-                                  <div style={{
-                                    width: '28px', height: '28px',
-                                    backgroundColor: '#FCFBF7',
-                                    border: '2px solid #FCFBF7',
-                                    borderRadius: '2px',
-                                    boxShadow: '0 2px 6px rgba(0,0,0,0.28)',
-                                    overflow: 'hidden',
-                                  }}>
-                                    <img
-                                      src={illUrl} alt=""
-                                      className="w-full h-full object-contain"
-                                      style={{ mixBlendMode: 'multiply', opacity: 0.95 }}
-                                      onError={() => handleIllError(flower.id)}
-                                    />
-                                  </div>
-                                </div>
-                              )}
-                            </>
+                            <img
+                              src={photos[0]}
+                              alt={flower.commonName}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
                           ) : illFailed ? (
                             <div className="w-full h-full flex items-center justify-center">
                               <FlowerIcon size={32} color="#D4CBB3" />
@@ -190,6 +167,7 @@ export default function Home() {
                               alt={flower.commonName}
                               className="w-full h-full object-contain"
                               style={{ mixBlendMode: 'multiply', opacity: 0.92, padding: '6px' }}
+                              loading="lazy"
                               onError={() => handleIllError(flower.id)}
                             />
                           )}
