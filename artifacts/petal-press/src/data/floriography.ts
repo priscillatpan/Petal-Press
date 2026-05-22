@@ -92,6 +92,7 @@ const BY_COMMON: Record<string, FloriographyEntry> = {
   "chrysanthemum":          { meaning: "loyalty, longevity, joy",                      nickname: "Autumn Gold" },
   "mum":                    { meaning: "loyalty, longevity, joy",                      nickname: "Autumn Gold" },
   "begonia":                { meaning: "caution, fanciful nature, gratitude",          nickname: "Careful Heart" },
+  "cineraria":              { meaning: "joyfulness, always bright, delight",           nickname: "Little Ray" },
   "impatiens":              { meaning: "impatience, ardent love",                      nickname: "Quick Flame" },
   "snapdragon":             { meaning: "graciousness, strength, presumption",          nickname: "Dragon's Breath" },
   "sweet pea":              { meaning: "blissful pleasure, departure, goodbye",        nickname: "Farewell Curl" },
