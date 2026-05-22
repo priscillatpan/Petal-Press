@@ -104,7 +104,7 @@ export default function Welcome() {
         >
           <button
             onClick={handleEnter}
-            className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-serif text-lg tracking-wide shadow-md shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all"
+            className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-sans text-base tracking-wide shadow-md shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all"
             data-testid="button-begin"
           >
             Open my garden

@@ -144,7 +144,7 @@ export default function EntryCard() {
           >
             {flower.commonName}
           </h1>
-          <p style={{ fontFamily: 'IM Fell English, serif', fontStyle: 'italic', fontSize: '15px', color: '#736959' }}>
+          <p style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: '15px', color: '#736959' }}>
             {flower.latinName}
           </p>
           {flower.nickname && (
@@ -166,7 +166,7 @@ export default function EntryCard() {
           <p className="text-xs uppercase tracking-widest mb-1" style={{ color: '#9A8F7F' }}>
             Language of Flowers
           </p>
-          <p style={{ fontFamily: 'IM Fell English, serif', fontStyle: 'italic', fontSize: '20px', color: '#986E5D' }}>
+          <p style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: '20px', color: '#986E5D' }}>
             {flower.meaning}
           </p>
         </motion.div>
@@ -180,12 +180,12 @@ export default function EntryCard() {
         >
           <div>
             <p className="text-xs uppercase tracking-widest mb-0.5" style={{ color: '#9A8F7F' }}>Pressed</p>
-            <p style={{ fontFamily: 'IM Fell English, serif', fontStyle: 'italic', fontSize: '15px', color: '#5C5346' }}>{flower.datePressed}</p>
+            <p style={{ fontSize: '14px', color: '#5C5346' }}>{flower.datePressed}</p>
           </div>
           {flower.plantFamily && (
             <div>
               <p className="text-xs uppercase tracking-widest mb-0.5" style={{ color: '#9A8F7F' }}>Family</p>
-              <p style={{ fontFamily: 'IM Fell English, serif', fontStyle: 'italic', fontSize: '15px', color: '#5C5346' }}>{flower.plantFamily}</p>
+              <p style={{ fontSize: '14px', color: '#5C5346' }}>{flower.plantFamily}</p>
             </div>
           )}
         </motion.div>
@@ -258,7 +258,7 @@ export default function EntryCard() {
             <textarea
               className="w-full bg-transparent resize-none focus:outline-none text-sm"
               style={{
-                fontFamily: 'IM Fell English, serif',
+                fontFamily: 'Fraunces, serif',
                 fontStyle: 'italic',
                 color: '#5C5346',
                 minHeight: '80px',
@@ -272,7 +272,7 @@ export default function EntryCard() {
           ) : (
             <p
               className="text-sm leading-relaxed whitespace-pre-wrap"
-              style={{ fontFamily: 'IM Fell English, serif', fontStyle: 'italic', color: '#5C5346' }}
+              style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: '#5C5346' }}
             >
               {flower.blurb || "No notes yet."}
             </p>

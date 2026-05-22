@@ -313,7 +313,7 @@ export default function CaptureFlow() {
         >
           <X className="w-4 h-4" />
         </button>
-        <span className="font-serif text-base text-foreground">Press a Flower</span>
+        <span className="font-sans text-sm font-medium text-foreground">Press a Flower</span>
         <div className="w-9" />
       </div>
 

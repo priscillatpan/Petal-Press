@@ -68,7 +68,7 @@ export default function Home() {
           </h1>
           <span
             className="text-xs tracking-widest"
-            style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: '#9A8F7F' }}
+            style={{ color: '#9A8F7F' }}
           >
             {loading ? '…' : `${flowers.length} species found`}
           </span>
