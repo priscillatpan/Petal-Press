@@ -236,18 +236,52 @@ export default function Home() {
         )}
       </main>
 
-      <Link href="/capture">
-        <button
-          className="fixed bottom-8 w-14 h-14 rounded-full flex items-center justify-center active:scale-95 transition-all z-20"
+      <Link href="/capture" style={{ display: 'block' }}>
+        {/* Outer container sized to hold button + curved label text */}
+        <div
+          className="fixed z-20 active:scale-95 transition-all"
           style={{
-            backgroundColor: '#986E5D',
-            right: 'max(20px, calc(50vw - 215px + 20px))',
-            boxShadow: '0 4px 16px rgba(152,110,93,0.35)',
+            bottom: '16px',
+            right: 'max(0px, calc(50vw - 215px))',
+            width: '96px',
+            height: '96px',
           }}
           data-testid="button-capture"
         >
-          <FlowerIcon size={28} color="#fff" />
-        </button>
+          {/* Curved "add flower" text arcing over the top */}
+          <svg
+            width="96" height="96" viewBox="0 0 96 96"
+            className="absolute inset-0 pointer-events-none"
+            aria-hidden
+          >
+            <defs>
+              {/* Arc from left (8,48) counterclockwise through top to right (88,48) */}
+              <path id="fab-arc" d="M 8,48 A 40,40 0 0,0 88,48" />
+            </defs>
+            <text
+              fill="#986E5D"
+              fontSize="7.5"
+              fontFamily="Fraunces, serif"
+              letterSpacing="2.5"
+              textAnchor="middle"
+            >
+              <textPath href="#fab-arc" startOffset="50%">
+                ✿ add flower ✿
+              </textPath>
+            </text>
+          </svg>
+
+          {/* The actual circle button, centered in the container */}
+          <button
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center"
+            style={{
+              backgroundColor: '#986E5D',
+              boxShadow: '0 4px 16px rgba(152,110,93,0.35)',
+            }}
+          >
+            <FlowerIcon size={28} color="#fff" />
+          </button>
+        </div>
       </Link>
     </div>
   );
