@@ -1,50 +1,22 @@
 import { useId } from "react";
 
-// All in the pebble/chunky family: smooth, rounded, filling most of the card.
-// Each has a subtle personality shift — offset weight, slight lean, gentle dent.
 const BLOBS = [
-  {
-    label: "Heavier top-left",
-    // Anchors nudged up-left; right side slightly pinched
-    d: "M 0.46,0.03 C 0.74,0.00 0.98,0.18 0.97,0.48 C 0.96,0.76 0.76,0.98 0.50,0.97 C 0.24,0.98 0.03,0.78 0.03,0.50 C 0.03,0.22 0.20,0.04 0.46,0.03 Z",
-  },
-  {
-    label: "Slightly wide",
-    // Wider than tall — landscape pebble
-    d: "M 0.50,0.06 C 0.80,0.04 0.98,0.22 0.96,0.50 C 0.94,0.76 0.76,0.96 0.50,0.95 C 0.24,0.96 0.04,0.78 0.04,0.50 C 0.04,0.24 0.22,0.06 0.50,0.06 Z",
-  },
-  {
-    label: "Gentle dent bottom",
-    // Subtle inward lean at lower-left
-    d: "M 0.50,0.05 C 0.76,0.03 0.97,0.20 0.97,0.48 C 0.97,0.74 0.78,0.97 0.52,0.97 C 0.26,0.98 0.04,0.80 0.05,0.54 C 0.06,0.28 0.26,0.05 0.50,0.05 Z",
-  },
-  {
-    label: "Chunky top",
-    // Heavier at the top — top corners fuller, bottom slightly pinched
-    d: "M 0.50,0.02 C 0.82,0.00 1.00,0.14 0.98,0.46 C 0.96,0.74 0.80,0.98 0.50,0.98 C 0.20,0.98 0.04,0.76 0.02,0.50 C 0.00,0.20 0.18,0.02 0.50,0.02 Z",
-  },
-  {
-    label: "Offset right",
-    // Center of mass shifted right — left side flatter
-    d: "M 0.54,0.04 C 0.78,0.02 0.98,0.20 0.98,0.48 C 0.98,0.76 0.80,0.97 0.54,0.97 C 0.28,0.98 0.04,0.80 0.03,0.52 C 0.02,0.24 0.24,0.04 0.54,0.04 Z",
-  },
-  {
-    label: "Gentle pinch top",
-    // Narrower at top, fuller at bottom — slight pear feel but still round
-    d: "M 0.50,0.06 C 0.74,0.04 0.97,0.22 0.97,0.50 C 0.97,0.78 0.78,0.98 0.50,0.97 C 0.22,0.98 0.03,0.78 0.04,0.52 C 0.05,0.24 0.26,0.06 0.50,0.06 Z",
-  },
+  { label: "Teardrop lower-left", d: "M 0.500,0.150 C 0.588,0.166 0.618,0.300 0.682,0.395 C 0.745,0.490 0.911,0.626 0.881,0.720 C 0.851,0.814 0.627,0.960 0.500,0.960 C 0.373,0.960 0.177,0.830 0.119,0.720 C 0.061,0.610 0.090,0.395 0.154,0.300 C 0.217,0.205 0.412,0.134 0.500,0.150 Z" },
+  { label: "Right lobe",          d: "M 0.500,0.120 C 0.604,0.103 0.832,0.168 0.898,0.270 C 0.965,0.372 0.965,0.645 0.898,0.730 C 0.832,0.815 0.595,0.802 0.500,0.780 C 0.405,0.758 0.364,0.668 0.327,0.600 C 0.289,0.532 0.246,0.450 0.275,0.370 C 0.304,0.290 0.396,0.137 0.500,0.120 Z" },
+  { label: "Top-heavy",           d: "M 0.500,0.060 C 0.624,0.062 0.826,0.195 0.864,0.290 C 0.901,0.385 0.786,0.558 0.725,0.630 C 0.665,0.702 0.581,0.717 0.500,0.720 C 0.419,0.723 0.304,0.723 0.240,0.650 C 0.177,0.577 0.076,0.378 0.119,0.280 C 0.162,0.182 0.376,0.058 0.500,0.060 Z" },
+  { label: "Left notch",          d: "M 0.500,0.100 C 0.595,0.082 0.815,0.175 0.881,0.280 C 0.947,0.385 0.962,0.623 0.898,0.730 C 0.835,0.837 0.595,0.942 0.500,0.920 C 0.405,0.898 0.359,0.688 0.327,0.600 C 0.295,0.512 0.281,0.473 0.309,0.390 C 0.338,0.307 0.405,0.118 0.500,0.100 Z" },
+  { label: "Bottom-heavy",        d: "M 0.500,0.260 C 0.581,0.257 0.696,0.273 0.760,0.350 C 0.823,0.427 0.924,0.618 0.881,0.720 C 0.838,0.822 0.627,0.960 0.500,0.960 C 0.373,0.960 0.156,0.818 0.119,0.720 C 0.081,0.622 0.211,0.447 0.275,0.370 C 0.338,0.293 0.419,0.263 0.500,0.260 Z" },
+  { label: "Kidney",              d: "M 0.500,0.080 C 0.598,0.097 0.653,0.278 0.708,0.380 C 0.763,0.482 0.864,0.593 0.829,0.690 C 0.794,0.787 0.618,0.955 0.500,0.960 C 0.382,0.965 0.182,0.833 0.119,0.720 C 0.055,0.607 0.055,0.387 0.119,0.280 C 0.182,0.173 0.402,0.063 0.500,0.080 Z" },
 ];
 
-const COLORS = [
-  "#8FAE7B","#B87C5A","#7B9EAE","#C4A07A","#9B7BB5","#AE8F7B",
-];
+const COLORS = ["#8FAE7B","#B87C5A","#7B9EAE","#C4A07A","#9B7BB5","#AE8F7B"];
 
 function BlobShape({ d, label, color, index }: { d: string; label: string; color: string; index: number }) {
   const uid = useId().replace(/:/g, "");
   const clipId = `bc-${uid}`;
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className="relative" style={{ width: 118, height: 118 }}>
+      <div className="relative" style={{ width: 130, height: 130 }}>
         <svg width="0" height="0" style={{ position: "absolute", overflow: "hidden" }}>
           <defs>
             <clipPath id={clipId} clipPathUnits="objectBoundingBox">
@@ -54,24 +26,17 @@ function BlobShape({ d, label, color, index }: { d: string; label: string; color
         </svg>
         <div
           style={{
-            width: "100%",
-            height: "100%",
+            width: "100%", height: "100%",
             clipPath: `url(#${clipId})`,
             background: `radial-gradient(circle at 38% 36%, ${color}ee, ${color}66)`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 40,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 44,
           }}
-        >
-          ✿
-        </div>
+        >✿</div>
       </div>
-      <div className="text-center" style={{ maxWidth: 118 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: "#3D362D", fontFamily: "Fraunces, serif" }}>
-          {index + 1}
-        </div>
-        <div style={{ fontSize: 9, color: "#9A8F7F", lineHeight: 1.3 }}>{label}</div>
+      <div className="text-center">
+        <div style={{ fontSize: 14, fontWeight: 700, color: "#3D362D", fontFamily: "Fraunces, serif" }}>{index + 1}</div>
+        <div style={{ fontSize: 9, color: "#9A8F7F" }}>{label}</div>
       </div>
     </div>
   );
@@ -79,20 +44,17 @@ function BlobShape({ d, label, color, index }: { d: string; label: string; color
 
 export function BlobPicker() {
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center gap-8 p-10"
-      style={{ backgroundColor: "#F5EFD8" }}
-    >
+    <div className="min-h-screen flex flex-col items-center justify-center gap-8 p-10" style={{ backgroundColor: "#F5EFD8" }}>
       <div style={{ fontFamily: "Fraunces, serif", fontSize: 16, color: "#3D362D", fontWeight: 600 }}>
-        Pebble family — smooth & filled
+        Blobby shapes — which feel right?
       </div>
-      <div className="grid grid-cols-6 gap-7">
-        {BLOBS.map((blob, i) => (
-          <BlobShape key={i} d={blob.d} label={blob.label} color={COLORS[i]} index={i} />
+      <div className="grid grid-cols-6 gap-6">
+        {BLOBS.map((b, i) => (
+          <BlobShape key={i} d={b.d} label={b.label} color={COLORS[i]} index={i} />
         ))}
       </div>
       <div style={{ fontSize: 10, color: "#9A8F7F", textAlign: "center" }}>
-        Tell me which numbers you like — or "all of them" to use the whole set in the grid.
+        All 6 are live in the app right now. Tell me which to keep or swap.
       </div>
     </div>
   );
