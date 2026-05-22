@@ -341,10 +341,10 @@ export default function CaptureFlow() {
             >
               <div className="text-center">
                 <h2 className="font-serif text-2xl text-foreground mb-1">
-                  {cameraFailed ? "What did you find?" : "Point at a flower"}
+                  {cameraFailed ? "What did you find?" : "Press a flower"}
                 </h2>
                 <p className="text-muted-foreground text-sm">
-                  {cameraFailed ? "Choose a photo from your walk" : "Hold steady, then tap Capture"}
+                  {cameraFailed ? "Choose a photo from your walk" : "Point at a flower"}
                 </p>
               </div>
 
