@@ -7,13 +7,6 @@ import { BlobFrame } from "@/components/BlobFrame";
 import { useGarden } from "@/context/GardenContext";
 import { getSeasonFromDate, SEASON_MONTH_INDICES, ALL_MONTHS_SHORT } from "@/data/season";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-
-function illustrationUrl(latinName: string): string {
-  const slug = latinName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  return `${SUPABASE_URL}/storage/v1/object/public/flower-images/illustrations/v2/${slug}.png`;
-}
-
 export default function EntryCard() {
   const [, params] = useRoute("/flower/:id");
   const id = params?.id;
@@ -22,8 +15,6 @@ export default function EntryCard() {
 
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [notes, setNotes] = useState(flower?.blurb ?? "");
-  const [illError, setIllError] = useState(false);
-
   if (!flower) {
     return (
       <div
@@ -51,7 +42,6 @@ export default function EntryCard() {
 
   const season = getSeasonFromDate(flower.datePressed);
   const bloomMonths = SEASON_MONTH_INDICES[season] ?? [];
-  const illUrl = illustrationUrl(flower.latinName);
   const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
   const hasPhoto = photos.length > 0 && !photos[0].startsWith('blob:');
   // Consistent blob shape per flower derived from its id
@@ -111,14 +101,6 @@ export default function EntryCard() {
                   src={photos[0]}
                   alt={flower.commonName}
                   className="w-full h-full object-cover"
-                />
-              ) : !illError ? (
-                <img
-                  src={illUrl}
-                  alt={flower.commonName}
-                  className="w-full h-full object-contain"
-                  style={{ mixBlendMode: 'multiply', opacity: 0.92, padding: '16px' }}
-                  onError={() => setIllError(true)}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">

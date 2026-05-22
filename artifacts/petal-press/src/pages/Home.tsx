@@ -7,16 +7,10 @@ import { BlobFrame } from "@/components/BlobFrame";
 import { getSeasonFromDate, SEASON_LABELS, type Season } from "@/data/season";
 
 const GHOST_SLOTS = 3;
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 
 type SeasonFilter = Season | null;
 
 const SEASONS: Season[] = ['spring', 'summer', 'fall', 'winter'];
-
-function illustrationUrl(latinName: string): string {
-  const slug = latinName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  return `${SUPABASE_URL}/storage/v1/object/public/flower-images/illustrations/v2/${slug}.png`;
-}
 
 const container = {
   hidden: { opacity: 0 },
@@ -30,8 +24,6 @@ const cell = {
 export default function Home() {
   const { flowers, loading } = useGarden();
   const [seasonFilter, setSeasonFilter] = useState<SeasonFilter>(null);
-  const [illErrors, setIllErrors] = useState<Set<string>>(new Set());
-
   const seasonsPresent = useMemo(() => {
     const set = new Set(flowers.map(f => getSeasonFromDate(f.datePressed)));
     return SEASONS.filter(s => set.has(s));
@@ -43,10 +35,6 @@ export default function Home() {
   }, [flowers, seasonFilter]);
 
   const ghostCount = GHOST_SLOTS;
-
-  function handleIllError(flowerId: string) {
-    setIllErrors(prev => new Set([...prev, flowerId]));
-  }
 
   return (
     <div className="min-h-screen pb-28 relative" style={{ backgroundColor: '#F5EFD8' }}>
@@ -127,8 +115,6 @@ export default function Home() {
             className="grid grid-cols-3 gap-2"
           >
             {filtered.map((flower, idx) => {
-              const illUrl = illustrationUrl(flower.latinName);
-              const illFailed = illErrors.has(flower.id);
               const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
               const hasPhoto = photos.length > 0 && !photos[0].startsWith('blob:');
 
@@ -157,19 +143,10 @@ export default function Home() {
                               className="w-full h-full object-cover"
                               loading="lazy"
                             />
-                          ) : illFailed ? (
+                          ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <FlowerIcon size={32} color="#D4CBB3" />
                             </div>
-                          ) : (
-                            <img
-                              src={illUrl}
-                              alt={flower.commonName}
-                              className="w-full h-full object-contain"
-                              style={{ mixBlendMode: 'multiply', opacity: 0.92, padding: '6px' }}
-                              loading="lazy"
-                              onError={() => handleIllError(flower.id)}
-                            />
                           )}
                         </BlobFrame>
                       </div>

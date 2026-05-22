@@ -10,7 +10,7 @@ import { supabase } from "@/lib/supabase";
 import { lookupFloriography } from "@/data/floriography";
 
 type Candidate = { commonName: string; scientificName: string; score: number; family: string };
-type Step = 1 | 2 | 3 | 4 | 5;
+type Step = 1 | 2 | 3 | 4;
 
 // Shared SVG defs — rendered once, reused by id
 function FlowerDefs() {
@@ -255,25 +255,12 @@ export default function CaptureFlow() {
         await addFlower(newFlower);
       }
 
-      // Show "Painting your specimen" step while illustration generates in background
       setSaving(false);
-      setStep(5);
-
-      // Fire-and-forget illustration generation (cached by latin name)
-      fetch("/api/illustrate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ latinName, commonName }),
-      }).catch(() => {});
-
-      // Navigate after 2.5 s — illustration will be ready soon
-      setTimeout(() => {
-        if (existing) {
-          setLocation(`/flower/${existing.id}`);
-        } else {
-          setLocation("/");
-        }
-      }, 2500);
+      if (existing) {
+        setLocation(`/flower/${existing.id}`);
+      } else {
+        setLocation("/");
+      }
     } catch {
       setSaving(false);
     }
@@ -606,49 +593,6 @@ export default function CaptureFlow() {
                     />
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Step 5 — Painting your specimen */}
-          {step === 5 && (
-            <motion.div
-              key="step5"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex-1 flex flex-col items-center justify-center px-6 gap-6 relative"
-              style={{ backgroundColor: '#F5EFD8' }}
-            >
-              {imagePreview && (
-                <div className="absolute inset-0 z-0">
-                  <img src={imagePreview} alt="" className="w-full h-full object-cover opacity-10 blur-2xl scale-110" style={{ mixBlendMode: 'multiply' }} />
-                </div>
-              )}
-              <div className="z-10 flex flex-col items-center text-center gap-4">
-                <motion.div
-                  animate={{ scale: [1, 1.08, 1], opacity: [0.7, 1, 0.7] }}
-                  transition={{ repeat: Infinity, duration: 2.4, ease: "easeInOut" }}
-                  className="w-24 h-24 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: 'rgba(152,110,93,0.12)' }}
-                >
-                  <svg viewBox="0 0 64 64" fill="none" className="w-14 h-14" style={{ color: '#986E5D' }}>
-                    <ellipse cx="32" cy="22" rx="10" ry="18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    <line x1="32" y1="40" x2="32" y2="60" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    <ellipse cx="20" cy="34" rx="7" ry="4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" transform="rotate(-30 20 34)" />
-                    <ellipse cx="44" cy="34" rx="7" ry="4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" transform="rotate(30 44 34)" />
-                  </svg>
-                </motion.div>
-                <div>
-                  <h3 className="text-2xl mb-1" style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: '#3D362D' }}>
-                    Painting your specimen…
-                  </h3>
-                  <p className="text-sm" style={{ color: '#9A8F7F' }}>
-                    Your botanical illustration is being created
-                  </p>
-                </div>
-                <p className="text-xs" style={{ color: '#C4BBA5', fontFamily: 'Fraunces, serif', fontStyle: 'italic' }}>
-                  {commonName} · {latinName}
-                </p>
               </div>
             </motion.div>
           )}
