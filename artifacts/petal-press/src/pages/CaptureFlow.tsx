@@ -402,8 +402,8 @@ export default function CaptureFlow() {
                       onClick={captureFromCamera}
                       className="w-16 h-16 rounded-full flex items-center justify-center active:scale-90 transition-transform"
                       style={{
-                        backgroundColor: '#986E5D',
-                        boxShadow: '0 0 0 4px #FAF7EF, 0 0 0 6px #986E5D',
+                        backgroundColor: '#c5d07d',
+                        boxShadow: '0 0 0 4px #FAF7EF, 0 0 0 6px #c5d07d',
                       }}
                       aria-label="Capture photo"
                     >

@@ -62,8 +62,8 @@
   --popover-foreground: 30 20% 20%;
   --popover-border: 40 20% 90%;
   
-  --primary: 340 30% 50%; /* Dusty rose */
-  --primary-foreground: 0 0% 100%;
+  --primary: 68 47% 65%; /* Yellow-green #c5d07d */
+  --primary-foreground: 30 20% 18%; /* Dark brown — needed for contrast on light button */
   
   --secondary: 130 15% 60%; /* Sage green */
   --secondary-foreground: 0 0% 100%;
@@ -79,7 +79,7 @@
   
   --border: 40 20% 85%;
   --input: 40 20% 85%;
-  --ring: 340 30% 50%;
+  --ring: 68 47% 65%;
   
   --app-font-sans: 'DM Sans', sans-serif;
   --app-font-serif: 'Fraunces', serif;

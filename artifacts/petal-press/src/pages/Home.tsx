@@ -83,9 +83,9 @@ export default function Home() {
               onClick={() => setSeasonFilter(null)}
               className="shrink-0 h-7 px-3 rounded-full text-xs font-medium border transition-colors"
               style={{
-                backgroundColor: seasonFilter === null ? '#986E5D' : 'transparent',
-                color: seasonFilter === null ? '#fff' : '#9A8F7F',
-                borderColor: seasonFilter === null ? '#986E5D' : '#D4CBB3',
+                backgroundColor: seasonFilter === null ? '#c5d07d' : 'transparent',
+                color: seasonFilter === null ? '#3D362D' : '#9A8F7F',
+                borderColor: seasonFilter === null ? '#c5d07d' : '#D4CBB3',
               }}
               data-testid="filter-all"
             >
@@ -97,9 +97,9 @@ export default function Home() {
                 onClick={() => setSeasonFilter(seasonFilter === s ? null : s)}
                 className="shrink-0 h-7 px-3 rounded-full text-xs font-medium border transition-colors"
                 style={{
-                  backgroundColor: seasonFilter === s ? '#986E5D' : 'transparent',
-                  color: seasonFilter === s ? '#fff' : '#9A8F7F',
-                  borderColor: seasonFilter === s ? '#986E5D' : '#D4CBB3',
+                  backgroundColor: seasonFilter === s ? '#c5d07d' : 'transparent',
+                  color: seasonFilter === s ? '#3D362D' : '#9A8F7F',
+                  borderColor: seasonFilter === s ? '#c5d07d' : '#D4CBB3',
                   opacity: seasonsPresent.includes(s) ? 1 : 0.4,
                 }}
                 data-testid={`filter-${s}`}
@@ -275,11 +275,11 @@ export default function Home() {
           <button
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center"
             style={{
-              backgroundColor: '#986E5D',
-              boxShadow: '0 4px 16px rgba(152,110,93,0.35)',
+              backgroundColor: '#c5d07d',
+              boxShadow: '0 4px 16px rgba(197,208,125,0.45)',
             }}
           >
-            <FlowerIcon size={28} color="#fff" />
+            <FlowerIcon size={28} color="#3D362D" />
           </button>
         </div>
       </Link>
