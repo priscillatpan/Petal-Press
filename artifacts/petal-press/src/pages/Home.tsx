@@ -153,7 +153,7 @@ export default function Home() {
 
                       <p
                         className="text-center truncate w-full px-0.5 shrink-0"
-                        style={{ fontSize: '11px', fontFamily: 'Fraunces, serif', color: '#736959' }}
+                        style={{ fontSize: '13px', fontFamily: 'Fraunces, serif', color: '#736959' }}
                       >
                         {flower.commonName}
                       </p>
