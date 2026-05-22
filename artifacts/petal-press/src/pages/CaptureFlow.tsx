@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Camera, AlertCircle } from "lucide-react";
 import { FlowerIcon } from "@/components/FlowerIcon";
+import { BlobFrame } from "@/components/BlobFrame";
 import { useGarden } from "@/context/GardenContext";
 import { Flower } from "@/data/types";
 import { getNativeStatus } from "@/data/nativeStatus";
@@ -30,23 +31,6 @@ function FlowerDefs() {
   );
 }
 
-function FlowerPhoto({ src, size = 96, className = "" }: { src: string; size?: number; className?: string }) {
-  return (
-    <div style={{ width: size, height: size, flexShrink: 0 }} className={className}>
-      <img
-        src={src}
-        alt=""
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          clipPath: 'url(#flower-clip-photo)',
-          display: 'block',
-        }}
-      />
-    </div>
-  );
-}
 
 function FlowerVideo({ videoRef, size = 240 }: { videoRef: React.RefObject<HTMLVideoElement | null>; size?: number }) {
   return (
@@ -488,14 +472,22 @@ export default function CaptureFlow() {
             >
               {imagePreview && (
                 <div className="flex justify-center mb-5">
-                  <div style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.22))' }}>
-                    <FlowerPhoto src={imagePreview} size={112} />
+                  <div style={{ width: '42%' }}>
+                    <div className="relative w-full" style={{ paddingBottom: '100%' }}>
+                      <BlobFrame
+                        blobIndex={0}
+                        className="absolute inset-0"
+                        style={{ backgroundColor: '#1a1a1a', boxShadow: '0 4px 18px rgba(0,0,0,0.18)' }}
+                      >
+                        <img src={imagePreview} alt="" className="w-full h-full object-cover" />
+                      </BlobFrame>
+                    </div>
                   </div>
                 </div>
               )}
 
               <h3 className="font-serif text-xl text-center text-foreground mb-1">We think this might be…</h3>
-              <p className="text-muted-foreground text-xs text-center mb-5">Tap to confirm, or pick a different match</p>
+              <p className="text-xs text-center mb-5" style={{ color: '#9A8F7F' }}>Tap to confirm, or pick a different match</p>
 
               <div className="space-y-3">
                 {candidates.map((match, i) => (
@@ -545,28 +537,38 @@ export default function CaptureFlow() {
               animate={{ opacity: 1, x: 0 }}
               className="flex-1 flex flex-col overflow-y-auto pb-32"
             >
+              {/* Hero blob — mirrors EntryCard layout */}
               {imagePreview && (
-                <div className="flex justify-center pt-8 pb-4" style={{ backgroundColor: 'rgba(245,239,216,0.6)' }}>
-                  <div style={{ filter: 'drop-shadow(0 6px 18px rgba(0,0,0,0.28))' }}>
-                    <FlowerPhoto src={imagePreview} size={180} />
+                <div className="px-5 pt-6 pb-1" style={{ backgroundColor: 'rgba(245,239,216,0.55)' }}>
+                  <div className="mx-auto" style={{ width: '65%' }}>
+                    <div className="relative w-full" style={{ paddingBottom: '100%' }}>
+                      <BlobFrame
+                        blobIndex={0}
+                        className="absolute inset-0"
+                        style={{ backgroundColor: '#1a1a1a', boxShadow: '0 6px 28px rgba(0,0,0,0.13)' }}
+                      >
+                        <img src={imagePreview} alt={commonName} className="w-full h-full object-cover" />
+                      </BlobFrame>
+                    </div>
                   </div>
                 </div>
               )}
 
-              <div className="px-5 pt-2 space-y-5">
+              <div className="px-5 pt-5 space-y-5">
+                {/* Name block — matches EntryCard */}
                 <div>
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground font-medium mb-0.5">Identified as</p>
-                  <h2 className="font-serif text-2xl text-foreground leading-tight">{commonName}</h2>
-                  <p className="text-sm italic text-muted-foreground">{latinName}</p>
+                  <p className="text-xs uppercase tracking-widest mb-0.5" style={{ color: '#9A8F7F' }}>Identified as</p>
+                  <h2 style={{ fontFamily: 'Fraunces, serif', fontSize: '28px', color: '#2C2721', lineHeight: 1.15 }}>{commonName}</h2>
+                  <p style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: '15px', color: '#736959' }}>{latinName}</p>
                 </div>
 
                 <div className="space-y-4">
                   {([
-                    { label: "Nickname", value: nickname, setter: setNickname, testId: "input-nickname", placeholder: "Give it a name..." },
-                    { label: "Meaning", value: meaning, setter: setMeaning, testId: "input-meaning", placeholder: "Floriography meaning..." },
+                    { label: "Nickname", value: nickname, setter: setNickname, testId: "input-nickname", placeholder: "Give it a name…" },
+                    { label: "Meaning", value: meaning, setter: setMeaning, testId: "input-meaning", placeholder: "Floriography meaning…" },
                   ] as const).map(({ label, value, setter, testId, placeholder }) => (
                     <div key={testId}>
-                      <label className="block text-xs uppercase tracking-widest text-muted-foreground font-medium mb-1.5">
+                      <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9A8F7F' }}>
                         {label}
                       </label>
                       <input
@@ -574,21 +576,33 @@ export default function CaptureFlow() {
                         value={value}
                         onChange={e => setter(e.target.value)}
                         placeholder={placeholder}
-                        className="w-full bg-transparent border-b border-border py-2 text-foreground text-sm focus:outline-none focus:border-primary transition-colors placeholder:text-muted-foreground/50"
+                        className="w-full bg-transparent border-b py-2 text-sm focus:outline-none transition-colors placeholder:text-muted-foreground/40"
+                        style={{ borderColor: '#E8DCC0', color: '#2C2721' }}
                         data-testid={testId}
                       />
                     </div>
                   ))}
 
                   <div>
-                    <label className="block text-xs uppercase tracking-widest text-muted-foreground font-medium mb-1.5">
+                    <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9A8F7F' }}>
                       Field Notes
                     </label>
                     <textarea
                       value={notes}
                       onChange={e => setNotes(e.target.value)}
-                      placeholder="Write a memory — where you were, what caught your eye..."
-                      className="w-full bg-muted/30 border border-border rounded-xl p-3 text-foreground text-sm focus:outline-none focus:border-primary transition-colors resize-none min-h-[90px] placeholder:text-muted-foreground/50"
+                      placeholder="Write a memory — where you were, what caught your eye…"
+                      className="w-full resize-none focus:outline-none text-sm leading-relaxed placeholder:text-muted-foreground/40"
+                      style={{
+                        fontFamily: 'Fraunces, serif',
+                        fontStyle: 'italic',
+                        color: '#5C5346',
+                        backgroundColor: '#FCFBF7',
+                        border: '1px solid #E8DCC0',
+                        borderRadius: '8px',
+                        padding: '12px',
+                        minHeight: '90px',
+                        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.03)',
+                      }}
                       data-testid="input-notes"
                     />
                   </div>
