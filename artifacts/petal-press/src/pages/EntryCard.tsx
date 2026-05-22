@@ -96,7 +96,7 @@ export default function EntryCard() {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="relative w-full" style={{ paddingBottom: '100%' }}>
+          <div className="relative w-full" style={{ paddingBottom: '65%' }}>
             <BlobFrame
               blobIndex={blobIndex}
               className="absolute inset-0"
