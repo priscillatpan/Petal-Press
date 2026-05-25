@@ -119,7 +119,9 @@ export default function CaptureFlow() {
     const side = Math.min(video.videoWidth, video.videoHeight);
     canvas.width = side;
     canvas.height = side;
-    const ctx = canvas.getContext("2d")!;
+    // Force sRGB so iOS P3 camera frames are correctly tone-mapped before JPEG export.
+    // Without this, P3 values get stripped of their color profile and appear overexposed.
+    const ctx = canvas.getContext("2d", { colorSpace: "srgb" })!;
     const ox = (video.videoWidth - side) / 2;
     const oy = (video.videoHeight - side) / 2;
     ctx.drawImage(video, ox, oy, side, side, 0, 0, side, side);
