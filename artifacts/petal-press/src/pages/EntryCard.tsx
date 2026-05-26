@@ -27,7 +27,7 @@ export default function EntryCard() {
         >
           Specimen not found
         </h2>
-        <Link href="/">
+        <Link href="/garden">
           <button
             className="text-sm underline underline-offset-2"
             style={{ color: '#986E5D' }}
@@ -61,7 +61,7 @@ export default function EntryCard() {
           borderBottom: '1px solid #E8DCC0',
         }}
       >
-        <Link href="/">
+        <Link href="/garden">
           <button
             className="w-9 h-9 rounded-full flex items-center justify-center"
             style={{ color: '#9A8F7F' }}

@@ -9,35 +9,18 @@ import CaptureFlow from "@/pages/CaptureFlow";
 import BouquetView from "@/pages/BouquetView";
 import Welcome from "@/pages/Welcome";
 import NotFound from "@/pages/not-found";
-import { useEffect } from "react";
-
 const queryClient = new QueryClient();
-
-function GateToWelcome({ children }: { children: React.ReactNode }) {
-  const [, setLocation] = useLocation();
-
-  useEffect(() => {
-    const seen = localStorage.getItem("petal-press-seen");
-    if (!seen) {
-      setLocation("/welcome");
-    }
-  }, [setLocation]);
-
-  return <>{children}</>;
-}
 
 function Router() {
   return (
-    <GateToWelcome>
-      <Switch>
-        <Route path="/welcome" component={Welcome} />
-        <Route path="/" component={Home} />
-        <Route path="/flower/:id" component={EntryCard} />
-        <Route path="/capture" component={CaptureFlow} />
-        <Route path="/bouquet" component={BouquetView} />
-        <Route component={NotFound} />
-      </Switch>
-    </GateToWelcome>
+    <Switch>
+      <Route path="/" component={Welcome} />
+      <Route path="/garden" component={Home} />
+      <Route path="/flower/:id" component={EntryCard} />
+      <Route path="/capture" component={CaptureFlow} />
+      <Route path="/bouquet" component={BouquetView} />
+      <Route component={NotFound} />
+    </Switch>
   );
 }
 

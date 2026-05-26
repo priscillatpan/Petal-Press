@@ -30,7 +30,7 @@ export default function BouquetView() {
 
       {/* Header */}
       <div className="p-6 relative z-10 flex justify-between items-center">
-        <Link href="/">
+        <Link href="/garden">
           <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground" data-testid="button-back">
             <ChevronLeft className="w-6 h-6" />
           </Button>

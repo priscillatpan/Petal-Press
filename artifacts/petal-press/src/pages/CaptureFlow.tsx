@@ -245,7 +245,7 @@ export default function CaptureFlow() {
       if (existing) {
         setLocation(`/flower/${existing.id}`);
       } else {
-        setLocation("/");
+        setLocation("/garden");
       }
     } catch {
       setSaving(false);
@@ -280,7 +280,7 @@ export default function CaptureFlow() {
       {/* Topbar */}
       <div className="p-4 flex items-center justify-between sticky top-0 bg-background/90 backdrop-blur-md z-10 border-b border-border/30">
         <button
-          onClick={() => setLocation("/")}
+          onClick={() => setLocation("/garden")}
           className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-muted-foreground hover:bg-muted/70 transition-colors"
           data-testid="button-cancel-capture"
         >
