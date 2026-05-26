@@ -145,12 +145,13 @@ export default function Welcome() {
           style={{ maxWidth: 360 }}
         >
           <iframe
-            src="https://tally.so/embed/obkQo5?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+            src="https://tally.so/embed/obkQo5?alignLeft=1&hideTitle=1&transparentBackground=1"
             width="100%"
-            height="160"
+            height="140"
             frameBorder={0}
             title="Join the Petal Press waitlist"
             style={{ border: 'none' }}
+            sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
           />
         </motion.div>
 
