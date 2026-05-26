@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Camera, AlertCircle } from "lucide-react";
 import { FlowerIcon } from "@/components/FlowerIcon";
 import { BlobFrame } from "@/components/BlobFrame";
-import { useGarden } from "@/context/GardenContext";
+import { useGarden } from "@/context/useGarden";
 import { Flower } from "@/data/types";
 import { getNativeStatus } from "@/data/nativeStatus";
 import { supabase } from "@/lib/supabase";

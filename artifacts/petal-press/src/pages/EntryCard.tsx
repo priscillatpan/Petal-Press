@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, Edit2, Check, Camera } from "lucide-react";
 import { FlowerIcon } from "@/components/FlowerIcon";
 import { BlobFrame } from "@/components/BlobFrame";
-import { useGarden } from "@/context/GardenContext";
+import { useGarden } from "@/context/useGarden";
 import { getSeasonFromDate } from "@/data/season";
 
 export default function EntryCard() {

@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { ChevronLeft, Share } from "lucide-react";
-import { useGarden } from "@/context/GardenContext";
+import { useGarden } from "@/context/useGarden";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useState, useEffect, ReactNode } from "react";
 import { Flower } from "../data/types";
 import { NativeStatus } from "../data/nativeStatus";
 import { supabase } from "../lib/supabase";
@@ -11,7 +11,7 @@ type GardenContextType = {
   updateFlower: (id: string, updates: Partial<Flower>) => Promise<void>;
 };
 
-const GardenContext = createContext<GardenContextType | undefined>(undefined);
+export const GardenContext = createContext<GardenContextType | undefined>(undefined);
 
 type FlowerRow = {
   id: string;
@@ -147,10 +147,3 @@ export function GardenProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useGarden() {
-  const context = useContext(GardenContext);
-  if (context === undefined) {
-    throw new Error("useGarden must be used within a GardenProvider");
-  }
-  return context;
-}

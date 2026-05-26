@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { useGarden } from "@/context/GardenContext";
+import { useGarden } from "@/context/useGarden";
 import { FlowerIcon } from "@/components/FlowerIcon";
 import { BlobFrame } from "@/components/BlobFrame";
 import { getSeasonFromDate, SEASON_LABELS, type Season } from "@/data/season";
