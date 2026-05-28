@@ -8,7 +8,7 @@ export default function Welcome() {
       style={{ backgroundColor: '#FAF7EF' }}
     >
       {/* Top nav */}
-      <div className="flex items-center justify-between px-6 pt-8 pb-2 shrink-0">
+      <div className="flex items-center justify-between px-6 pt-4 pb-2 shrink-0">
         <div className="flex items-center gap-2">
           <FlowerIcon size={18} color="#c5d07d" />
           <span style={{ fontFamily: 'Fraunces, serif', fontSize: '15px', color: '#3D362D', letterSpacing: '-0.01em' }}>
@@ -47,7 +47,7 @@ export default function Welcome() {
             color: '#2C2721',
             letterSpacing: '-0.02em',
           }}>
-            Welcome to<br />Petal Press
+            Petal Press<br />is coming soon!
           </h1>
           <p style={{ fontSize: '14px', color: '#736959', lineHeight: 1.6, maxWidth: 250, margin: '0 auto' }}>
             a little diary for the flowers you find —
