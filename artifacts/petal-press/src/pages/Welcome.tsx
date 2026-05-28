@@ -35,8 +35,7 @@ export default function Welcome() {
             Petal Press<br />is coming soon!
           </h1>
           <p style={{ fontSize: '14px', color: '#736959', lineHeight: 1.6, maxWidth: 290, margin: '0 auto' }}>
-            a little diary for the flowers you find:
-            discover what they're called & their hidden meanings
+            a little diary for the flowers: discover their names & hidden meanings
           </p>
         </motion.div>
 
