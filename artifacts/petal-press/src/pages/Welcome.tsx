@@ -6,7 +6,7 @@ export default function Welcome() {
       className="h-screen flex flex-col overflow-hidden px-6"
       style={{ backgroundColor: '#FAF7EF' }}
     >
-      <div className="flex flex-col items-center text-center gap-4 pt-14">
+      <div className="flex flex-col items-center text-center gap-4 pt-10">
 
         {/* Flower emoji */}
         <motion.div
@@ -51,7 +51,7 @@ export default function Welcome() {
           <iframe
             src="https://tally.so/embed/obkQo5?alignLeft=1&hideTitle=1&transparentBackground=1"
             width="100%"
-            height="230"
+            height="270"
             frameBorder={0}
             title="Join the Petal Press waitlist"
             style={{ border: 'none' }}
