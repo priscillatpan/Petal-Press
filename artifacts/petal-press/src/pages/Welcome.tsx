@@ -51,7 +51,7 @@ export default function Welcome() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.5 }}
           className="w-full"
-          style={{ maxWidth: 360 }}
+          style={{ maxWidth: 480 }}
         >
           <iframe
             src="https://tally.so/embed/obkQo5?alignLeft=1&hideTitle=1&transparentBackground=1"
