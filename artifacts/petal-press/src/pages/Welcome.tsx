@@ -4,11 +4,11 @@ import { FlowerIcon } from "@/components/FlowerIcon";
 export default function Welcome() {
   return (
     <div
-      className="min-h-screen flex flex-col"
+      className="h-screen flex flex-col overflow-hidden"
       style={{ backgroundColor: '#FAF7EF' }}
     >
       {/* Top nav */}
-      <div className="flex items-center justify-between px-6 pt-8 pb-2">
+      <div className="flex items-center justify-between px-6 pt-8 pb-2 shrink-0">
         <div className="flex items-center gap-2">
           <FlowerIcon size={18} color="#c5d07d" />
           <span style={{ fontFamily: 'Fraunces, serif', fontSize: '15px', color: '#3D362D', letterSpacing: '-0.01em' }}>
@@ -20,20 +20,21 @@ export default function Welcome() {
         </span>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-6 text-center gap-8 py-8">
+      {/* Main content — vertically centred, no scroll */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 text-center gap-6 min-h-0">
 
         {/* Scattered blob photos */}
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className="relative w-full"
-          style={{ maxWidth: 320, height: 210 }}
+          className="relative w-full shrink-0"
+          style={{ maxWidth: 300, height: 190 }}
         >
           {/* Forget-me-not — top left */}
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1, rotate: -6 }}
+            animate={{ opacity: 1 }}
             transition={{ delay: 0.1, duration: 0.6 }}
             className="absolute"
             style={{ left: '4%', top: '5%', width: '44%', rotate: '-6deg' }}
@@ -57,7 +58,7 @@ export default function Welcome() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
             className="absolute"
-            style={{ right: '2%', top: '0%', width: '40%', transform: 'rotate(8deg)' }}
+            style={{ right: '2%', top: '0%', width: '40%', rotate: '8deg' }}
           >
             <div style={{ paddingBottom: '100%', position: 'relative' }}>
               <div style={{
@@ -78,7 +79,7 @@ export default function Welcome() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.6 }}
             className="absolute"
-            style={{ left: '10%', bottom: '0%', width: '38%', transform: 'rotate(5deg)' }}
+            style={{ left: '10%', bottom: '0%', width: '38%', rotate: '5deg' }}
           >
             <div style={{ paddingBottom: '100%', position: 'relative' }}>
               <div style={{
@@ -99,7 +100,7 @@ export default function Welcome() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.6 }}
             className="absolute"
-            style={{ right: '6%', bottom: '4%', width: '36%', transform: 'rotate(-9deg)' }}
+            style={{ right: '6%', bottom: '4%', width: '36%', rotate: '-9deg' }}
           >
             <div style={{ paddingBottom: '100%', position: 'relative' }}>
               <div style={{
@@ -120,19 +121,21 @@ export default function Welcome() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.6 }}
-          className="flex flex-col gap-3"
+          className="flex flex-col gap-3 shrink-0"
         >
           <h1 style={{
             fontFamily: 'Fraunces, serif',
-            fontSize: '38px',
+            fontSize: '36px',
             lineHeight: 1.1,
             color: '#2C2721',
             letterSpacing: '-0.02em',
           }}>
-            Your personal<br />flower diary
+            Welcome to<br />Petal Press
           </h1>
-          <p style={{ fontSize: '15px', color: '#736959', lineHeight: 1.6, maxWidth: 280, margin: '0 auto' }}>
-            Photograph flowers on your walks. Get them identified and given their floriography meaning. Collect them in a beautiful garden.
+          <p style={{ fontSize: '15px', color: '#736959', lineHeight: 1.65, maxWidth: 260, margin: '0 auto' }}>
+            a little diary for the flowers you find —
+            discover what they're called & the secret
+            meanings they've carried for centuries
           </p>
         </motion.div>
 
@@ -141,7 +144,7 @@ export default function Welcome() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.6 }}
-          className="w-full"
+          className="w-full shrink-0"
           style={{ maxWidth: 360 }}
         >
           <iframe
@@ -154,35 +157,27 @@ export default function Welcome() {
             sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
           />
         </motion.div>
-
-        {/* Feature hints */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.65, duration: 0.6 }}
-          className="flex gap-6 justify-center"
-        >
-          {[
-            { icon: "📸", label: "Photograph" },
-            { icon: "🌿", label: "Identify" },
-            { icon: "📖", label: "Collect" },
-          ].map(({ icon, label }) => (
-            <div key={label} className="flex flex-col items-center gap-1">
-              <span style={{ fontSize: '22px' }}>{icon}</span>
-              <span style={{ fontSize: '11px', color: '#9A8F7F', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-                {label}
-              </span>
-            </div>
-          ))}
-        </motion.div>
       </div>
 
       {/* Footer */}
-      <div className="px-6 pb-8 text-center">
-        <p style={{ fontSize: '11px', color: '#C4BBA5' }}>
-          made with care for curious walkers
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7, duration: 0.6 }}
+        className="px-6 pb-7 text-center shrink-0"
+      >
+        <p style={{ fontSize: '12px', color: '#C4BBA5' }}>
+          made with love by{' '}
+          <a
+            href="https://www.instagram.com/priscilla.png/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#9A8F7F', textDecoration: 'underline', textUnderlineOffset: '3px' }}
+          >
+            priscilla
+          </a>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }
