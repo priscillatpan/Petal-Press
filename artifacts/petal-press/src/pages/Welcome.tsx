@@ -51,12 +51,12 @@ export default function Welcome() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.5 }}
           className="w-full"
-          style={{ maxWidth: 480 }}
+          style={{ maxWidth: 360 }}
         >
           <iframe
             src="https://tally.so/embed/obkQo5?alignLeft=1&hideTitle=1&transparentBackground=1"
             width="100%"
-            height="240"
+            height="280"
             frameBorder={0}
             title="Join the Petal Press waitlist"
             style={{ border: 'none' }}
