@@ -1,10 +1,5 @@
 import { motion } from "framer-motion";
-
-const BLOBS = [
-  { src: "/images/forget-me-not.png",   rotate: "-7deg",  radius: "62% 38% 46% 54% / 60% 44% 56% 40%" },
-  { src: "/images/california-poppy.png", rotate: "4deg",   radius: "48% 52% 58% 42% / 44% 58% 42% 56%" },
-  { src: "/images/hydrangea.png",        rotate: "-3deg",  radius: "52% 48% 40% 60% / 56% 40% 60% 44%" },
-];
+import { FlowerIcon } from "@/components/FlowerIcon";
 
 export default function Welcome() {
   return (
@@ -14,38 +9,13 @@ export default function Welcome() {
     >
       <div className="flex flex-col items-center text-center gap-4 pt-10">
 
-        {/* Three blob photos */}
+        {/* Green flower icon */}
         <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex items-center justify-center gap-3"
         >
-          {BLOBS.map(({ src, rotate, radius }, i) => (
-            <motion.div
-              key={src}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              style={{
-                width: 88,
-                height: 88,
-                flexShrink: 0,
-                transform: `rotate(${rotate})`,
-                borderRadius: radius,
-                overflow: "hidden",
-                boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
-                backgroundColor: "#1a1a1a",
-              }}
-            >
-              <img
-                src={src}
-                alt=""
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                draggable={false}
-              />
-            </motion.div>
-          ))}
+          <FlowerIcon size={52} color="#c5d07d" />
         </motion.div>
 
         {/* Headline */}
