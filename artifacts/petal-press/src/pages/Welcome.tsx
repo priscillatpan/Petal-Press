@@ -34,11 +34,16 @@ export default function Welcome() {
           }}>
             Petal Press<br />is coming soon!
           </h1>
-          <p style={{ fontSize: '14px', color: '#736959', lineHeight: 1.6, maxWidth: 250, margin: '0 auto' }}>
+          <p style={{ fontSize: '14px', color: '#736959', lineHeight: 1.6, maxWidth: 290, margin: '0 auto' }}>
             a little diary for the flowers you find:
             discover what they're called & their hidden meanings
           </p>
         </motion.div>
+
+        {/* Waitlist label */}
+        <p style={{ fontSize: '12px', color: '#9A8F7F', letterSpacing: '0.04em' }}>
+          join the waitlist — we'll email you when it's ready ✉︎
+        </p>
 
         {/* Tally waitlist */}
         <motion.div
