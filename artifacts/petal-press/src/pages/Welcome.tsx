@@ -1,27 +1,12 @@
 import { motion } from "framer-motion";
-import { FlowerIcon } from "@/components/FlowerIcon";
 
 export default function Welcome() {
   return (
     <div
-      className="h-screen flex flex-col overflow-hidden"
+      className="h-screen flex flex-col overflow-hidden px-6"
       style={{ backgroundColor: '#FAF7EF' }}
     >
-      {/* Top nav */}
-      <div className="flex items-center justify-between px-6 pt-4 pb-2 shrink-0">
-        <div className="flex items-center gap-2">
-          <FlowerIcon size={18} color="#c5d07d" />
-          <span style={{ fontFamily: 'Fraunces, serif', fontSize: '15px', color: '#3D362D', letterSpacing: '-0.01em' }}>
-            Petal Press
-          </span>
-        </div>
-        <span style={{ fontSize: '11px', color: '#9A8F7F', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-          Coming soon
-        </span>
-      </div>
-
-      {/* Main content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 text-center gap-4 min-h-0">
+      <div className="flex flex-col items-center text-center gap-4 pt-14">
 
         {/* Flower emoji */}
         <motion.div
@@ -60,7 +45,7 @@ export default function Welcome() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="w-full shrink-0"
+          className="w-full"
           style={{ maxWidth: 360 }}
         >
           <iframe
@@ -75,12 +60,12 @@ export default function Welcome() {
         </motion.div>
       </div>
 
-      {/* Footer */}
+      {/* Footer pinned to bottom */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.5 }}
-        className="px-6 pb-6 text-center shrink-0"
+        className="mt-auto pb-6 text-center"
       >
         <p style={{ fontSize: '12px', color: '#C4BBA5' }}>
           made with love by{' '}
