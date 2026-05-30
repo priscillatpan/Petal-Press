@@ -13,24 +13,16 @@ import { lookupFloriography } from "@/data/floriography";
 type Candidate = { commonName: string; scientificName: string; score: number; family: string };
 type Step = 1 | 2 | 3 | 4;
 
-// Shared SVG defs — rendered once, reused by id
-function FlowerDefs() {
-  return (
-    <svg width="0" height="0" style={{ position: 'absolute', pointerEvents: 'none' }}>
-      <defs>
-        {/* 5 rounded circles — matches the daisy icon shape, objectBoundingBox so it scales */}
-        <clipPath id="flower-clip-photo" clipPathUnits="objectBoundingBox">
-          <circle cx="0.50" cy="0.31" r="0.23" />
-          <circle cx="0.68" cy="0.44" r="0.23" />
-          <circle cx="0.61" cy="0.65" r="0.23" />
-          <circle cx="0.39" cy="0.65" r="0.23" />
-          <circle cx="0.32" cy="0.44" r="0.23" />
-        </clipPath>
-      </defs>
-    </svg>
-  );
-}
+// CSS mask-image is far more reliable than clip-path:url() on iOS Safari (all versions).
+// White = visible, black/transparent = hidden.
+const FLOWER_MASK_SVG = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='31' r='23' fill='white'/%3E%3Ccircle cx='68' cy='44' r='23' fill='white'/%3E%3Ccircle cx='61' cy='65' r='23' fill='white'/%3E%3Ccircle cx='39' cy='65' r='23' fill='white'/%3E%3Ccircle cx='32' cy='44' r='23' fill='white'/%3E%3C/svg%3E")`;
 
+const flowerMaskStyle: React.CSSProperties = {
+  WebkitMaskImage: FLOWER_MASK_SVG,
+  maskImage: FLOWER_MASK_SVG,
+  WebkitMaskSize: '100% 100%',
+  maskSize: '100% 100%',
+};
 
 function FlowerVideo({ videoRef, size = 240 }: { videoRef: React.RefObject<HTMLVideoElement | null>; size?: number }) {
   return (
@@ -44,8 +36,8 @@ function FlowerVideo({ videoRef, size = 240 }: { videoRef: React.RefObject<HTMLV
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          clipPath: 'url(#flower-clip-photo)',
           display: 'block',
+          ...flowerMaskStyle,
         }}
       />
     </div>
@@ -78,13 +70,9 @@ export default function CaptureFlow() {
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // On iOS Safari, the getUserMedia video element is invisible due to a clip-path bug.
-  // Use the native camera via <input capture> instead — better UX on iPhone anyway.
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-
   // Start rear camera on mount; stop when leaving step 1 or unmounting
   useEffect(() => {
-    if (isIOS || !navigator.mediaDevices?.getUserMedia) {
+    if (!navigator.mediaDevices?.getUserMedia) {
       setCameraFailed(true);
       return;
     }
@@ -260,9 +248,6 @@ export default function CaptureFlow() {
 
   return (
     <div className="bg-background flex flex-col" style={{ minHeight: "100dvh" }}>
-      {/* Shared flower clip-path definitions — used by FlowerPhoto and FlowerVideo */}
-      <FlowerDefs />
-
       {/* Camera input — opens rear camera directly */}
       <input
         id="flower-photo-input"
@@ -355,13 +340,13 @@ export default function CaptureFlow() {
                     {!cameraReady && (
                       <div
                         style={{
-                          width: '100%',
-                          height: '100%',
-                          clipPath: 'url(#flower-clip-photo)',
+                          position: 'absolute',
+                          inset: 0,
                           backgroundColor: '#EDE5CC',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
+                          ...flowerMaskStyle,
                         }}
                       >
                         <motion.div
