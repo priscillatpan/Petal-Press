@@ -78,9 +78,13 @@ export default function CaptureFlow() {
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
+  // On iOS Safari, the getUserMedia video element is invisible due to a clip-path bug.
+  // Use the native camera via <input capture> instead — better UX on iPhone anyway.
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
   // Start rear camera on mount; stop when leaving step 1 or unmounting
   useEffect(() => {
-    if (!navigator.mediaDevices?.getUserMedia) {
+    if (isIOS || !navigator.mediaDevices?.getUserMedia) {
       setCameraFailed(true);
       return;
     }
