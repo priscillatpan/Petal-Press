@@ -92,7 +92,9 @@ export default function CaptureFlow() {
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          setCameraReady(true);
+          videoRef.current.play()
+            .then(() => setCameraReady(true))
+            .catch(() => setCameraReady(true));
         }
       })
       .catch(() => { if (active) setCameraFailed(true); });
