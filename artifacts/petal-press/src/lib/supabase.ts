@@ -1,18 +1,22 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false,
-    detectSessionInUrl: false,
-  },
-  realtime: {
-    params: { eventsPerSecond: 0 },
-  },
-});
+// Guard against missing env vars (e.g. external deployments without Supabase configured).
+// The Welcome/waitlist page works without Supabase; garden features will fail gracefully.
+export const supabase = supabaseUrl && supabaseAnonKey
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+        detectSessionInUrl: false,
+      },
+      realtime: {
+        params: { eventsPerSecond: 0 },
+      },
+    })
+  : null;
 
 export type FlowerRow = {
   id: string;

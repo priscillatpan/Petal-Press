@@ -73,6 +73,7 @@ export function GardenProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function fetchFlowers() {
+      if (!supabase) { setLoading(false); return; }
       const { data, error } = await supabase
         .from("flowers")
         .select("*")
@@ -89,6 +90,7 @@ export function GardenProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addFlower = async (flower: Flower) => {
+    if (!supabase) { setFlowers((prev) => [...prev, flower]); return; }
     const { error } = await supabase.from("flowers").insert(flowerToRow(flower));
     if (error) {
       console.error("Failed to save flower:", error.message);
@@ -101,6 +103,10 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     const flower = flowers.find((f) => f.id === id);
     if (!flower) return;
     const newUrls = [...flower.imageUrls, imageUrl];
+    if (!supabase) {
+      setFlowers((prev) => prev.map((f) => f.id === id ? { ...f, imageUrls: newUrls, imageUrl: newUrls[0] } : f));
+      return;
+    }
     const { error } = await supabase
       .from("flowers")
       .update({ image_urls: newUrls, image_url: newUrls[0] })
@@ -117,6 +123,10 @@ export function GardenProvider({ children }: { children: ReactNode }) {
   };
 
   const updateFlower = async (id: string, updates: Partial<Flower>) => {
+    if (!supabase) {
+      setFlowers((prev) => prev.map((f) => (f.id === id ? { ...f, ...updates } : f)));
+      return;
+    }
     const dbUpdates: Partial<Omit<FlowerRow, "created_at">> = {};
     if (updates.commonName !== undefined) dbUpdates.common_name = updates.commonName;
     if (updates.latinName !== undefined) dbUpdates.latin_name = updates.latinName;

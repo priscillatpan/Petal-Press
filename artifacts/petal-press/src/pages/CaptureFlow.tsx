@@ -188,7 +188,7 @@ export default function CaptureFlow() {
     // Upload photo — never fall back to blob URLs (ephemeral)
     let finalImageUrl = "";
     const file = selectedFileRef.current;
-    if (file) {
+    if (file && supabase) {
       try {
         const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
         const path = `${Date.now()}.${ext}`;
