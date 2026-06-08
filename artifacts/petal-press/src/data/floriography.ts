@@ -278,6 +278,15 @@ const BY_COMMON: Record<string, FloriographyEntry> = {
   "agave":                  { meaning: "patience, a century of waiting",              nickname: "Century Wait" },
   "aloe":                   { meaning: "grief, bitterness, healing",                  nickname: "Bitter Healer" },
 
+  // ── Oxalis & sorrels ─────────────────────────────────────────────
+  "oxalis":                 { meaning: "joy, maternal tenderness, radiant heart",     nickname: "Little Clover" },
+  "wood sorrel":            { meaning: "joy, maternal tenderness, radiant heart",     nickname: "Little Clover" },
+  "sorrel":                 { meaning: "joy, maternal tenderness, parental affection",nickname: "Little Clover" },
+  "pink sorrel":            { meaning: "joy, tender affection, radiant heart",        nickname: "Rosy Clover" },
+  "pink wood sorrel":       { meaning: "joy, tender affection, radiant heart",        nickname: "Rosy Clover" },
+  "bermuda buttercup":      { meaning: "joy, brightness, resilience",                 nickname: "Golden Clover" },
+  "cape sorrel":            { meaning: "joy, brightness, resilience",                 nickname: "Golden Clover" },
+
   // ── Unusual & neighbourhood finds ────────────────────────────────
   "cheddar pink":           { meaning: "pure love, boldness, lively spirit",          nickname: "Cliffside Heart" },
   "dianthus":               { meaning: "pure love, boldness, lively spirit",          nickname: "Cliffside Heart" },
@@ -440,6 +449,7 @@ const BY_GENUS: Record<string, FloriographyEntry> = {
   "penstemon":       BY_COMMON["penstemon"],
   "aloe":            BY_COMMON["aloe"],
   "agave":           BY_COMMON["agave"],
+  "oxalis":          BY_COMMON["oxalis"],
   "pericallis":      BY_COMMON["cineraria"],
   "abelia":          BY_COMMON["abelia"],
   "pentas":          BY_COMMON["pentas"],
