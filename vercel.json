@@ -1,0 +1,6 @@
+{
+  "buildCommand": "pnpm --filter @workspace/petal-press run build",
+  "outputDirectory": "artifacts/petal-press/dist/public",
+  "installCommand": "pnpm install",
+  "framework": null
+}
