@@ -278,6 +278,11 @@ const BY_COMMON: Record<string, FloriographyEntry> = {
   "agave":                  { meaning: "patience, a century of waiting",              nickname: "Century Wait" },
   "aloe":                   { meaning: "grief, bitterness, healing",                  nickname: "Bitter Healer" },
 
+  // ── Mist flower & neighbours ─────────────────────────────────────
+  "bartlettina":            { meaning: "mystery, quiet wonder, gentle persistence",   nickname: "Mist Flower" },
+  "mist flower":            { meaning: "mystery, quiet wonder, gentle persistence",   nickname: "Mist Flower" },
+  "purple torch":           { meaning: "mystery, quiet wonder, gentle persistence",   nickname: "Mist Flower" },
+
   // ── Oxalis & sorrels ─────────────────────────────────────────────
   "oxalis":                 { meaning: "joy, maternal tenderness, radiant heart",     nickname: "Little Clover" },
   "wood sorrel":            { meaning: "joy, maternal tenderness, radiant heart",     nickname: "Little Clover" },
@@ -450,6 +455,7 @@ const BY_GENUS: Record<string, FloriographyEntry> = {
   "aloe":            BY_COMMON["aloe"],
   "agave":           BY_COMMON["agave"],
   "oxalis":          BY_COMMON["oxalis"],
+  "bartlettina":     BY_COMMON["bartlettina"],
   "pericallis":      BY_COMMON["cineraria"],
   "abelia":          BY_COMMON["abelia"],
   "pentas":          BY_COMMON["pentas"],
