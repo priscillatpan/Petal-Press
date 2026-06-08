@@ -1,0 +1,5 @@
+{
+  "buildCommand": "cd ../.. && pnpm install && pnpm --filter @workspace/petal-press run build",
+  "outputDirectory": "dist",
+  "framework": null
+}
