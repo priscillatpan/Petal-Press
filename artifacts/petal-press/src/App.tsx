@@ -20,7 +20,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    if (!authLoading && !user) setLocation("/signin");
+    if (!authLoading && !user) setLocation("/");
   }, [user, authLoading, setLocation]);
 
   if (authLoading) {
@@ -40,8 +40,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Welcome} />
-      <Route path="/signin" component={SignIn} />
+      <Route path="/" component={SignIn} />
+      <Route path="/waitlist" component={Welcome} />
       <Route path="/garden">
         {() => <ProtectedRoute><Home /></ProtectedRoute>}
       </Route>

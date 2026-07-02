@@ -75,7 +75,7 @@ export default function Welcome() {
           transition={{ delay: 0.6, duration: 0.4 }}
         >
           <a
-            href="/signin"
+            href="/"
             style={{
               fontSize: "13px",
               color: "#9A8F7F",

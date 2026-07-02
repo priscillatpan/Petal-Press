@@ -65,10 +65,10 @@ export default function SignIn() {
               letterSpacing: "-0.02em",
             }}
           >
-            Open your garden
+            Welcome to Petal Press
           </h1>
-          <p style={{ fontSize: "14px", color: "#736959", lineHeight: 1.6, maxWidth: 268, margin: "0 auto" }}>
-            Enter your email and we'll send a magic link — no password needed.
+          <p style={{ fontSize: "14px", color: "#736959", lineHeight: 1.6, maxWidth: 280, margin: "0 auto" }}>
+            Enter your email to sign in or create an account — we'll send you a link.
           </p>
         </motion.div>
 
@@ -133,7 +133,7 @@ export default function SignIn() {
                   fontFamily: "system-ui, sans-serif",
                 }}
               >
-                {loading ? "Sending…" : "Send magic link ✉︎"}
+                {loading ? "Sending…" : "Continue with email"}
               </button>
             </motion.form>
           ) : (
@@ -194,7 +194,7 @@ export default function SignIn() {
         >
           New here?{" "}
           <a
-            href="/"
+            href="/waitlist"
             style={{ color: "#9A8F7F", textDecoration: "underline", textUnderlineOffset: "3px" }}
           >
             Join the waitlist
