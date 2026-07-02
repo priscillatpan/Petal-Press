@@ -26,11 +26,11 @@ type FlowerRow = {
   native_status: string;
   image_url: string;
   image_urls: string[];
+  user_id?: string;
   created_at: string;
 };
 
 function rowToFlower(row: FlowerRow): Flower {
-  // Support both legacy (image_url only) and new (image_urls array) rows
   const urls: string[] = row.image_urls?.length
     ? row.image_urls
     : row.image_url ? [row.image_url] : [];
@@ -50,7 +50,7 @@ function rowToFlower(row: FlowerRow): Flower {
   };
 }
 
-function flowerToRow(flower: Flower): Omit<FlowerRow, "created_at"> {
+function flowerToRow(flower: Flower): Omit<FlowerRow, "created_at" | "user_id"> {
   return {
     id: flower.id,
     common_name: flower.commonName,
@@ -67,31 +67,47 @@ function flowerToRow(flower: Flower): Omit<FlowerRow, "created_at"> {
   };
 }
 
+async function getCurrentUserId(): Promise<string | null> {
+  if (!supabase) return null;
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.id ?? null;
+}
+
 export function GardenProvider({ children }: { children: ReactNode }) {
   const [flowers, setFlowers] = useState<Flower[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchFlowers() {
-      if (!supabase) { setLoading(false); return; }
-      const { data, error } = await supabase
-        .from("flowers")
-        .select("*")
-        .order("created_at", { ascending: true });
+  async function fetchFlowers() {
+    if (!supabase) { setLoading(false); return; }
+    const { data, error } = await supabase
+      .from("flowers")
+      .select("*")
+      .order("created_at", { ascending: true });
 
-      if (error) {
-        console.error("Failed to load flowers:", error.message);
-      } else {
-        setFlowers((data as FlowerRow[]).map(rowToFlower));
-      }
-      setLoading(false);
+    if (error) {
+      console.error("Failed to load flowers:", error.message);
+    } else {
+      setFlowers((data as FlowerRow[]).map(rowToFlower));
     }
+    setLoading(false);
+  }
+
+  useEffect(() => {
     fetchFlowers();
+
+    if (!supabase) return;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      setLoading(true);
+      fetchFlowers();
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
   const addFlower = async (flower: Flower) => {
     if (!supabase) { setFlowers((prev) => [...prev, flower]); return; }
-    const { error } = await supabase.from("flowers").insert(flowerToRow(flower));
+    const userId = await getCurrentUserId();
+    const row = { ...flowerToRow(flower), ...(userId ? { user_id: userId } : {}) };
+    const { error } = await supabase.from("flowers").insert(row);
     if (error) {
       console.error("Failed to save flower:", error.message);
       throw error;
@@ -116,9 +132,7 @@ export function GardenProvider({ children }: { children: ReactNode }) {
       throw error;
     }
     setFlowers((prev) =>
-      prev.map((f) =>
-        f.id === id ? { ...f, imageUrls: newUrls, imageUrl: newUrls[0] } : f
-      )
+      prev.map((f) => f.id === id ? { ...f, imageUrls: newUrls, imageUrl: newUrls[0] } : f)
     );
   };
 
@@ -156,4 +170,3 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     </GardenContext.Provider>
   );
 }
-

@@ -3,19 +3,8 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 
-// Guard against missing env vars (e.g. external deployments without Supabase configured).
-// The Welcome/waitlist page works without Supabase; garden features will fail gracefully.
 export const supabase = supabaseUrl && supabaseAnonKey
-  ? createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-        detectSessionInUrl: false,
-      },
-      realtime: {
-        params: { eventsPerSecond: 0 },
-      },
-    })
+  ? createClient(supabaseUrl, supabaseAnonKey)
   : null;
 
 export type FlowerRow = {
@@ -30,6 +19,8 @@ export type FlowerRow = {
   location: string;
   spotted_count: number;
   image_url: string;
+  image_urls: string[];
   in_bouquet: boolean;
+  user_id: string;
   created_at: string;
 };

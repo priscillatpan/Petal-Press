@@ -132,17 +132,47 @@ export default function CaptureFlow() {
     }, "image/jpeg", 0.92);
   }
 
+  async function fileToJpegBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const canvas = document.createElement("canvas");
+        const MAX = 2000;
+        let w = img.naturalWidth, h = img.naturalHeight;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round((h / w) * MAX); w = MAX; }
+          else { w = Math.round((w / h) * MAX); h = MAX; }
+        }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d", { colorSpace: "srgb" })!;
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => {
+          if (!blob) { reject(new Error("Canvas conversion failed")); return; }
+          const reader = new FileReader();
+          reader.onload = () => resolve((reader.result as string).split(",")[1]);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        }, "image/jpeg", 0.85);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Image load failed")); };
+      img.src = url;
+    });
+  }
+
   const identifyPhoto = useCallback(async (file: File) => {
     setStep(2);
     setError(null);
 
     try {
-      const formData = new FormData();
-      formData.append("image", file);
+      const base64 = await fileToJpegBase64(file);
 
       const res = await fetch("/api/identify", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: base64, mimeType: "image/jpeg" }),
       });
 
       if (!res.ok) {

@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { useGarden } from "@/context/useGarden";
+import { useAuth } from "@/context/AuthContext";
 import { FlowerIcon } from "@/components/FlowerIcon";
 import { BlobFrame } from "@/components/BlobFrame";
 import { getSeasonFromDate, SEASON_LABELS, type Season } from "@/data/season";
@@ -23,6 +24,7 @@ const cell = {
 
 export default function Home() {
   const { flowers, loading } = useGarden();
+  const { signOut, user } = useAuth();
   const [seasonFilter, setSeasonFilter] = useState<SeasonFilter>(null);
   const seasonsPresent = useMemo(() => {
     const set = new Set(flowers.map(f => getSeasonFromDate(f.datePressed)));
@@ -54,12 +56,28 @@ export default function Home() {
             <FlowerIcon size={20} color="#c5d07d" />
             Petal Press
           </h1>
-          <span
-            className="text-xs tracking-widest"
-            style={{ color: '#9A8F7F' }}
-          >
-            {loading ? '…' : `${flowers.length} species found`}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-xs tracking-widest" style={{ color: '#9A8F7F' }}>
+              {loading ? '…' : `${flowers.length} species found`}
+            </span>
+            {user && (
+              <button
+                onClick={() => signOut()}
+                title="Sign out"
+                style={{
+                  fontSize: '11px',
+                  color: '#B8AFA0',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '2px 0',
+                  letterSpacing: '0.03em',
+                }}
+              >
+                sign out
+              </button>
+            )}
+          </div>
         </div>
         <p className="text-xs mb-3" style={{ color: '#9A8F7F' }}>
           {loading ? 'Loading your pressings…' : 'What flowers will you discover today?'}
