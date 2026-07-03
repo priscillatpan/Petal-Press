@@ -69,6 +69,8 @@ export default function CaptureFlow() {
   const [plantFamily, setPlantFamily] = useState("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
+  const [generatingMeaning, setGeneratingMeaning] = useState(false);
+  const resizedBlobRef = useRef<Blob | null>(null);
 
   // Start rear camera on mount; stop when leaving step 1 or unmounting
   useEffect(() => {
@@ -130,6 +132,27 @@ export default function CaptureFlow() {
       streamRef.current = null;
       identifyPhoto(file);
     }, "image/jpeg", 0.92);
+  }
+
+  async function resizeFileToBlob(file: File, maxPx = 1200, quality = 0.82): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const canvas = document.createElement("canvas");
+        let w = img.naturalWidth, h = img.naturalHeight;
+        if (w > maxPx || h > maxPx) {
+          if (w > h) { h = Math.round((h / w) * maxPx); w = maxPx; }
+          else { w = Math.round((w / h) * maxPx); h = maxPx; }
+        }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d", { colorSpace: "srgb" })!.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Resize failed")), "image/jpeg", quality);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Image load failed")); };
+      img.src = url;
+    });
   }
 
   async function fileToJpegBase64(file: File): Promise<string> {
@@ -201,30 +224,55 @@ export default function CaptureFlow() {
     identifyPhoto(file);
   }
 
-  function handleSelectCandidate(candidate: Candidate) {
+  async function handleSelectCandidate(candidate: Candidate) {
     const flori = lookupFloriography(candidate.commonName, candidate.scientificName);
+    const isDefault = flori.meaning === "beauty, wonder";
     setCommonName(candidate.commonName);
     setLatinName(candidate.scientificName);
     setPlantFamily(candidate.family || "");
     setNickname(flori.nickname);
     setMeaning(flori.meaning);
     setStep(4);
+
+    if (isDefault) {
+      setGeneratingMeaning(true);
+      try {
+        const res = await fetch("/api/meaning", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            commonName: candidate.commonName,
+            scientificName: candidate.scientificName,
+            family: candidate.family,
+          }),
+        });
+        if (res.ok) {
+          const data = await res.json() as { meaning: string; nickname: string };
+          if (data.meaning) setMeaning(data.meaning);
+          if (data.nickname) setNickname(data.nickname);
+        }
+      } catch {
+        // Keep lookup table defaults if API unavailable
+      } finally {
+        setGeneratingMeaning(false);
+      }
+    }
   }
 
   async function handleSave() {
     if (saving) return;
     setSaving(true);
 
-    // Upload photo — never fall back to blob URLs (ephemeral)
+    // Upload photo — resize first so storage stays lean
     let finalImageUrl = "";
     const file = selectedFileRef.current;
     if (file && supabase) {
       try {
-        const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-        const path = `${Date.now()}.${ext}`;
+        const uploadBlob = await resizeFileToBlob(file).catch(() => file);
+        const path = `${Date.now()}.jpg`;
         const { error: uploadError } = await supabase.storage
           .from("flower-images")
-          .upload(path, file, { contentType: file.type, upsert: false });
+          .upload(path, uploadBlob, { contentType: "image/jpeg", upsert: false });
 
         if (uploadError) {
           console.error("Image upload failed:", uploadError.message);
@@ -594,15 +642,27 @@ export default function CaptureFlow() {
                       <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: '#9A8F7F' }}>
                         {label}
                       </label>
-                      <input
-                        type="text"
-                        value={value}
-                        onChange={e => setter(e.target.value)}
-                        placeholder={placeholder}
-                        className="w-full bg-transparent border-b py-2 text-sm focus:outline-none transition-colors placeholder:text-muted-foreground/40"
-                        style={{ borderColor: '#E8DCC0', color: '#2C2721' }}
-                        data-testid={testId}
-                      />
+                      {generatingMeaning ? (
+                        <div
+                          className="w-full py-2 rounded"
+                          style={{
+                            height: 32,
+                            background: 'linear-gradient(90deg, #EDE6D0 25%, #F5EFDE 50%, #EDE6D0 75%)',
+                            backgroundSize: '200% 100%',
+                            animation: 'shimmer 1.4s infinite',
+                          }}
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={value}
+                          onChange={e => setter(e.target.value)}
+                          placeholder={placeholder}
+                          className="w-full bg-transparent border-b py-2 text-sm focus:outline-none transition-colors placeholder:text-muted-foreground/40"
+                          style={{ borderColor: '#E8DCC0', color: '#2C2721' }}
+                          data-testid={testId}
+                        />
+                      )}
                     </div>
                   ))}
 
