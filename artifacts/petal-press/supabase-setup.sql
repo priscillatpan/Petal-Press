@@ -35,6 +35,33 @@ SET user_id = (
 )
 WHERE user_id IS NULL;
 
+-- 5. Shared floriography meanings cache
+--    Stores AI-generated meanings keyed by species so we only ever
+--    pay for a new OpenAI lookup once per species, globally.
+CREATE TABLE IF NOT EXISTS flower_meanings (
+  scientific_name TEXT PRIMARY KEY,
+  common_name TEXT,
+  meaning TEXT NOT NULL,
+  nickname TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE flower_meanings ENABLE ROW LEVEL SECURITY;
+
+-- Anyone (including the anon key used by the Vercel function) can read the cache
+CREATE POLICY "Anyone can read flower meanings"
+  ON flower_meanings FOR SELECT
+  USING (true);
+
+-- Anyone can add a new cached meaning (non-sensitive shared data, no user info)
+CREATE POLICY "Anyone can insert flower meanings"
+  ON flower_meanings FOR INSERT
+  WITH CHECK (true);
+
+CREATE POLICY "Anyone can update flower meanings"
+  ON flower_meanings FOR UPDATE
+  USING (true);
+
 -- ============================================================
 -- Supabase Auth settings — do in the dashboard UI:
 --
@@ -55,6 +82,11 @@ WHERE user_id IS NULL;
 
 -- Vercel env vars to add (Settings → Environment Variables):
 --   PLANTNET_API_KEY   = (your Pl@ntNet key)
+--   OPENAI_API_KEY     = (your OpenAI key, from platform.openai.com)
+--   SUPABASE_URL       = (same value as VITE_SUPABASE_URL, no VITE_ prefix —
+--                         needed because Vercel functions don't read Vite's
+--                         client-side env vars)
+--   SUPABASE_ANON_KEY  = (same value as VITE_SUPABASE_ANON_KEY, no VITE_ prefix)
 --   VITE_SUPABASE_URL  = (your Supabase project URL)
 --   VITE_SUPABASE_ANON_KEY = (your Supabase anon key)
 -- ============================================================
