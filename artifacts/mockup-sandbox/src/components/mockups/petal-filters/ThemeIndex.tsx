@@ -72,56 +72,56 @@ export function ThemeIndex() {
         </div>
       </header>
 
-      <main className="px-4 pt-5 flex flex-col gap-3">
-        <p className="text-[11px] uppercase tracking-widest" style={{ color: "#9A8F7F" }}>
-          Love &amp; Devotion &middot; 3 flowers
-        </p>
-        {flowers
-          .filter((f) => f.theme === "love")
-          .map((f) => (
-            <div
-              key={f.name}
-              className="rounded-2xl flex items-center gap-3 p-2.5"
-              style={{ backgroundColor: "#FFF9ED", border: "1px solid #E8DCC0" }}
-            >
+      <main className="px-3 pt-5 flex flex-col gap-4">
+        <div>
+          <p className="text-[11px] uppercase tracking-widest mb-2 px-1" style={{ color: "#9A8F7F" }}>
+            Love &amp; Devotion &middot; 3 flowers
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {flowers
+              .filter((f) => f.theme === "love")
+              .map((f) => (
+                <div
+                  key={f.name}
+                  className="rounded-2xl overflow-hidden"
+                  style={{ backgroundColor: "#FFF9ED", border: "1px solid #E8DCC0" }}
+                >
+                  <div
+                    className="w-full flex items-center justify-center text-5xl"
+                    style={{ height: 140, backgroundColor: f.color + "22" }}
+                  >
+                    {f.img}
+                  </div>
+                  <div className="p-2.5">
+                    <p className="text-sm truncate" style={{ fontFamily: "Fraunces, serif", color: "#2C2721" }}>
+                      {f.name}
+                    </p>
+                    <p className="text-[10px] italic truncate mt-0.5" style={{ color: "#9A8F7F" }}>
+                      "Blissful pleasure"
+                    </p>
+                  </div>
+                </div>
+              ))}
+            <div className="rounded-2xl overflow-hidden opacity-40" style={{ backgroundColor: "#FFF9ED", border: "1px solid #E8DCC0" }}>
               <div
-                className="rounded-xl flex items-center justify-center text-3xl shrink-0"
-                style={{ width: 56, height: 56, backgroundColor: f.color + "22" }}
+                className="w-full flex items-center justify-center text-5xl"
+                style={{ height: 140, backgroundColor: "#EFE7D0" }}
               >
-                {f.img}
+                🌷
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm truncate" style={{ fontFamily: "Fraunces, serif", color: "#2C2721" }}>
-                  {f.name}
+              <div className="p-2.5">
+                <p className="text-sm truncate" style={{ fontFamily: "Fraunces, serif", color: "#9A8F7F" }}>
+                  Tulip
                 </p>
-                <p className="text-[11px] italic" style={{ color: "#9A8F7F" }}>
-                  "Blissful pleasure" &mdash; a token of gratitude
+                <p className="text-[10px] truncate mt-0.5" style={{ color: "#C4BBA5" }}>
+                  Perfect &amp; Deep Love
                 </p>
               </div>
             </div>
-          ))}
-
-        <div
-          className="rounded-2xl flex items-center gap-3 p-2.5 opacity-40"
-          style={{ backgroundColor: "#FFF9ED", border: "1px solid #E8DCC0" }}
-        >
-          <div
-            className="rounded-xl flex items-center justify-center text-2xl shrink-0"
-            style={{ width: 56, height: 56, backgroundColor: "#EFE7D0" }}
-          >
-            🌷
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm" style={{ fontFamily: "Fraunces, serif", color: "#9A8F7F" }}>
-              Tulip
-            </p>
-            <p className="text-[11px]" style={{ color: "#C4BBA5" }}>
-              Perfect &amp; Deep Love
-            </p>
           </div>
         </div>
 
-        <p className="text-center text-xs mt-4" style={{ color: "#C4BBA5" }}>
+        <p className="text-center text-xs mt-2" style={{ color: "#C4BBA5" }}>
           Each theme comes from a fixed list of 10 — so this stays browsable, not overwhelming.
         </p>
       </main>
