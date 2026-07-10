@@ -2,6 +2,7 @@ import { createContext, useState, useEffect, ReactNode } from "react";
 import { Flower } from "../data/types";
 import { NativeStatus } from "../data/nativeStatus";
 import { supabase } from "../lib/supabase";
+import { deriveTheme } from "../data/themes";
 
 type GardenContextType = {
   flowers: Flower[];
@@ -43,7 +44,7 @@ function rowToFlower(row: FlowerRow): Flower {
     meaning: row.meaning,
     blurb: row.blurb,
     color: row.color,
-    theme: row.theme ?? "joy",
+    theme: row.theme ?? deriveTheme(row.meaning ?? ""),
     datePressed: row.date_pressed,
     plantFamily: row.plant_family,
     nativeStatus: row.native_status as NativeStatus,
