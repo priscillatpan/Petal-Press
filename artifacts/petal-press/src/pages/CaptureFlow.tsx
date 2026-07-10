@@ -466,7 +466,7 @@ export default function CaptureFlow() {
               {/* Fallback: file picker (no camera access) */}
               {cameraFailed && (
                 <label
-                  htmlFor="flower-photo-input"
+                  htmlFor="flower-library-input"
                   className={`w-full aspect-[3/4] max-h-[52vh] border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-4 transition-all cursor-pointer active:scale-[0.98] ${
                     fileReceived
                       ? "border-primary/60 bg-primary/10"
