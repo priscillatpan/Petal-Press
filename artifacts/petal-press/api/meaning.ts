@@ -15,7 +15,12 @@ function getSupabase() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_ANON_KEY;
   if (!url || !key) return null;
-  return createClient(url, key);
+  try {
+    return createClient(url, key);
+  } catch (err) {
+    console.error("Failed to create Supabase client:", err);
+    return null;
+  }
 }
 
 export default async function handler(req: Req, res: Res) {
