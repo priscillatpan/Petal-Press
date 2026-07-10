@@ -12,8 +12,8 @@ export const initialFlowers: Flower[] = [
     datePressed: "April 3, 2026",
     plantFamily: "Boraginaceae",
     nativeStatus: "naturalized",
-    imageUrl: "/images/forget-me-not.png",
-    imageUrls: ["/images/forget-me-not.png"],
+    imageUrl: "/images/forget-me-not.jpg",
+    imageUrls: ["/images/forget-me-not.jpg"],
   },
   {
     id: "f2",
@@ -26,8 +26,8 @@ export const initialFlowers: Flower[] = [
     datePressed: "April 10, 2026",
     plantFamily: "Papaveraceae",
     nativeStatus: "native",
-    imageUrl: "/images/california-poppy.png",
-    imageUrls: ["/images/california-poppy.png"],
+    imageUrl: "/images/california-poppy.jpg",
+    imageUrls: ["/images/california-poppy.jpg"],
   },
   {
     id: "f3",
@@ -40,8 +40,8 @@ export const initialFlowers: Flower[] = [
     datePressed: "April 17, 2026",
     plantFamily: "Apocynaceae",
     nativeStatus: "cultivated",
-    imageUrl: "/images/star-jasmine.png",
-    imageUrls: ["/images/star-jasmine.png"],
+    imageUrl: "/images/star-jasmine.jpg",
+    imageUrls: ["/images/star-jasmine.jpg"],
   },
   {
     id: "f4",
@@ -54,7 +54,7 @@ export const initialFlowers: Flower[] = [
     datePressed: "April 25, 2026",
     plantFamily: "Hydrangeaceae",
     nativeStatus: "cultivated",
-    imageUrl: "/images/hydrangea.png",
-    imageUrls: ["/images/hydrangea.png"],
+    imageUrl: "/images/hydrangea.jpg",
+    imageUrls: ["/images/hydrangea.jpg"],
   },
 ];
