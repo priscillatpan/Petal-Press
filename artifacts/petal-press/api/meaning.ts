@@ -59,8 +59,7 @@ export default async function handler(req: Req, res: Res) {
   }
 
   const THEME_KEYS = [
-    "love", "new-beginnings", "remembrance", "friendship", "purity",
-    "strength", "joy", "mystery", "grief", "luck",
+    "love", "new-beginnings", "remembrance", "joy", "strength",
   ];
 
   const prompt = `You are a floriography expert. Give me the traditional symbolic meaning, a poetic nickname, and a single theme category for this flower:

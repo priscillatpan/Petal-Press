@@ -54,7 +54,7 @@ export const initialFlowers: Flower[] = [
     meaning: "heartfelt emotion, gratitude, understanding",
     blurb: "A front yard explosion of lavender blue. The homeowner was on the porch and told me they're 30 years old.",
     color: "purple",
-    theme: "friendship",
+    theme: "love",
     datePressed: "April 25, 2026",
     plantFamily: "Hydrangeaceae",
     nativeStatus: "cultivated",
