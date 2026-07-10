@@ -250,8 +250,12 @@ export default function CaptureFlow() {
           const data = await res.json() as { meaning: string; nickname: string };
           if (data.meaning) setMeaning(data.meaning);
           if (data.nickname) setNickname(data.nickname);
+        } else {
+          const body = await res.json().catch(() => ({})) as { error?: string };
+          console.error("Meaning API failed:", res.status, body.error);
         }
-      } catch {
+      } catch (err) {
+        console.error("Meaning API request errored:", err);
         // Keep lookup table defaults if API unavailable
       } finally {
         setGeneratingMeaning(false);
