@@ -21,6 +21,7 @@ type FlowerRow = {
   meaning: string;
   blurb: string;
   color: string;
+  theme: string;
   date_pressed: string;
   plant_family: string;
   native_status: string;
@@ -42,6 +43,7 @@ function rowToFlower(row: FlowerRow): Flower {
     meaning: row.meaning,
     blurb: row.blurb,
     color: row.color,
+    theme: row.theme ?? "joy",
     datePressed: row.date_pressed,
     plantFamily: row.plant_family,
     nativeStatus: row.native_status as NativeStatus,
@@ -59,6 +61,7 @@ function flowerToRow(flower: Flower): Omit<FlowerRow, "created_at" | "user_id"> 
     meaning: flower.meaning,
     blurb: flower.blurb,
     color: flower.color,
+    theme: flower.theme,
     date_pressed: flower.datePressed,
     plant_family: flower.plantFamily,
     native_status: flower.nativeStatus,
@@ -148,6 +151,7 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     if (updates.meaning !== undefined) dbUpdates.meaning = updates.meaning;
     if (updates.blurb !== undefined) dbUpdates.blurb = updates.blurb;
     if (updates.color !== undefined) dbUpdates.color = updates.color;
+    if (updates.theme !== undefined) dbUpdates.theme = updates.theme;
     if (updates.datePressed !== undefined) dbUpdates.date_pressed = updates.datePressed;
     if (updates.plantFamily !== undefined) dbUpdates.plant_family = updates.plantFamily;
     if (updates.nativeStatus !== undefined) dbUpdates.native_status = updates.nativeStatus;

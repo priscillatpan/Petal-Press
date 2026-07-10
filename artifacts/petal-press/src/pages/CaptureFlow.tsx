@@ -9,6 +9,7 @@ import { Flower } from "@/data/types";
 import { getNativeStatus } from "@/data/nativeStatus";
 import { supabase } from "@/lib/supabase";
 import { lookupFloriography } from "@/data/floriography";
+import { deriveTheme } from "@/data/themes";
 
 type Candidate = { commonName: string; scientificName: string; score: number; family: string };
 type Step = 1 | 2 | 3 | 4;
@@ -66,6 +67,7 @@ export default function CaptureFlow() {
   const [latinName, setLatinName] = useState("");
   const [nickname, setNickname] = useState("");
   const [meaning, setMeaning] = useState("");
+  const [theme, setTheme] = useState("joy");
   const [plantFamily, setPlantFamily] = useState("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
@@ -232,6 +234,7 @@ export default function CaptureFlow() {
     setPlantFamily(candidate.family || "");
     setNickname(flori.nickname);
     setMeaning(flori.meaning);
+    setTheme(deriveTheme(flori.meaning));
     setStep(4);
 
     if (isDefault) {
@@ -247,9 +250,10 @@ export default function CaptureFlow() {
           }),
         });
         if (res.ok) {
-          const data = await res.json() as { meaning: string; nickname: string };
+          const data = await res.json() as { meaning: string; nickname: string; theme?: string };
           if (data.meaning) setMeaning(data.meaning);
           if (data.nickname) setNickname(data.nickname);
+          if (data.theme) setTheme(data.theme);
         } else {
           const body = await res.json().catch(() => ({})) as { error?: string };
           console.error("Meaning API failed:", res.status, body.error);
@@ -308,6 +312,7 @@ export default function CaptureFlow() {
           meaning,
           blurb: notes,
           color: "unknown",
+          theme,
           datePressed: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
           plantFamily,
           nativeStatus: getNativeStatus(latinName),

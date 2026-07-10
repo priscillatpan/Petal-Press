@@ -6,10 +6,12 @@ import { useAuth } from "@/context/AuthContext";
 import { FlowerIcon } from "@/components/FlowerIcon";
 import { BlobFrame } from "@/components/BlobFrame";
 import { getSeasonFromDate, SEASON_LABELS, type Season } from "@/data/season";
+import { THEMES } from "@/data/themes";
 
 const GHOST_SLOTS = 3;
 
 type SeasonFilter = Season | null;
+type ViewMode = "all" | "meaning";
 
 const SEASONS: Season[] = ['spring', 'summer', 'fall', 'winter'];
 
@@ -26,6 +28,7 @@ export default function Home() {
   const { flowers, loading } = useGarden();
   const { signOut, user } = useAuth();
   const [seasonFilter, setSeasonFilter] = useState<SeasonFilter>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>("all");
   const seasonsPresent = useMemo(() => {
     const set = new Set(flowers.map(f => getSeasonFromDate(f.datePressed)));
     return SEASONS.filter(s => set.has(s));
@@ -35,6 +38,13 @@ export default function Home() {
     if (!seasonFilter) return flowers;
     return flowers.filter(f => getSeasonFromDate(f.datePressed) === seasonFilter);
   }, [flowers, seasonFilter]);
+
+  const themeGroups = useMemo(() => {
+    return THEMES.map(t => ({
+      ...t,
+      flowers: filtered.filter(f => (f.theme || "joy") === t.key),
+    })).filter(g => g.flowers.length > 0);
+  }, [filtered]);
 
   const ghostCount = GHOST_SLOTS;
 
@@ -83,7 +93,30 @@ export default function Home() {
           {loading ? 'Loading your pressings…' : 'What flowers will you discover today?'}
         </p>
 
-        {!loading && seasonsPresent.length > 0 && (
+        {!loading && (
+          <div className="flex gap-1 mb-3 p-0.5 rounded-full w-fit" style={{ backgroundColor: '#EDE6D0' }}>
+            {([
+              { key: "all", label: "All Flowers" },
+              { key: "meaning", label: "By Meaning" },
+            ] as const).map(opt => (
+              <button
+                key={opt.key}
+                onClick={() => setViewMode(opt.key)}
+                className="h-7 px-3 rounded-full text-xs font-medium transition-colors"
+                style={{
+                  backgroundColor: viewMode === opt.key ? '#FFF9ED' : 'transparent',
+                  color: viewMode === opt.key ? '#3D362D' : '#9A8F7F',
+                  boxShadow: viewMode === opt.key ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                }}
+                data-testid={`mode-${opt.key}`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {!loading && viewMode === "all" && seasonsPresent.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-none">
             <button
               onClick={() => setSeasonFilter(null)}
@@ -124,6 +157,84 @@ export default function Home() {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
+          </div>
+        ) : viewMode === "meaning" ? (
+          <div className="space-y-6">
+            {themeGroups.map(group => (
+              <div key={group.key}>
+                <div className="flex items-center gap-2 mb-2 px-0.5">
+                  <span
+                    className="w-2 h-2 rounded-full shrink-0"
+                    style={{ backgroundColor: group.color }}
+                  />
+                  <h2
+                    className="text-sm tracking-wide"
+                    style={{ fontFamily: 'Fraunces, serif', color: '#3D362D' }}
+                  >
+                    {group.label}
+                  </h2>
+                  <span className="text-[11px]" style={{ color: '#9A8F7F' }}>
+                    {group.flowers.length}
+                  </span>
+                </div>
+                <motion.div
+                  variants={container}
+                  initial="hidden"
+                  animate="show"
+                  className="grid grid-cols-2 gap-3"
+                >
+                  {group.flowers.map((flower, idx) => {
+                    const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
+                    const hasPhoto = photos.length > 0 && !photos[0].startsWith('blob:');
+                    return (
+                      <motion.div key={flower.id} variants={cell}>
+                        <Link href={`/flower/${flower.id}`} style={{ display: 'block' }}>
+                          <div
+                            className="flex flex-col items-center gap-1 cursor-pointer active:scale-95 transition-transform duration-150"
+                            data-testid={`card-flower-${flower.id}`}
+                          >
+                            <div className="relative w-full" style={{ paddingBottom: '100%' }}>
+                              <BlobFrame
+                                blobIndex={idx}
+                                className="absolute inset-0"
+                                style={{
+                                  backgroundColor: hasPhoto ? '#2a1f18' : '#FAF7EF',
+                                  boxShadow: '0 3px 12px rgba(0,0,0,0.13)',
+                                }}
+                              >
+                                {hasPhoto ? (
+                                  <img
+                                    src={photos[0]}
+                                    alt={flower.commonName}
+                                    className="w-full h-full object-cover"
+                                    loading="lazy"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <FlowerIcon size={32} color="#D4CBB3" />
+                                  </div>
+                                )}
+                              </BlobFrame>
+                            </div>
+                            <p
+                              className="text-center truncate w-full px-0.5 shrink-0"
+                              style={{ fontSize: '13px', fontFamily: 'Fraunces, serif', color: '#736959' }}
+                            >
+                              {flower.commonName}
+                            </p>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </motion.div>
+              </div>
+            ))}
+            {themeGroups.length === 0 && (
+              <p className="text-center text-sm py-10" style={{ color: '#9A8F7F' }}>
+                No pressed flowers yet.
+              </p>
+            )}
           </div>
         ) : (
           <motion.div

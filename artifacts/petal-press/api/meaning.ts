@@ -46,28 +46,33 @@ export default async function handler(req: Req, res: Res) {
     try {
       const { data } = await supabase
         .from("flower_meanings")
-        .select("meaning, nickname")
+        .select("meaning, nickname, theme")
         .eq("scientific_name", cacheKey)
         .maybeSingle();
 
       if (data) {
-        return res.json({ meaning: data.meaning, nickname: data.nickname });
+        return res.json({ meaning: data.meaning, nickname: data.nickname, theme: data.theme });
       }
     } catch (err) {
       console.error("Cache lookup failed, continuing to AI:", err);
     }
   }
 
-  const prompt = `You are a floriography expert. Give me the traditional symbolic meaning and a poetic nickname for this flower:
+  const THEME_KEYS = [
+    "love", "new-beginnings", "remembrance", "friendship", "purity",
+    "strength", "joy", "mystery", "grief", "luck",
+  ];
+
+  const prompt = `You are a floriography expert. Give me the traditional symbolic meaning, a poetic nickname, and a single theme category for this flower:
 
 Common name: ${commonName || "unknown"}
 Scientific name: ${scientificName || "unknown"}
 Family: ${family || "unknown"}
 
 Reply with ONLY a JSON object in this exact format (no markdown, no explanation):
-{"meaning": "2-5 symbolic meanings separated by commas", "nickname": "2-3 word poetic nickname"}
+{"meaning": "2-5 symbolic meanings separated by commas", "nickname": "2-3 word poetic nickname", "theme": "one of: ${THEME_KEYS.join(", ")}"}
 
-The meaning should be evocative and drawn from Victorian flower language or cultural symbolism. The nickname should be lyrical and feel like a secret name for the flower (like "Heart's Bloom" or "Wish-Maker").`;
+The meaning should be evocative and drawn from Victorian flower language or cultural symbolism. The nickname should be lyrical and feel like a secret name for the flower (like "Heart's Bloom" or "Wish-Maker"). The theme MUST be exactly one of the listed keys, chosen as whichever best fits the meaning — never invent a new one.`;
 
   try {
     const response = await fetch(OPENAI_API, {
@@ -95,7 +100,8 @@ The meaning should be evocative and drawn from Victorian flower language or cult
     };
 
     const text = data.choices?.[0]?.message?.content?.trim() ?? "";
-    const parsed = JSON.parse(text) as { meaning: string; nickname: string };
+    const parsed = JSON.parse(text) as { meaning: string; nickname: string; theme?: string };
+    const theme = THEME_KEYS.includes(parsed.theme ?? "") ? parsed.theme : "joy";
 
     // 2. Save to the shared cache so future lookups of this species are free
     if (supabase && cacheKey) {
@@ -105,13 +111,14 @@ The meaning should be evocative and drawn from Victorian flower language or cult
           common_name: commonName || null,
           meaning: parsed.meaning,
           nickname: parsed.nickname,
+          theme,
         });
       } catch (err) {
         console.error("Failed to write cache entry:", err);
       }
     }
 
-    return res.json({ meaning: parsed.meaning, nickname: parsed.nickname });
+    return res.json({ meaning: parsed.meaning, nickname: parsed.nickname, theme });
   } catch (err) {
     console.error("Failed to generate meaning:", err);
     return res.status(500).json({ error: "Failed to generate meaning" });

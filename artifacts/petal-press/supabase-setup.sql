@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS flower_meanings (
   common_name TEXT,
   meaning TEXT NOT NULL,
   nickname TEXT NOT NULL,
+  theme TEXT,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -61,6 +62,15 @@ CREATE POLICY "Anyone can insert flower meanings"
 CREATE POLICY "Anyone can update flower meanings"
   ON flower_meanings FOR UPDATE
   USING (true);
+
+-- 6. Theme tag on each flower — closed set of floriography categories,
+--    used for the "By Meaning" browse view. Also add to flower_meanings
+--    cache above (already included) so re-lookups carry the theme too.
+ALTER TABLE flowers
+  ADD COLUMN IF NOT EXISTS theme TEXT NOT NULL DEFAULT 'joy';
+
+ALTER TABLE flower_meanings
+  ADD COLUMN IF NOT EXISTS theme TEXT;
 
 -- ============================================================
 -- Supabase Auth settings — do in the dashboard UI:

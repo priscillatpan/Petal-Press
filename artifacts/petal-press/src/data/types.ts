@@ -8,6 +8,7 @@ export type Flower = {
   meaning: string;
   blurb: string;
   color: string;
+  theme: string;
   datePressed: string;
   plantFamily: string;
   nativeStatus: NativeStatus;
