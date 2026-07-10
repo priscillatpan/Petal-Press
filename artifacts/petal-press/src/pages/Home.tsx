@@ -12,6 +12,7 @@ const GHOST_SLOTS = 3;
 
 type SeasonFilter = Season | null;
 type ViewMode = "all" | "meaning";
+type SortMode = "recent" | "az";
 
 const SEASONS: Season[] = ['spring', 'summer', 'fall', 'winter'];
 
@@ -29,15 +30,28 @@ export default function Home() {
   const { signOut, user } = useAuth();
   const [seasonFilter, setSeasonFilter] = useState<SeasonFilter>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("all");
+  const [sortMode, setSortMode] = useState<SortMode>("recent");
   const seasonsPresent = useMemo(() => {
     const set = new Set(flowers.map(f => getSeasonFromDate(f.datePressed)));
     return SEASONS.filter(s => set.has(s));
   }, [flowers]);
 
   const filtered = useMemo(() => {
-    if (!seasonFilter) return flowers;
-    return flowers.filter(f => getSeasonFromDate(f.datePressed) === seasonFilter);
-  }, [flowers, seasonFilter]);
+    const bySeason = !seasonFilter
+      ? flowers
+      : flowers.filter(f => getSeasonFromDate(f.datePressed) === seasonFilter);
+    const sorted = [...bySeason];
+    if (sortMode === "az") {
+      sorted.sort((a, b) => a.commonName.localeCompare(b.commonName));
+    } else {
+      sorted.sort((a, b) => {
+        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return bTime - aTime;
+      });
+    }
+    return sorted;
+  }, [flowers, seasonFilter, sortMode]);
 
   const themeGroups = useMemo(() => {
     return THEMES.map(t => ({
@@ -109,6 +123,29 @@ export default function Home() {
                   boxShadow: viewMode === opt.key ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
                 }}
                 data-testid={`mode-${opt.key}`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {!loading && viewMode === "all" && (
+          <div className="flex gap-1 mb-3 p-0.5 rounded-full w-fit" style={{ backgroundColor: '#EDE6D0' }}>
+            {([
+              { key: "recent", label: "Newest" },
+              { key: "az", label: "A – Z" },
+            ] as const).map(opt => (
+              <button
+                key={opt.key}
+                onClick={() => setSortMode(opt.key)}
+                className="h-7 px-3 rounded-full text-xs font-medium transition-colors"
+                style={{
+                  backgroundColor: sortMode === opt.key ? '#FFF9ED' : 'transparent',
+                  color: sortMode === opt.key ? '#3D362D' : '#9A8F7F',
+                  boxShadow: sortMode === opt.key ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
+                }}
+                data-testid={`sort-${opt.key}`}
               >
                 {opt.label}
               </button>

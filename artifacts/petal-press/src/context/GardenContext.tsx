@@ -46,11 +46,32 @@ function rowToFlower(row: FlowerRow): Flower {
     color: row.color,
     theme: row.theme ?? deriveTheme(row.meaning ?? ""),
     datePressed: row.date_pressed,
+    createdAt: row.created_at,
     plantFamily: row.plant_family,
     nativeStatus: row.native_status as NativeStatus,
     imageUrl: urls[0] ?? "",
     imageUrls: urls,
   };
+}
+
+// Older rows saved before the theme column existed have `theme: null`.
+// Persist the derived classification once so future loads don't need to
+// recompute it and Supabase becomes the source of truth for theme grouping.
+async function backfillMissingThemes(rows: FlowerRow[]) {
+  if (!supabase) return;
+  const missing = rows.filter((r) => !r.theme);
+  if (missing.length === 0) return;
+  await Promise.all(
+    missing.map((r) =>
+      supabase!
+        .from("flowers")
+        .update({ theme: deriveTheme(r.meaning ?? "") })
+        .eq("id", r.id)
+        .then(({ error }) => {
+          if (error) console.error("Failed to backfill theme:", error.message);
+        })
+    )
+  );
 }
 
 function flowerToRow(flower: Flower): Omit<FlowerRow, "created_at" | "user_id"> {
@@ -91,7 +112,9 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     if (error) {
       console.error("Failed to load flowers:", error.message);
     } else {
-      setFlowers((data as FlowerRow[]).map(rowToFlower));
+      const rows = data as FlowerRow[];
+      setFlowers(rows.map(rowToFlower));
+      backfillMissingThemes(rows);
     }
     setLoading(false);
   }
@@ -108,7 +131,11 @@ export function GardenProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addFlower = async (flower: Flower) => {
-    if (!supabase) { setFlowers((prev) => [...prev, flower]); return; }
+    if (!supabase) {
+      const withCreatedAt = { ...flower, createdAt: flower.createdAt ?? new Date().toISOString() };
+      setFlowers((prev) => [...prev, withCreatedAt]);
+      return;
+    }
     const userId = await getCurrentUserId();
     const row = { ...flowerToRow(flower), ...(userId ? { user_id: userId } : {}) };
     const { error } = await supabase.from("flowers").insert(row);

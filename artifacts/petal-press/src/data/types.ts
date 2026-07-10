@@ -10,6 +10,7 @@ export type Flower = {
   color: string;
   theme: string;
   datePressed: string;
+  createdAt?: string;
   plantFamily: string;
   nativeStatus: NativeStatus;
   imageUrl: string;
