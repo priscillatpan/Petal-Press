@@ -6,6 +6,7 @@ export const modules: ModuleMap = {
   "./components/mockups/petal-filters/LocationMap.tsx": () => import("../components/mockups/petal-filters/LocationMap.tsx"),
   "./components/mockups/petal-filters/SpeciesIndex.tsx": () => import("../components/mockups/petal-filters/SpeciesIndex.tsx"),
   "./components/mockups/petal-filters/ThemeIndex.tsx": () => import("../components/mockups/petal-filters/ThemeIndex.tsx"),
+  "./components/mockups/petal-home/Current.tsx": () => import("../components/mockups/petal-home/Current.tsx"),
   "./components/mockups/petal-press/Bugapedia.tsx": () => import("../components/mockups/petal-press/Bugapedia.tsx"),
   "./components/mockups/petal-press/Critterdex.tsx": () => import("../components/mockups/petal-press/Critterdex.tsx"),
   "./components/mockups/petal-press/CritterdexEntry.tsx": () => import("../components/mockups/petal-press/CritterdexEntry.tsx"),
