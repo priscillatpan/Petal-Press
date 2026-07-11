@@ -113,24 +113,21 @@ export default function Home() {
 
         {!loading && (
           <div className="space-y-2">
-            {/* View toggle */}
-            <div className="flex gap-2 overflow-x-auto scrollbar-none">
+            {/* Single bar: view toggle | sort (context-sensitive) */}
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
               <Pill active={viewMode === "all"} onClick={() => setViewMode("all")} testId="mode-all">All Flowers</Pill>
               <Pill active={viewMode === "meaning"} onClick={() => setViewMode("meaning")} testId="mode-meaning">By Meaning</Pill>
-            </div>
 
-            {/* Sort pills — All Flowers only */}
-            {viewMode === "all" && (
-              <div className="flex gap-2 overflow-x-auto scrollbar-none">
-                <Pill active={sortMode === "recent"} onClick={() => setSortMode("recent")} testId="sort-recent">Newest</Pill>
-                <Pill active={sortMode === "az"} onClick={() => setSortMode("az")} testId="sort-az">A – Z</Pill>
-              </div>
-            )}
+              {/* Divider */}
+              <span className="shrink-0 w-px h-4 rounded-full mx-1" style={{ backgroundColor: '#D4CBB3' }} />
 
-            {/* Theme filter pills — By Meaning only */}
-            {viewMode === "meaning" && (
-              <div className="flex gap-2 overflow-x-auto scrollbar-none">
-                {THEMES.map(t => (
+              {viewMode === "all" ? (
+                <>
+                  <Pill active={sortMode === "recent"} onClick={() => setSortMode("recent")} testId="sort-recent">Newest</Pill>
+                  <Pill active={sortMode === "az"} onClick={() => setSortMode("az")} testId="sort-az">A – Z</Pill>
+                </>
+              ) : (
+                THEMES.map(t => (
                   <Pill
                     key={t.key}
                     active={themeFilter === t.key}
@@ -140,9 +137,9 @@ export default function Home() {
                   >
                     {THEME_SHORT[t.key as ThemeKey]}
                   </Pill>
-                ))}
-              </div>
-            )}
+                ))
+              )}
+            </div>
           </div>
         )}
       </header>
