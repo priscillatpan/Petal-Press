@@ -72,6 +72,26 @@ export default function Home() {
           borderBottom: '1px solid #E8DCC0',
         }}
       >
+        {user && (
+          <button
+            onClick={() => signOut()}
+            title="Sign out"
+            style={{
+              position: 'absolute',
+              top: '10px',
+              right: '20px',
+              fontSize: '11px',
+              color: '#B8AFA0',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              letterSpacing: '0.03em',
+              padding: '2px 0',
+            }}
+          >
+            sign out
+          </button>
+        )}
         <div className="flex items-center justify-between mb-0.5">
           <h1
             className="text-2xl tracking-tight flex items-center gap-2"
@@ -80,28 +100,9 @@ export default function Home() {
             <FlowerIcon size={20} color="#c5d07d" />
             Petal Press
           </h1>
-          <div className="flex items-center gap-3">
-            <span className="text-xs tracking-widest" style={{ color: '#9A8F7F' }}>
-              {loading ? '…' : `${flowers.length} species found`}
-            </span>
-            {user && (
-              <button
-                onClick={() => signOut()}
-                title="Sign out"
-                style={{
-                  fontSize: '11px',
-                  color: '#B8AFA0',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '2px 0',
-                  letterSpacing: '0.03em',
-                }}
-              >
-                sign out
-              </button>
-            )}
-          </div>
+          <span className="text-xs tracking-widest" style={{ color: '#9A8F7F' }}>
+            {loading ? '…' : `${flowers.length} species found`}
+          </span>
         </div>
         <p className="text-xs mb-3" style={{ color: '#9A8F7F' }}>
           {loading ? 'Loading your pressings…' : 'What flowers will you discover today?'}
