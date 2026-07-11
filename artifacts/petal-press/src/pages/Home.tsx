@@ -5,16 +5,12 @@ import { useGarden } from "@/context/useGarden";
 import { useAuth } from "@/context/AuthContext";
 import { FlowerIcon } from "@/components/FlowerIcon";
 import { BlobFrame } from "@/components/BlobFrame";
-import { getSeasonFromDate, SEASON_LABELS, type Season } from "@/data/season";
-import { THEMES } from "@/data/themes";
+import { THEMES, type ThemeKey } from "@/data/themes";
 
 const GHOST_SLOTS = 3;
 
-type SeasonFilter = Season | null;
 type ViewMode = "all" | "meaning";
 type SortMode = "recent" | "az";
-
-const SEASONS: Season[] = ['spring', 'summer', 'fall', 'winter'];
 
 const container = {
   hidden: { opacity: 0 },
@@ -25,47 +21,90 @@ const cell = {
   show: { opacity: 1, scale: 1, transition: { type: "spring" as const, stiffness: 220, damping: 20 } },
 };
 
+const THEME_SHORT: Record<ThemeKey, string> = {
+  "love": "Love",
+  "new-beginnings": "New Beginnings",
+  "remembrance": "Remembrance",
+  "joy": "Joy",
+  "strength": "Strength",
+};
+
+// Shared pill row component
+function PillRow({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-none">
+      {children}
+    </div>
+  );
+}
+
+function Pill({
+  active,
+  onClick,
+  dot,
+  children,
+  testId,
+}: {
+  active: boolean;
+  onClick: () => void;
+  dot?: string;
+  children: React.ReactNode;
+  testId?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      data-testid={testId}
+      className="shrink-0 flex items-center gap-1.5 h-8 px-3.5 rounded-full text-xs font-medium border transition-all duration-150"
+      style={{
+        backgroundColor: active ? '#FFFDF5' : 'transparent',
+        color: active ? '#3D362D' : '#9A8F7F',
+        borderColor: active ? '#C8BFA8' : '#D4CBB3',
+        boxShadow: active ? '0 1px 4px rgba(0,0,0,0.09)' : 'none',
+      }}
+    >
+      {dot && (
+        <span
+          className="w-2 h-2 rounded-full shrink-0"
+          style={{ backgroundColor: dot, opacity: active ? 1 : 0.5 }}
+        />
+      )}
+      {children}
+    </button>
+  );
+}
+
 export default function Home() {
   const { flowers, loading } = useGarden();
   const { signOut, user } = useAuth();
-  const [seasonFilter, setSeasonFilter] = useState<SeasonFilter>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [sortMode, setSortMode] = useState<SortMode>("recent");
-  const seasonsPresent = useMemo(() => {
-    const set = new Set(flowers.map(f => getSeasonFromDate(f.datePressed)));
-    return SEASONS.filter(s => set.has(s));
-  }, [flowers]);
+  const [themeFilter, setThemeFilter] = useState<ThemeKey | null>(null);
 
-  const filtered = useMemo(() => {
-    const bySeason = !seasonFilter
-      ? flowers
-      : flowers.filter(f => getSeasonFromDate(f.datePressed) === seasonFilter);
-    const sorted = [...bySeason];
+  const displayed = useMemo(() => {
+    let list = [...flowers];
+
+    if (viewMode === "meaning" && themeFilter) {
+      list = list.filter(f => f.theme === themeFilter);
+    }
+
     if (sortMode === "az") {
-      sorted.sort((a, b) => a.commonName.localeCompare(b.commonName));
+      list.sort((a, b) => a.commonName.localeCompare(b.commonName));
     } else {
-      sorted.sort((a, b) => {
+      list.sort((a, b) => {
         const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
         const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
         return bTime - aTime;
       });
     }
-    return sorted;
-  }, [flowers, seasonFilter, sortMode]);
 
-  const themeGroups = useMemo(() => {
-    return THEMES.map(t => ({
-      ...t,
-      flowers: filtered.filter(f => (f.theme || "joy") === t.key),
-    })).filter(g => g.flowers.length > 0);
-  }, [filtered]);
-
-  const ghostCount = GHOST_SLOTS;
+    return list;
+  }, [flowers, viewMode, themeFilter, sortMode]);
 
   return (
     <div className="min-h-screen pb-28 relative" style={{ backgroundColor: '#F5EFD8' }}>
       <header
-        className="px-5 pt-10 pb-3 sticky top-0 z-20"
+        className="px-5 pt-10 pb-4 sticky top-0 z-20"
         style={{
           backgroundColor: 'rgba(245,239,216,0.95)',
           backdropFilter: 'blur(8px)',
@@ -92,6 +131,7 @@ export default function Home() {
             sign out
           </button>
         )}
+
         <div className="flex items-center justify-between mb-0.5">
           <h1
             className="text-2xl tracking-tight flex items-center gap-2"
@@ -104,86 +144,67 @@ export default function Home() {
             {loading ? '…' : `${flowers.length} species found`}
           </span>
         </div>
-        <p className="text-xs mb-3" style={{ color: '#9A8F7F' }}>
+
+        <p className="text-xs mb-4" style={{ color: '#9A8F7F' }}>
           {loading ? 'Loading your pressings…' : 'What flowers will you discover today?'}
         </p>
 
         {!loading && (
-          <div className="flex gap-1 mb-3 p-0.5 rounded-full w-fit" style={{ backgroundColor: '#EDE6D0' }}>
-            {([
-              { key: "all", label: "All Flowers" },
-              { key: "meaning", label: "By Meaning" },
-            ] as const).map(opt => (
-              <button
-                key={opt.key}
-                onClick={() => setViewMode(opt.key)}
-                className="h-7 px-3 rounded-full text-xs font-medium transition-colors"
-                style={{
-                  backgroundColor: viewMode === opt.key ? '#FFF9ED' : 'transparent',
-                  color: viewMode === opt.key ? '#3D362D' : '#9A8F7F',
-                  boxShadow: viewMode === opt.key ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
-                }}
-                data-testid={`mode-${opt.key}`}
+          <div className="space-y-3">
+            {/* View toggle */}
+            <PillRow>
+              <Pill
+                active={viewMode === "all"}
+                onClick={() => setViewMode("all")}
+                testId="mode-all"
               >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        )}
+                All Flowers
+              </Pill>
+              <Pill
+                active={viewMode === "meaning"}
+                onClick={() => setViewMode("meaning")}
+                testId="mode-meaning"
+              >
+                By Meaning
+              </Pill>
+            </PillRow>
 
-        {!loading && viewMode === "all" && (
-          <div className="flex gap-1 mb-3 p-0.5 rounded-full w-fit" style={{ backgroundColor: '#EDE6D0' }}>
-            {([
-              { key: "recent", label: "Newest" },
-              { key: "az", label: "A – Z" },
-            ] as const).map(opt => (
-              <button
-                key={opt.key}
-                onClick={() => setSortMode(opt.key)}
-                className="h-7 px-3 rounded-full text-xs font-medium transition-colors"
-                style={{
-                  backgroundColor: sortMode === opt.key ? '#FFF9ED' : 'transparent',
-                  color: sortMode === opt.key ? '#3D362D' : '#9A8F7F',
-                  boxShadow: sortMode === opt.key ? '0 1px 4px rgba(0,0,0,0.08)' : 'none',
-                }}
-                data-testid={`sort-${opt.key}`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        )}
+            {/* Sort pills — only for All Flowers */}
+            {viewMode === "all" && (
+              <PillRow>
+                <Pill
+                  active={sortMode === "recent"}
+                  onClick={() => setSortMode("recent")}
+                  testId="sort-recent"
+                >
+                  Newest
+                </Pill>
+                <Pill
+                  active={sortMode === "az"}
+                  onClick={() => setSortMode("az")}
+                  testId="sort-az"
+                >
+                  A – Z
+                </Pill>
+              </PillRow>
+            )}
 
-        {!loading && viewMode === "all" && seasonsPresent.length > 0 && (
-          <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-none">
-            <button
-              onClick={() => setSeasonFilter(null)}
-              className="shrink-0 h-7 px-3 rounded-full text-xs font-medium border transition-colors"
-              style={{
-                backgroundColor: seasonFilter === null ? '#c5d07d' : 'transparent',
-                color: seasonFilter === null ? '#3D362D' : '#9A8F7F',
-                borderColor: seasonFilter === null ? '#c5d07d' : '#D4CBB3',
-              }}
-              data-testid="filter-all"
-            >
-              All
-            </button>
-            {SEASONS.map(s => (
-              <button
-                key={s}
-                onClick={() => setSeasonFilter(seasonFilter === s ? null : s)}
-                className="shrink-0 h-7 px-3 rounded-full text-xs font-medium border transition-colors"
-                style={{
-                  backgroundColor: seasonFilter === s ? '#c5d07d' : 'transparent',
-                  color: seasonFilter === s ? '#3D362D' : '#9A8F7F',
-                  borderColor: seasonFilter === s ? '#c5d07d' : '#D4CBB3',
-                  opacity: seasonsPresent.includes(s) ? 1 : 0.4,
-                }}
-                data-testid={`filter-${s}`}
-              >
-                {SEASON_LABELS[s]}
-              </button>
-            ))}
+            {/* Theme filter pills — only for By Meaning */}
+            {viewMode === "meaning" && (
+              <PillRow>
+                {THEMES.map(t => (
+                  <Pill
+                    key={t.key}
+                    active={themeFilter === t.key}
+                    dot={t.color}
+                    onClick={() => setThemeFilter(themeFilter === t.key ? null : t.key as ThemeKey)}
+                    testId={`theme-${t.key}`}
+                  >
+                    {THEME_SHORT[t.key as ThemeKey]}
+                  </Pill>
+                ))}
+              </PillRow>
+            )}
           </div>
         )}
       </header>
@@ -196,104 +217,24 @@ export default function Home() {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
           </div>
-        ) : viewMode === "meaning" ? (
-          <div className="space-y-6">
-            {themeGroups.map(group => (
-              <div key={group.key}>
-                <div className="flex items-center gap-2 mb-2 px-0.5">
-                  <span
-                    className="w-2 h-2 rounded-full shrink-0"
-                    style={{ backgroundColor: group.color }}
-                  />
-                  <h2
-                    className="text-sm tracking-wide"
-                    style={{ fontFamily: 'Fraunces, serif', color: '#3D362D' }}
-                  >
-                    {group.label}
-                  </h2>
-                  <span className="text-[11px]" style={{ color: '#9A8F7F' }}>
-                    {group.flowers.length}
-                  </span>
-                </div>
-                <motion.div
-                  variants={container}
-                  initial="hidden"
-                  animate="show"
-                  className="grid grid-cols-2 gap-3"
-                >
-                  {group.flowers.map((flower, idx) => {
-                    const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
-                    const hasPhoto = photos.length > 0 && !photos[0].startsWith('blob:');
-                    return (
-                      <motion.div key={flower.id} variants={cell}>
-                        <Link href={`/flower/${flower.id}`} style={{ display: 'block' }}>
-                          <div
-                            className="flex flex-col items-center gap-1 cursor-pointer active:scale-95 transition-transform duration-150"
-                            data-testid={`card-flower-${flower.id}`}
-                          >
-                            <div className="relative w-full" style={{ paddingBottom: '100%' }}>
-                              <BlobFrame
-                                blobIndex={idx}
-                                className="absolute inset-0"
-                                style={{
-                                  backgroundColor: hasPhoto ? '#2a1f18' : '#FAF7EF',
-                                  boxShadow: '0 3px 12px rgba(0,0,0,0.13)',
-                                }}
-                              >
-                                {hasPhoto ? (
-                                  <img
-                                    src={photos[0]}
-                                    alt={flower.commonName}
-                                    className="w-full h-full object-cover"
-                                    loading="lazy"
-                                  />
-                                ) : (
-                                  <div className="w-full h-full flex items-center justify-center">
-                                    <FlowerIcon size={32} color="#D4CBB3" />
-                                  </div>
-                                )}
-                              </BlobFrame>
-                            </div>
-                            <p
-                              className="text-center truncate w-full px-0.5 shrink-0"
-                              style={{ fontSize: '13px', fontFamily: 'Fraunces, serif', color: '#736959' }}
-                            >
-                              {flower.commonName}
-                            </p>
-                          </div>
-                        </Link>
-                      </motion.div>
-                    );
-                  })}
-                </motion.div>
-              </div>
-            ))}
-            {themeGroups.length === 0 && (
-              <p className="text-center text-sm py-10" style={{ color: '#9A8F7F' }}>
-                No pressed flowers yet.
-              </p>
-            )}
-          </div>
         ) : (
           <motion.div
+            key={`${viewMode}-${themeFilter}-${sortMode}`}
             variants={container}
             initial="hidden"
             animate="show"
             className="grid grid-cols-2 gap-3"
           >
-            {filtered.map((flower, idx) => {
+            {displayed.map((flower, idx) => {
               const photos = flower.imageUrls?.length ? flower.imageUrls : flower.imageUrl ? [flower.imageUrl] : [];
               const hasPhoto = photos.length > 0 && !photos[0].startsWith('blob:');
-
               return (
                 <motion.div key={flower.id} variants={cell}>
-                  {/* display:block on the <a> so % widths resolve from the grid cell */}
                   <Link href={`/flower/${flower.id}`} style={{ display: 'block' }}>
                     <div
                       className="flex flex-col items-center gap-1 cursor-pointer active:scale-95 transition-transform duration-150"
                       data-testid={`card-flower-${flower.id}`}
                     >
-                      {/* Explicit square container — padding-bottom trick guarantees 1:1 */}
                       <div className="relative w-full" style={{ paddingBottom: '100%' }}>
                         <BlobFrame
                           blobIndex={idx}
@@ -317,7 +258,6 @@ export default function Home() {
                           )}
                         </BlobFrame>
                       </div>
-
                       <p
                         className="text-center truncate w-full px-0.5 shrink-0"
                         style={{ fontSize: '13px', fontFamily: 'Fraunces, serif', color: '#736959' }}
@@ -330,7 +270,13 @@ export default function Home() {
               );
             })}
 
-            {Array.from({ length: ghostCount }).map((_, i) => (
+            {displayed.length === 0 && (
+              <div className="col-span-2 py-10 text-center" style={{ color: '#9A8F7F', fontSize: '13px' }}>
+                No flowers in this category yet.
+              </div>
+            )}
+
+            {viewMode === "all" && Array.from({ length: GHOST_SLOTS }).map((_, i) => (
               <motion.div key={`ghost-${i}`} variants={cell}>
                 <div
                   className="flex flex-col items-center gap-1"
@@ -338,7 +284,7 @@ export default function Home() {
                 >
                   <div className="relative w-full" style={{ paddingBottom: '100%' }}>
                     <BlobFrame
-                      blobIndex={filtered.length + i}
+                      blobIndex={displayed.length + i}
                       className="absolute inset-0 flex items-center justify-center"
                       style={{ backgroundColor: 'rgba(232,220,192,0.35)' }}
                     >
@@ -359,13 +305,9 @@ export default function Home() {
       </main>
 
       <Link href="/capture" style={{ display: 'block' }}>
-        {/* FAB pill button */}
         <div
           className="fixed z-20 active:scale-95 transition-all"
-          style={{
-            bottom: '20px',
-            right: 'max(16px, calc(50vw - 215px))',
-          }}
+          style={{ bottom: '20px', right: 'max(16px, calc(50vw - 215px))' }}
           data-testid="button-capture"
         >
           <button
