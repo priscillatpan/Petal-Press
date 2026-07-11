@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { GardenProvider } from "@/context/GardenContext";
+import { DemoGardenProvider } from "@/context/DemoGardenProvider";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Home from "@/pages/Home";
 import EntryCard from "@/pages/EntryCard";
@@ -42,6 +43,9 @@ function Router() {
     <Switch>
       <Route path="/" component={SignIn} />
       <Route path="/waitlist" component={Welcome} />
+      <Route path="/demo">
+        {() => <DemoGardenProvider><Home /></DemoGardenProvider>}
+      </Route>
       <Route path="/garden">
         {() => <ProtectedRoute><Home /></ProtectedRoute>}
       </Route>
