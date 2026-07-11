@@ -113,14 +113,35 @@ export default function Home() {
 
         {!loading && (
           <div className="space-y-2">
-            {/* Single bar: view toggle | sort (context-sensitive) */}
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
-              <Pill active={viewMode === "all"} onClick={() => setViewMode("all")} testId="mode-all">All Flowers</Pill>
-              <Pill active={viewMode === "meaning"} onClick={() => setViewMode("meaning")} testId="mode-meaning">By Meaning</Pill>
+            {/* Segmented toggle */}
+            <div
+              className="inline-flex rounded-full p-[3px]"
+              style={{ backgroundColor: '#E8DCC0' }}
+            >
+              {(['all', 'meaning'] as const).map(mode => (
+                <button
+                  key={mode}
+                  data-testid={mode === 'all' ? 'mode-all' : 'mode-meaning'}
+                  onClick={() => setViewMode(mode)}
+                  className="rounded-full px-4 py-1 text-xs transition-all"
+                  style={{
+                    fontFamily: 'system-ui, sans-serif',
+                    fontWeight: viewMode === mode ? 500 : 400,
+                    color: viewMode === mode ? '#3D362D' : '#9A8F7F',
+                    backgroundColor: viewMode === mode ? '#FFFDF5' : 'transparent',
+                    boxShadow: viewMode === mode ? '0 1px 3px rgba(0,0,0,0.10)' : 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    letterSpacing: '0.01em',
+                  }}
+                >
+                  {mode === 'all' ? 'All Flowers' : 'By Meaning'}
+                </button>
+              ))}
+            </div>
 
-              {/* Divider */}
-              <span className="shrink-0 w-px h-4 rounded-full mx-1" style={{ backgroundColor: '#D4CBB3' }} />
-
+            {/* Sub-options row */}
+            <div className="flex gap-2 overflow-x-auto scrollbar-none">
               {viewMode === "all" ? (
                 <>
                   <Pill active={sortMode === "recent"} onClick={() => setSortMode("recent")} testId="sort-recent">Newest</Pill>
