@@ -6,8 +6,10 @@ import { useAuth } from "@/context/AuthContext";
 import { FlowerIcon } from "@/components/FlowerIcon";
 import { BlobFrame } from "@/components/BlobFrame";
 import { THEMES, type ThemeKey } from "@/data/themes";
+import { getSeasonFromDate, SEASON_LABELS, type Season } from "@/data/season";
 
 const GHOST_SLOTS = 3;
+const SEASONS: Season[] = ['spring', 'summer', 'fall', 'winter'];
 
 type ViewMode = "all" | "meaning";
 type SortMode = "recent" | "az";
@@ -79,10 +81,20 @@ export default function Home() {
   const { signOut, user } = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>("all");
   const [sortMode, setSortMode] = useState<SortMode>("recent");
+  const [seasonFilter, setSeasonFilter] = useState<Season | null>(null);
   const [themeFilter, setThemeFilter] = useState<ThemeKey | null>(null);
+
+  const seasonsPresent = useMemo(() => {
+    const set = new Set(flowers.map(f => getSeasonFromDate(f.datePressed)));
+    return SEASONS.filter(s => set.has(s));
+  }, [flowers]);
 
   const displayed = useMemo(() => {
     let list = [...flowers];
+
+    if (viewMode === "all" && seasonFilter) {
+      list = list.filter(f => getSeasonFromDate(f.datePressed) === seasonFilter);
+    }
 
     if (viewMode === "meaning" && themeFilter) {
       list = list.filter(f => f.theme === themeFilter);
