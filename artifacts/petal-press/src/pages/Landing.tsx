@@ -58,7 +58,7 @@ export default function Landing() {
           marginBottom: 24,
           marginTop: 0,
         }}>
-          a little diary for the flowers you find —
+          a little diary for the flowers you find:
           discover their names & hidden meanings
         </p>
 
