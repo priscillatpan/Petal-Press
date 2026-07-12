@@ -56,9 +56,19 @@ function Pill({
 export default function Home({ hideCapture = false }: { hideCapture?: boolean }) {
   const { flowers, loading } = useGarden();
   const { signOut, user } = useAuth();
-  const [viewMode, setViewMode] = useState<ViewMode>("all");
-  const [sortMode, setSortMode] = useState<SortMode>("recent");
-  const [themeFilter, setThemeFilter] = useState<ThemeKey | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>(
+    () => (sessionStorage.getItem("garden-view") as ViewMode) ?? "all"
+  );
+  const [sortMode, setSortMode] = useState<SortMode>(
+    () => (sessionStorage.getItem("garden-sort") as SortMode) ?? "recent"
+  );
+  const [themeFilter, setThemeFilter] = useState<ThemeKey | null>(
+    () => (sessionStorage.getItem("garden-theme") as ThemeKey) || null
+  );
+
+  const setViewModeP = (m: ViewMode) => { setViewMode(m); sessionStorage.setItem("garden-view", m); };
+  const setSortModeP = (m: SortMode) => { setSortMode(m); sessionStorage.setItem("garden-sort", m); };
+  const setThemeFilterP = (t: ThemeKey | null) => { setThemeFilter(t); sessionStorage.setItem("garden-theme", t ?? ""); };
 
   const displayed = useMemo(() => {
     let list = [...flowers];
@@ -122,7 +132,7 @@ export default function Home({ hideCapture = false }: { hideCapture?: boolean })
                 <button
                   key={mode}
                   data-testid={mode === 'all' ? 'mode-all' : 'mode-meaning'}
-                  onClick={() => setViewMode(mode)}
+                  onClick={() => setViewModeP(mode)}
                   className="rounded-full px-4 py-1 text-xs transition-all"
                   style={{
                     fontFamily: 'system-ui, sans-serif',
@@ -144,8 +154,8 @@ export default function Home({ hideCapture = false }: { hideCapture?: boolean })
             <div className="flex gap-2 overflow-x-auto scrollbar-none">
               {viewMode === "all" ? (
                 <>
-                  <Pill active={sortMode === "recent"} onClick={() => setSortMode("recent")} testId="sort-recent">Newest</Pill>
-                  <Pill active={sortMode === "az"} onClick={() => setSortMode("az")} testId="sort-az">A – Z</Pill>
+                  <Pill active={sortMode === "recent"} onClick={() => setSortModeP("recent")} testId="sort-recent">Newest</Pill>
+                  <Pill active={sortMode === "az"} onClick={() => setSortModeP("az")} testId="sort-az">A – Z</Pill>
                 </>
               ) : (
                 (() => {
@@ -160,7 +170,7 @@ export default function Home({ hideCapture = false }: { hideCapture?: boolean })
                         key={t.key}
                         active={themeFilter === t.key}
                         dot={t.color}
-                        onClick={() => setThemeFilter(themeFilter === t.key ? null : t.key as ThemeKey)}
+                        onClick={() => setThemeFilterP(themeFilter === t.key ? null : t.key as ThemeKey)}
                         testId={`theme-${t.key}`}
                       >
                         {THEME_SHORT[t.key as ThemeKey]}
