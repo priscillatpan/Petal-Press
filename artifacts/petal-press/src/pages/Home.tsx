@@ -53,7 +53,7 @@ function Pill({
   );
 }
 
-export default function Home() {
+export default function Home({ hideCapture = false }: { hideCapture?: boolean }) {
   const { flowers, loading } = useGarden();
   const { signOut, user } = useAuth();
   const [viewMode, setViewMode] = useState<ViewMode>("all");
@@ -245,16 +245,18 @@ export default function Home() {
         )}
       </main>
 
-      <Link href="/capture" style={{ display: 'block' }}>
-        <div className="fixed z-20 active:scale-95 transition-all" style={{ bottom: '20px', right: 'max(16px, calc(50vw - 215px))' }} data-testid="button-capture">
-          <button className="flex items-center gap-2.5 h-14 px-5 rounded-full" style={{ backgroundColor: '#c5d07d', boxShadow: '0 4px 20px rgba(197,208,125,0.55)' }}>
-            <FlowerIcon size={22} color="#3D362D" />
-            <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: '15px', color: '#3D362D', letterSpacing: '0.01em' }}>
-              add flower
-            </span>
-          </button>
-        </div>
-      </Link>
+      {!hideCapture && (
+        <Link href="/capture" style={{ display: 'block' }}>
+          <div className="fixed z-20 active:scale-95 transition-all" style={{ bottom: '20px', right: 'max(16px, calc(50vw - 215px))' }} data-testid="button-capture">
+            <button className="flex items-center gap-2.5 h-14 px-5 rounded-full" style={{ backgroundColor: '#c5d07d', boxShadow: '0 4px 20px rgba(197,208,125,0.55)' }}>
+              <FlowerIcon size={22} color="#3D362D" />
+              <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: '15px', color: '#3D362D', letterSpacing: '0.01em' }}>
+                add flower
+              </span>
+            </button>
+          </div>
+        </Link>
+      )}
     </div>
   );
 }

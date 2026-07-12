@@ -101,12 +101,6 @@ export default function Landing() {
                 pointerEvents: "none",
               }}
             />
-            {/* Cover bottom to hide "add flower" button */}
-            <div style={{
-              position: "absolute", bottom: 0, left: 0, right: 0, height: 70,
-              background: "linear-gradient(to bottom, transparent 0%, #F5EFD8 55%)",
-              pointerEvents: "none",
-            }} />
           </div>
         </div>
 

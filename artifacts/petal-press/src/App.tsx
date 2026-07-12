@@ -48,7 +48,7 @@ function Router() {
       <Route path="/waitlist" component={Welcome} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/demo">
-        {() => <DemoGardenProvider><Home /></DemoGardenProvider>}
+        {() => <DemoGardenProvider><Home hideCapture /></DemoGardenProvider>}
       </Route>
       <Route path="/garden">
         {() => <ProtectedRoute><Home /></ProtectedRoute>}
