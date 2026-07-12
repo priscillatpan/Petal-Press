@@ -1,16 +1,19 @@
 import { Link } from "wouter";
 import { FlowerIcon } from "@/components/FlowerIcon";
 
-const FLOATERS: { symbol: string; size: number; top?: string; left?: string; right?: string; bottom?: string; cls: string; delay: string; opacity: number }[] = [
-  { symbol: "🌸", size: 28, top: "6%",   left: "5%",   cls: "float-a", delay: "0s",    opacity: 0.55 },
-  { symbol: "✿",  size: 22, top: "12%",  right: "8%",  cls: "float-c", delay: "1.2s",  opacity: 0.45 },
-  { symbol: "🌼", size: 20, top: "35%",  left: "3%",   cls: "float-b", delay: "0.5s",  opacity: 0.40 },
-  { symbol: "🌸", size: 16, top: "42%",  right: "5%",  cls: "float-e", delay: "2.1s",  opacity: 0.35 },
-  { symbol: "❀",  size: 24, top: "58%",  left: "8%",   cls: "float-d", delay: "0.8s",  opacity: 0.38 },
-  { symbol: "🌼", size: 18, top: "65%",  right: "6%",  cls: "float-a", delay: "1.7s",  opacity: 0.33 },
-  { symbol: "✿",  size: 20, bottom: "20%", left: "4%", cls: "float-c", delay: "3.0s",  opacity: 0.35 },
-  { symbol: "🌸", size: 22, bottom: "12%", right: "7%",cls: "float-b", delay: "0.3s",  opacity: 0.40 },
-  { symbol: "❀",  size: 16, top: "78%",  left: "42%",  cls: "float-e", delay: "1.5s",  opacity: 0.28 },
+const FLOATERS = [
+  { symbol: "💐", size: 26, left: "4%",  cls: "fall-3", delay: "0s",    opacity: 0.70 },
+  { symbol: "🌹", size: 22, left: "12%", cls: "fall-1", delay: "-6s",   opacity: 0.65 },
+  { symbol: "🥀", size: 20, left: "21%", cls: "fall-5", delay: "-14s",  opacity: 0.55 },
+  { symbol: "🌺", size: 24, left: "30%", cls: "fall-2", delay: "-3s",   opacity: 0.68 },
+  { symbol: "🌷", size: 22, left: "41%", cls: "fall-4", delay: "-18s",  opacity: 0.60 },
+  { symbol: "🪷", size: 26, left: "52%", cls: "fall-1", delay: "-9s",   opacity: 0.70 },
+  { symbol: "🌸", size: 20, left: "62%", cls: "fall-6", delay: "-2s",   opacity: 0.58 },
+  { symbol: "💮", size: 18, left: "71%", cls: "fall-3", delay: "-11s",  opacity: 0.52 },
+  { symbol: "🏵",  size: 22, left: "80%", cls: "fall-5", delay: "-7s",   opacity: 0.60 },
+  { symbol: "🪻", size: 24, left: "88%", cls: "fall-2", delay: "-16s",  opacity: 0.65 },
+  { symbol: "🌻", size: 20, left: "8%",  cls: "fall-4", delay: "-20s",  opacity: 0.55 },
+  { symbol: "🌼", size: 22, left: "94%", cls: "fall-6", delay: "-5s",   opacity: 0.60 },
 ];
 
 const SCALE = 250 / 390;
@@ -25,20 +28,22 @@ export default function Landing() {
       fontFamily: "system-ui, sans-serif",
     }}>
 
-      {/* Floating flowers */}
+      {/* Falling flowers */}
       {FLOATERS.map((f, i) => (
         <div
           key={i}
           className={f.cls}
           style={{
             position: "absolute",
-            top: f.top, left: f.left, right: f.right, bottom: f.bottom,
+            top: 0,
+            left: f.left,
             fontSize: f.size,
             opacity: f.opacity,
             animationDelay: f.delay,
             pointerEvents: "none",
             zIndex: 0,
             userSelect: "none",
+            lineHeight: 1,
           }}
         >
           {f.symbol}
