@@ -31,29 +31,31 @@ export default function Landing() {
       }}>
 
         {/* Title */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
-          <FlowerIcon size={28} color="#c5d07d" />
+        <p style={{ fontSize: "11px", color: "#9A8F7F", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8, marginTop: 0 }}>
+          welcome to
+        </p>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 10 }}>
           <h1 style={{
             fontFamily: "Fraunces, serif",
-            fontSize: "clamp(38px, 10vw, 50px)",
+            fontSize: "clamp(28px, 8vw, 36px)",
             lineHeight: 1.1,
             color: "#2C2721",
-            letterSpacing: "-0.03em",
+            letterSpacing: "-0.025em",
             margin: 0,
           }}>
             Petal Press
           </h1>
+          <FlowerIcon size={22} color="#c5d07d" />
         </div>
 
         {/* Tagline */}
         <p style={{
           fontFamily: "Fraunces, serif",
-          fontStyle: "italic",
           fontSize: "14px",
           color: "#9A8F7F",
           lineHeight: 1.65,
           maxWidth: 240,
-          marginBottom: 28,
+          marginBottom: 24,
           marginTop: 0,
         }}>
           a little diary for the flowers you find —
@@ -99,6 +101,12 @@ export default function Landing() {
                 pointerEvents: "none",
               }}
             />
+            {/* Cover bottom to hide "add flower" button */}
+            <div style={{
+              position: "absolute", bottom: 0, left: 0, right: 0, height: 70,
+              background: "linear-gradient(to bottom, transparent 0%, #F5EFD8 55%)",
+              pointerEvents: "none",
+            }} />
           </div>
         </div>
 
