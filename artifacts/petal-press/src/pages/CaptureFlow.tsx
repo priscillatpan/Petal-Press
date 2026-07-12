@@ -329,8 +329,10 @@ export default function CaptureFlow() {
         setLocation("/garden");
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.error("Failed to save flower:", msg);
+      const msg = err instanceof Error
+        ? err.message
+        : (err as { message?: string })?.message ?? JSON.stringify(err);
+      console.error("Failed to save flower:", err);
       setSaving(false);
       alert(`Couldn't save: ${msg}`);
     }
