@@ -80,15 +80,9 @@ export default function Landing() {
             <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#E88FA5", flexShrink: 0 }} />
             <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#F0A860", flexShrink: 0 }} />
             <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#c5d07d", flexShrink: 0 }} />
-            <div style={{
-              flex: 1, height: 16, backgroundColor: "#E8DCC0",
-              borderRadius: 6, marginLeft: 8,
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}>
-              <span style={{ fontSize: "9px", color: "#9A8F7F", fontFamily: "system-ui", letterSpacing: "0.01em" }}>
-                your garden ♡
-              </span>
-            </div>
+            <span style={{ fontSize: "9px", color: "#9A8F7F", fontFamily: "system-ui", letterSpacing: "0.01em", marginLeft: 8 }}>
+              your garden ♡
+            </span>
           </div>
 
           {/* Scaled iframe */}
