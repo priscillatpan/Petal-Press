@@ -320,14 +320,13 @@ export default function CaptureFlow() {
           imageUrls: finalImageUrl ? [finalImageUrl] : [],
         };
         await addFlower(newFlower);
+        setSaving(false);
+        setLocation(`/flower/${newFlower.id}`);
+        return;
       }
 
       setSaving(false);
-      if (existing) {
-        setLocation(`/flower/${existing.id}`);
-      } else {
-        setLocation("/garden");
-      }
+      setLocation(`/flower/${existing.id}`);
     } catch (err) {
       const msg = err instanceof Error
         ? err.message
