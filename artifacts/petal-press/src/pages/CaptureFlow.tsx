@@ -306,15 +306,15 @@ export default function CaptureFlow() {
       } else {
         const newFlower: Flower = {
           id: crypto.randomUUID(),
-          commonName,
-          latinName,
-          nickname,
-          meaning,
-          blurb: notes,
+          commonName: commonName || "Unknown flower",
+          latinName: latinName || "",
+          nickname: nickname || "",
+          meaning: meaning || "",
+          blurb: notes || "",
           color: "unknown",
-          theme,
+          theme: theme || "joy",
           datePressed: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
-          plantFamily,
+          plantFamily: plantFamily || "",
           nativeStatus: getNativeStatus(latinName),
           imageUrl: finalImageUrl,
           imageUrls: finalImageUrl ? [finalImageUrl] : [],
@@ -329,9 +329,10 @@ export default function CaptureFlow() {
         setLocation("/garden");
       }
     } catch (err) {
-      console.error("Failed to save flower:", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("Failed to save flower:", msg);
       setSaving(false);
-      alert("Couldn't save — please try again. Check your connection.");
+      alert(`Couldn't save: ${msg}`);
     }
   }
 
