@@ -54,27 +54,8 @@ function rowToFlower(row: FlowerRow): Flower {
   };
 }
 
-// Older rows saved before the theme column existed have `theme: null`.
-// Persist the derived classification once so future loads don't need to
-// recompute it and Supabase becomes the source of truth for theme grouping.
-async function backfillMissingThemes(rows: FlowerRow[]) {
-  if (!supabase) return;
-  const missing = rows.filter((r) => !r.theme);
-  if (missing.length === 0) return;
-  await Promise.all(
-    missing.map((r) =>
-      supabase!
-        .from("flowers")
-        .update({ theme: deriveTheme(r.meaning ?? "") })
-        .eq("id", r.id)
-        .then(({ error }) => {
-          if (error) console.error("Failed to backfill theme:", error.message);
-        })
-    )
-  );
-}
 
-function flowerToRow(flower: Flower): Omit<FlowerRow, "created_at" | "user_id"> {
+function flowerToRow(flower: Flower): Omit<FlowerRow, "created_at" | "user_id" | "theme"> {
   return {
     id: flower.id,
     common_name: flower.commonName,
@@ -83,7 +64,6 @@ function flowerToRow(flower: Flower): Omit<FlowerRow, "created_at" | "user_id"> 
     meaning: flower.meaning,
     blurb: flower.blurb,
     color: flower.color,
-    theme: flower.theme,
     date_pressed: flower.datePressed,
     plant_family: flower.plantFamily,
     native_status: flower.nativeStatus,
@@ -112,9 +92,7 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     if (error) {
       console.error("Failed to load flowers:", error.message);
     } else {
-      const rows = data as FlowerRow[];
-      setFlowers(rows.map(rowToFlower));
-      backfillMissingThemes(rows);
+      setFlowers((data as FlowerRow[]).map(rowToFlower));
     }
     setLoading(false);
   }
@@ -179,7 +157,6 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     if (updates.meaning !== undefined) dbUpdates.meaning = updates.meaning;
     if (updates.blurb !== undefined) dbUpdates.blurb = updates.blurb;
     if (updates.color !== undefined) dbUpdates.color = updates.color;
-    if (updates.theme !== undefined) dbUpdates.theme = updates.theme;
     if (updates.datePressed !== undefined) dbUpdates.date_pressed = updates.datePressed;
     if (updates.plantFamily !== undefined) dbUpdates.plant_family = updates.plantFamily;
     if (updates.nativeStatus !== undefined) dbUpdates.native_status = updates.nativeStatus;
