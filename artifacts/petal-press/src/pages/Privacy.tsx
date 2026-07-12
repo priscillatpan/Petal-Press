@@ -86,13 +86,22 @@ export default function Privacy() {
 
         </div>
 
-        <div className="mt-10 pt-8 flex items-center justify-between" style={{ borderTop: "1px solid #E8DCC0" }}>
-          <Link href="/">
-            <span style={{ fontSize: "13px", color: "#9A8F7F", cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "3px" }}>
-              ← Back to Home
-            </span>
-          </Link>
-          <p style={{ fontSize: "12px", color: "#C4BBA5" }}>© 2026 Priscilla</p>
+        <div className="mt-10 pt-8" style={{ borderTop: "1px solid #E8DCC0" }}>
+          <p style={{ fontSize: "12px", color: "#C4BBA5" }}>
+            © 2026{" "}
+            <a
+              href="https://www.instagram.com/priscilla.png/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "#C4BBA5", textDecoration: "underline", textUnderlineOffset: "3px" }}
+            >
+              Priscilla
+            </a>
+            {" — "}
+            <Link href="/">
+              <span style={{ color: "#C4BBA5", cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "3px" }}>home</span>
+            </Link>
+          </p>
         </div>
       </div>
     </div>

@@ -200,21 +200,22 @@ export default function Landing() {
       </motion.div>
 
       {/* Footer */}
-      <div className="mt-auto px-6 pb-8 pt-10 flex items-center justify-center gap-5 relative z-10">
-        <Link href="/about">
-          <span style={{ fontSize: "11px", color: "#C4BBA5", cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "3px" }}>about</span>
-        </Link>
-        <Link href="/privacy">
-          <span style={{ fontSize: "11px", color: "#C4BBA5", cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "3px" }}>privacy</span>
-        </Link>
-        <a
-          href="https://www.instagram.com/priscilla.png/"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ fontSize: "11px", color: "#C4BBA5", textDecoration: "underline", textUnderlineOffset: "3px" }}
-        >
-          by priscilla
-        </a>
+      <div className="mt-auto px-6 pb-8 pt-10 flex items-center justify-center relative z-10">
+        <p style={{ fontSize: "12px", color: "#C4BBA5" }}>
+          © 2026{" "}
+          <a
+            href="https://www.instagram.com/priscilla.png/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#C4BBA5", textDecoration: "underline", textUnderlineOffset: "3px" }}
+          >
+            Priscilla
+          </a>
+          {" — "}
+          <Link href="/privacy">
+            <span style={{ color: "#C4BBA5", cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "3px" }}>terms</span>
+          </Link>
+        </p>
       </div>
     </div>
   );

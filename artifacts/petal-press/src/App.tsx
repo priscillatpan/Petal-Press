@@ -7,7 +7,6 @@ import { GardenProvider } from "@/context/GardenContext";
 import { DemoGardenProvider } from "@/context/DemoGardenProvider";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Landing from "@/pages/Landing";
-import About from "@/pages/About";
 import Privacy from "@/pages/Privacy";
 import Home from "@/pages/Home";
 import EntryCard from "@/pages/EntryCard";
@@ -47,7 +46,6 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/signin" component={SignIn} />
       <Route path="/waitlist" component={Welcome} />
-      <Route path="/about" component={About} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/demo">
         {() => <DemoGardenProvider><Home /></DemoGardenProvider>}
