@@ -62,6 +62,21 @@ export default function Landing() {
           discover their names & hidden meanings
         </p>
 
+        {/* CTA */}
+        <Link href="/signin">
+          <button style={{
+            height: 48, paddingLeft: 26, paddingRight: 26,
+            borderRadius: 999, backgroundColor: "#c5d07d",
+            border: "none", cursor: "pointer",
+            fontFamily: "Fraunces, serif",
+            fontSize: "15px", color: "#3D362D", letterSpacing: "0.01em",
+            boxShadow: "0 4px 18px rgba(197,208,125,0.48)",
+            marginBottom: 20,
+          }}>
+            Start your garden →
+          </button>
+        </Link>
+
         {/* App preview mockup */}
         <div style={{
           width: 250,
@@ -104,19 +119,6 @@ export default function Landing() {
           </div>
         </div>
 
-        {/* CTA */}
-        <Link href="/signin">
-          <button style={{
-            height: 48, paddingLeft: 26, paddingRight: 26,
-            borderRadius: 999, backgroundColor: "#c5d07d",
-            border: "none", cursor: "pointer",
-            fontFamily: "Fraunces, serif", fontStyle: "italic",
-            fontSize: "15px", color: "#3D362D", letterSpacing: "0.01em",
-            boxShadow: "0 4px 18px rgba(197,208,125,0.48)",
-          }}>
-            Start your garden →
-          </button>
-        </Link>
       </div>
 
       {/* Footer */}
