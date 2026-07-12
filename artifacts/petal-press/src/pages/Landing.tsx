@@ -1,6 +1,4 @@
 import { Link } from "wouter";
-import { motion } from "framer-motion";
-import { FlowerIcon } from "@/components/FlowerIcon";
 
 const BLOBS = [
   "M 0.488,0.026 C 0.593,0.030 0.711,0.114 0.792,0.192 C 0.874,0.270 0.977,0.394 0.978,0.496 C 0.979,0.599 0.881,0.727 0.799,0.807 C 0.718,0.887 0.594,0.974 0.488,0.976 C 0.382,0.978 0.230,0.901 0.163,0.821 C 0.096,0.741 0.088,0.604 0.088,0.496 C 0.088,0.388 0.096,0.249 0.163,0.171 C 0.230,0.092 0.383,0.023 0.488,0.026 Z",
@@ -10,205 +8,125 @@ const BLOBS = [
   "M 0.487,0.054 C 0.591,0.046 0.743,0.080 0.820,0.151 C 0.896,0.223 0.949,0.374 0.947,0.484 C 0.946,0.593 0.889,0.727 0.813,0.809 C 0.736,0.891 0.593,0.976 0.487,0.974 C 0.381,0.971 0.253,0.876 0.176,0.795 C 0.100,0.713 0.024,0.584 0.027,0.484 C 0.031,0.383 0.121,0.265 0.197,0.194 C 0.274,0.122 0.384,0.061 0.487,0.054 Z",
 ];
 
-let blobCounter = 0;
-
-function FloatingBlob({
-  src, alt, size, top, left, right, bottom, floatClass, blobIndex = 0, opacity = 0.88,
-}: {
-  src: string; alt: string; size: number;
-  top?: string | number; left?: string | number; right?: string | number; bottom?: string | number;
-  floatClass: string; blobIndex?: number; opacity?: number;
+let _uid = 0;
+function FloatingBlob({ src, size, top, left, right, bottom, floatClass, blobIndex = 0, opacity = 0.82, delay = "0s" }: {
+  src: string; size: number;
+  top?: string; left?: string; right?: string; bottom?: string;
+  floatClass: string; blobIndex?: number; opacity?: number; delay?: string;
 }) {
-  const uid = `fl-${blobIndex}-${++blobCounter}`;
-  const d = BLOBS[blobIndex % BLOBS.length];
+  const uid = `fb${++_uid}`;
   return (
-    <div
-      className={floatClass}
-      style={{
-        position: "absolute",
-        width: size,
-        height: size,
-        top, left, right, bottom,
-        pointerEvents: "none",
-        zIndex: 0,
-        opacity,
-      }}
-    >
+    <div className={floatClass} style={{ position: "absolute", width: size, height: size, top, left, right, bottom, pointerEvents: "none", zIndex: 0, opacity, animationDelay: delay }}>
       <svg width="0" height="0" style={{ position: "absolute" }} aria-hidden>
-        <defs>
-          <clipPath id={uid} clipPathUnits="objectBoundingBox"><path d={d} /></clipPath>
-        </defs>
+        <defs><clipPath id={uid} clipPathUnits="objectBoundingBox"><path d={BLOBS[blobIndex % BLOBS.length]} /></clipPath></defs>
       </svg>
-      <div style={{
-        width: "100%", height: "100%",
-        clipPath: `url(#${uid})`,
-        overflow: "hidden",
-        boxShadow: "0 4px 18px rgba(0,0,0,0.14)",
-      }}>
-        <img src={src} alt={alt} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      <div style={{ width: "100%", height: "100%", clipPath: `url(#${uid})`, overflow: "hidden", boxShadow: "0 4px 16px rgba(0,0,0,0.13)" }}>
+        <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       </div>
     </div>
   );
 }
 
-const SCALE = 260 / 390;
-const IFRAME_H = 560;
-
-function AppPreview() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.97 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
-      style={{
-        width: 260,
-        borderRadius: 20,
-        overflow: "hidden",
-        boxShadow: "0 24px 64px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.1)",
-        border: "1.5px solid #D4CBB3",
-        position: "relative",
-        zIndex: 2,
-        flexShrink: 0,
-      }}
-    >
-      {/* Browser chrome bar */}
-      <div style={{
-        backgroundColor: "#EDE5D0",
-        padding: "9px 12px",
-        display: "flex",
-        alignItems: "center",
-        gap: 5,
-        borderBottom: "1px solid #D4CBB3",
-      }}>
-        <div style={{ width: 9, height: 9, borderRadius: "50%", backgroundColor: "#E88FA5" }} />
-        <div style={{ width: 9, height: 9, borderRadius: "50%", backgroundColor: "#F0A860" }} />
-        <div style={{ width: 9, height: 9, borderRadius: "50%", backgroundColor: "#c5d07d" }} />
-        <div style={{
-          flex: 1, height: 14, marginLeft: 8,
-          backgroundColor: "#D4CBB3", borderRadius: 6,
-        }} />
-      </div>
-
-      {/* Scaled iframe */}
-      <div style={{ width: 260, height: IFRAME_H * SCALE, overflow: "hidden", position: "relative", backgroundColor: "#F5EFD8" }}>
-        <iframe
-          src="/demo"
-          title="Petal Press preview"
-          scrolling="no"
-          style={{
-            width: 390,
-            height: IFRAME_H,
-            border: "none",
-            transform: `scale(${SCALE})`,
-            transformOrigin: "top left",
-            pointerEvents: "none",
-          }}
-        />
-      </div>
-    </motion.div>
-  );
-}
+const SCALE = 250 / 390;
+const IFRAME_H = 520;
 
 export default function Landing() {
   return (
-    <div
-      className="min-h-screen flex flex-col overflow-hidden"
-      style={{ backgroundColor: "#F5EFD8", position: "relative" }}
-    >
-      {/* Floating flowers */}
-      <FloatingBlob src="/images/forget-me-not.jpg"    alt="" size={88}  top="6%"  left="-12px" floatClass="float-a" blobIndex={0} opacity={0.80} />
-      <FloatingBlob src="/images/california-poppy.jpg" alt="" size={72}  top="9%"  right="-8px" floatClass="float-c" blobIndex={2} opacity={0.75} />
-      <FloatingBlob src="/images/star-jasmine.jpg"     alt="" size={80}  top="34%" left="-18px" floatClass="float-b" blobIndex={4} opacity={0.70} />
-      <FloatingBlob src="/images/hydrangea.jpg"        alt="" size={76}  top="38%" right="-14px" floatClass="float-d" blobIndex={1} opacity={0.72} />
-      <FloatingBlob src="/images/forget-me-not.jpg"    alt="" size={64}  bottom="18%" left="4px"  floatClass="float-e" blobIndex={3} opacity={0.65} />
-      <FloatingBlob src="/images/california-poppy.jpg" alt="" size={70}  bottom="14%" right="0px" floatClass="float-b" blobIndex={2} opacity={0.68} />
+    <div style={{ height: "100dvh", overflow: "hidden", backgroundColor: "#F5EFD8", position: "relative", display: "flex", flexDirection: "column" }}>
 
-      {/* Nav */}
-      <nav className="flex items-center justify-between px-6 pt-8 pb-2 relative z-10">
-        <div className="flex items-center gap-2">
-          <FlowerIcon size={17} color="#c5d07d" />
-          <span style={{ fontFamily: "Fraunces, serif", fontSize: "16px", color: "#3D362D", letterSpacing: "-0.01em" }}>
-            Petal Press
-          </span>
-        </div>
+      {/* ── Floating flowers ── */}
+      <FloatingBlob src="/images/forget-me-not.jpg"    size={90}  top="3%"   left="-16px" floatClass="float-a" blobIndex={0} opacity={0.78} delay="0s" />
+      <FloatingBlob src="/images/california-poppy.jpg" size={68}  top="5%"   right="-10px" floatClass="float-c" blobIndex={2} opacity={0.72} delay="1.1s" />
+      <FloatingBlob src="/images/hydrangea.jpg"        size={58}  top="28%"  right="-14px" floatClass="float-b" blobIndex={1} opacity={0.65} delay="0.6s" />
+      <FloatingBlob src="/images/star-jasmine.jpg"     size={74}  top="30%"  left="-18px"  floatClass="float-e" blobIndex={4} opacity={0.68} delay="2s" />
+      <FloatingBlob src="/images/california-poppy.jpg" size={56}  bottom="22%" left="8px"  floatClass="float-d" blobIndex={3} opacity={0.60} delay="0.4s" />
+      <FloatingBlob src="/images/forget-me-not.jpg"    size={62}  bottom="18%" right="4px" floatClass="float-a" blobIndex={2} opacity={0.62} delay="1.8s" />
+      <FloatingBlob src="/images/hydrangea.jpg"        size={48}  bottom="6%"  left="22%"  floatClass="float-c" blobIndex={0} opacity={0.50} delay="0.9s" />
+      <FloatingBlob src="/images/star-jasmine.jpg"     size={44}  top="52%"   right="-8px" floatClass="float-e" blobIndex={3} opacity={0.48} delay="3s" />
+
+      {/* ── Sign in link ── */}
+      <div style={{ position: "absolute", top: 20, right: 20, zIndex: 10 }}>
         <Link href="/signin">
           <span style={{ fontSize: "13px", color: "#736959", cursor: "pointer", textDecoration: "underline", textUnderlineOffset: "3px" }}>
             Sign in
           </span>
         </Link>
-      </nav>
-
-      {/* Hero text */}
-      <div className="flex flex-col items-center text-center px-8 pt-6 pb-5 relative z-10">
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          style={{
-            fontFamily: "Fraunces, serif",
-            fontSize: "30px",
-            lineHeight: 1.2,
-            color: "#2C2721",
-            letterSpacing: "-0.025em",
-            maxWidth: 260,
-          }}
-        >
-          Your walk,<br />pressed into a garden.
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          style={{ fontSize: "13px", color: "#736959", lineHeight: 1.65, maxWidth: 240, marginTop: 10 }}
-        >
-          Photograph a flower, get its name and secret meaning, keep it forever.
-        </motion.p>
       </div>
 
-      {/* App preview mockup */}
-      <div className="flex justify-center relative z-10">
-        <AppPreview />
-      </div>
+      {/* ── Main content (centered, no scroll) ── */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 0, zIndex: 1, padding: "0 24px", textAlign: "center" }}>
 
-      {/* CTA */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.4 }}
-        className="flex flex-col items-center gap-2 px-6 pt-7 relative z-10"
-      >
+        {/* Title */}
+        <h1 style={{
+          fontFamily: "Fraunces, serif",
+          fontSize: "clamp(40px, 11vw, 52px)",
+          lineHeight: 1.1,
+          color: "#2C2721",
+          letterSpacing: "-0.03em",
+          marginBottom: 10,
+        }}>
+          Petal Press
+        </h1>
+
+        {/* Tagline */}
+        <p style={{
+          fontSize: "13px",
+          color: "#9A8F7F",
+          lineHeight: 1.6,
+          maxWidth: 230,
+          marginBottom: 28,
+          fontStyle: "italic",
+        }}>
+          a little diary for the flowers you find —<br />
+          discover their names & hidden meanings
+        </p>
+
+        {/* App preview mockup */}
+        <div style={{
+          width: 250,
+          borderRadius: 18,
+          overflow: "hidden",
+          boxShadow: "0 20px 56px rgba(0,0,0,0.16), 0 4px 14px rgba(0,0,0,0.09)",
+          border: "1.5px solid #D4CBB3",
+          marginBottom: 24,
+          flexShrink: 0,
+        }}>
+          {/* Browser bar */}
+          <div style={{ backgroundColor: "#EDE5D0", padding: "8px 12px", display: "flex", alignItems: "center", gap: 5, borderBottom: "1px solid #D4CBB3" }}>
+            <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#E88FA5", flexShrink: 0 }} />
+            <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#F0A860", flexShrink: 0 }} />
+            <div style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#c5d07d", flexShrink: 0 }} />
+            <div style={{ flex: 1, height: 16, backgroundColor: "#FAF7EF", borderRadius: 6, marginLeft: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ fontSize: "9px", color: "#9A8F7F", fontFamily: "system-ui", letterSpacing: "0.01em" }}>your garden ♡</span>
+            </div>
+          </div>
+          {/* Scaled iframe */}
+          <div style={{ width: 250, height: IFRAME_H * SCALE, overflow: "hidden", position: "relative", backgroundColor: "#F5EFD8" }}>
+            <iframe src="/demo" title="Petal Press preview" scrolling="no" style={{ width: 390, height: IFRAME_H, border: "none", transform: `scale(${SCALE})`, transformOrigin: "top left", pointerEvents: "none" }} />
+          </div>
+        </div>
+
+        {/* CTA */}
         <Link href="/signin">
           <button style={{
-            height: 50,
-            paddingLeft: 28,
-            paddingRight: 28,
-            borderRadius: 999,
-            backgroundColor: "#c5d07d",
-            border: "none",
-            cursor: "pointer",
-            fontFamily: "Fraunces, serif",
-            fontStyle: "italic",
-            fontSize: "15px",
-            color: "#3D362D",
-            letterSpacing: "0.01em",
-            boxShadow: "0 4px 20px rgba(197,208,125,0.5)",
+            height: 48, paddingLeft: 26, paddingRight: 26, borderRadius: 999,
+            backgroundColor: "#c5d07d", border: "none", cursor: "pointer",
+            fontFamily: "Fraunces, serif", fontStyle: "italic", fontSize: "15px",
+            color: "#3D362D", letterSpacing: "0.01em",
+            boxShadow: "0 4px 18px rgba(197,208,125,0.48)",
+            marginBottom: 8,
           }}>
             Start your garden →
           </button>
         </Link>
-        <p style={{ fontSize: "11px", color: "#C4BBA5" }}>free · no account needed to browse</p>
-      </motion.div>
+      </div>
 
-      {/* Footer */}
-      <div className="mt-auto px-6 pb-8 pt-10 flex items-center justify-center relative z-10">
-        <p style={{ fontSize: "12px", color: "#C4BBA5" }}>
+      {/* ── Footer ── */}
+      <div style={{ textAlign: "center", paddingBottom: 16, zIndex: 1, flexShrink: 0 }}>
+        <p style={{ fontSize: "11px", color: "#C4BBA5" }}>
           © 2026{" "}
-          <a
-            href="https://www.instagram.com/priscilla.png/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: "#C4BBA5", textDecoration: "underline", textUnderlineOffset: "3px" }}
-          >
+          <a href="https://www.instagram.com/priscilla.png/" target="_blank" rel="noopener noreferrer"
+            style={{ color: "#C4BBA5", textDecoration: "underline", textUnderlineOffset: "3px" }}>
             Priscilla
           </a>
           {" — "}
