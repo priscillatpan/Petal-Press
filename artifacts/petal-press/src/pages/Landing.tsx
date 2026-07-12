@@ -1,6 +1,18 @@
 import { Link } from "wouter";
 import { FlowerIcon } from "@/components/FlowerIcon";
 
+const FLOATERS: { symbol: string; size: number; top?: string; left?: string; right?: string; bottom?: string; cls: string; delay: string; opacity: number }[] = [
+  { symbol: "🌸", size: 28, top: "6%",   left: "5%",   cls: "float-a", delay: "0s",    opacity: 0.55 },
+  { symbol: "✿",  size: 22, top: "12%",  right: "8%",  cls: "float-c", delay: "1.2s",  opacity: 0.45 },
+  { symbol: "🌼", size: 20, top: "35%",  left: "3%",   cls: "float-b", delay: "0.5s",  opacity: 0.40 },
+  { symbol: "🌸", size: 16, top: "42%",  right: "5%",  cls: "float-e", delay: "2.1s",  opacity: 0.35 },
+  { symbol: "❀",  size: 24, top: "58%",  left: "8%",   cls: "float-d", delay: "0.8s",  opacity: 0.38 },
+  { symbol: "🌼", size: 18, top: "65%",  right: "6%",  cls: "float-a", delay: "1.7s",  opacity: 0.33 },
+  { symbol: "✿",  size: 20, bottom: "20%", left: "4%", cls: "float-c", delay: "3.0s",  opacity: 0.35 },
+  { symbol: "🌸", size: 22, bottom: "12%", right: "7%",cls: "float-b", delay: "0.3s",  opacity: 0.40 },
+  { symbol: "❀",  size: 16, top: "78%",  left: "42%",  cls: "float-e", delay: "1.5s",  opacity: 0.28 },
+];
+
 const SCALE = 250 / 390;
 const IFRAME_H = 520;
 
@@ -12,6 +24,26 @@ export default function Landing() {
       display: "flex", flexDirection: "column",
       fontFamily: "system-ui, sans-serif",
     }}>
+
+      {/* Floating flowers */}
+      {FLOATERS.map((f, i) => (
+        <div
+          key={i}
+          className={f.cls}
+          style={{
+            position: "absolute",
+            top: f.top, left: f.left, right: f.right, bottom: f.bottom,
+            fontSize: f.size,
+            opacity: f.opacity,
+            animationDelay: f.delay,
+            pointerEvents: "none",
+            zIndex: 0,
+            userSelect: "none",
+          }}
+        >
+          {f.symbol}
+        </div>
+      ))}
 
       {/* Sign in */}
       <div style={{ position: "absolute", top: 20, right: 20, zIndex: 10 }}>
