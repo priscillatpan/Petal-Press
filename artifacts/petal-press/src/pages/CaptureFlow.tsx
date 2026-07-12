@@ -305,7 +305,7 @@ export default function CaptureFlow() {
         }
       } else {
         const newFlower: Flower = {
-          id: `f${Date.now()}`,
+          id: crypto.randomUUID(),
           commonName,
           latinName,
           nickname,
@@ -328,8 +328,10 @@ export default function CaptureFlow() {
       } else {
         setLocation("/garden");
       }
-    } catch {
+    } catch (err) {
+      console.error("Failed to save flower:", err);
       setSaving(false);
+      alert("Couldn't save — please try again. Check your connection.");
     }
   }
 
