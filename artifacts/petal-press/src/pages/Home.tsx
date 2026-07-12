@@ -148,17 +148,34 @@ export default function Home() {
                   <Pill active={sortMode === "az"} onClick={() => setSortMode("az")} testId="sort-az">A – Z</Pill>
                 </>
               ) : (
-                THEMES.map(t => (
-                  <Pill
-                    key={t.key}
-                    active={themeFilter === t.key}
-                    dot={t.color}
-                    onClick={() => setThemeFilter(themeFilter === t.key ? null : t.key as ThemeKey)}
-                    testId={`theme-${t.key}`}
-                  >
-                    {THEME_SHORT[t.key as ThemeKey]}
-                  </Pill>
-                ))
+                (() => {
+                  const counts = Object.fromEntries(
+                    THEMES.map(t => [t.key, flowers.filter(f => f.theme === t.key).length])
+                  );
+                  return THEMES
+                    .filter(t => counts[t.key] > 0)
+                    .sort((a, b) => counts[b.key] - counts[a.key])
+                    .map(t => (
+                      <Pill
+                        key={t.key}
+                        active={themeFilter === t.key}
+                        dot={t.color}
+                        onClick={() => setThemeFilter(themeFilter === t.key ? null : t.key as ThemeKey)}
+                        testId={`theme-${t.key}`}
+                      >
+                        {THEME_SHORT[t.key as ThemeKey]}
+                        <span
+                          className="ml-1 rounded-full px-1.5 py-px text-[10px] leading-none"
+                          style={{
+                            backgroundColor: themeFilter === t.key ? '#E8DCC0' : '#EDE5D0',
+                            color: themeFilter === t.key ? '#3D362D' : '#9A8F7F',
+                          }}
+                        >
+                          {counts[t.key]}
+                        </span>
+                      </Pill>
+                    ));
+                })()
               )}
             </div>
           </div>
