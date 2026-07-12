@@ -2,18 +2,18 @@ import { Link } from "wouter";
 import { FlowerIcon } from "@/components/FlowerIcon";
 
 const FLOATERS = [
-  { symbol: "💐", size: 26, left: "4%",  cls: "fall-3", delay: "0s",    opacity: 0.70 },
-  { symbol: "🌹", size: 22, left: "12%", cls: "fall-1", delay: "-6s",   opacity: 0.65 },
-  { symbol: "🥀", size: 20, left: "21%", cls: "fall-5", delay: "-14s",  opacity: 0.55 },
-  { symbol: "🌺", size: 24, left: "30%", cls: "fall-2", delay: "-3s",   opacity: 0.68 },
-  { symbol: "🌷", size: 22, left: "41%", cls: "fall-4", delay: "-18s",  opacity: 0.60 },
-  { symbol: "🪷", size: 26, left: "52%", cls: "fall-1", delay: "-9s",   opacity: 0.70 },
-  { symbol: "🌸", size: 20, left: "62%", cls: "fall-6", delay: "-2s",   opacity: 0.58 },
-  { symbol: "💮", size: 18, left: "71%", cls: "fall-3", delay: "-11s",  opacity: 0.52 },
-  { symbol: "🏵",  size: 22, left: "80%", cls: "fall-5", delay: "-7s",   opacity: 0.60 },
-  { symbol: "🪻", size: 24, left: "88%", cls: "fall-2", delay: "-16s",  opacity: 0.65 },
-  { symbol: "🌻", size: 20, left: "8%",  cls: "fall-4", delay: "-20s",  opacity: 0.55 },
-  { symbol: "🌼", size: 22, left: "94%", cls: "fall-6", delay: "-5s",   opacity: 0.60 },
+  { symbol: "💐", size: 26, left: "4%",  cls: "fall-3", delay: "0s",    opacity: 0.50 },
+  { symbol: "🌹", size: 22, left: "12%", cls: "fall-1", delay: "-6s",   opacity: 0.50 },
+  { symbol: "🥀", size: 20, left: "21%", cls: "fall-5", delay: "-14s",  opacity: 0.50 },
+  { symbol: "🌺", size: 24, left: "30%", cls: "fall-2", delay: "-3s",   opacity: 0.50 },
+  { symbol: "🌷", size: 22, left: "41%", cls: "fall-4", delay: "-18s",  opacity: 0.50 },
+  { symbol: "🪷", size: 26, left: "52%", cls: "fall-1", delay: "-9s",   opacity: 0.50 },
+  { symbol: "🌸", size: 20, left: "62%", cls: "fall-6", delay: "-2s",   opacity: 0.50 },
+  { symbol: "💮", size: 18, left: "71%", cls: "fall-3", delay: "-11s",  opacity: 0.50 },
+  { symbol: "🏵",  size: 22, left: "80%", cls: "fall-5", delay: "-7s",   opacity: 0.50 },
+  { symbol: "🪻", size: 24, left: "88%", cls: "fall-2", delay: "-16s",  opacity: 0.50 },
+  { symbol: "🌻", size: 20, left: "8%",  cls: "fall-4", delay: "-20s",  opacity: 0.50 },
+  { symbol: "🌼", size: 22, left: "94%", cls: "fall-6", delay: "-5s",   opacity: 0.50 },
 ];
 
 const SCALE = 250 / 390;
