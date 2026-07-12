@@ -1,5 +1,5 @@
 kind = "web"
-previewPath = "/demo"
+previewPath = "/"
 title = "Petal Press"
 version = "1.0.0"
 id = "artifacts/petal-press"

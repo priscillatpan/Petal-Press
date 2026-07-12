@@ -1,0 +1,47 @@
+Privacy & Terms
+Last updated: February 2026
+
+Privacy Policy
+I built this postcard app for fun & I want to keep your information safe. Here's what I collect:
+
+What I collect: Photos you upload, messages, recipient addresses, email, and payment information.
+
+How it's used: Your information is sent to PostGrid (our printing partner) to print and mail your postcard. Payments are processed securely through Stripe.
+
+Data storage: Your postcard content (photos, messages, and addresses) is stored by PostGrid as part of their service. We do not access or read your postcard content except as necessary for customer service or technical support.
+
+Contact
+If you have any questions, you can reach me at:
+📧 hello.priscillapng@gmail.com
+
+Terms of Service
+This project is meant to help you connect with friends and make sending mail easy! By using Postcard Press, you agree:
+
+You're responsible for your content:
+
+You own (or have permission to use) any photos you upload
+You won't send illegal, harassing, obscene, or harmful content
+You won't use this to spam or harm anyone
+I reserve the right to refuse orders that violate these terms and will report illegal activity to authorities.
+
+Pricing: $2 per postcard (includes printing and US postage)
+
+Delivery: Typically takes 5-10 business days via USPS.
+
+All sales are final once sent to print (see Refund Policy for exceptions)
+
+Liability: I'm not responsible for USPS delays, lost mail, wrong addresses, or postcards that get a little beat up in the mail. Postcards may show minor wear from the mailing process.
+
+Refund Policy
+No returns since postcards are custom-made! Refunds are available if your postcard is not delivered within 14 business days or if there is a printing error on our end. No refunds for incorrect addresses provided by you or USPS delays. Email us to request a refund.
+
+Cancellation Policy
+This is a one-person indie project and orders process automatically, so I can't guarantee cancellations. Once you hit send, your postcard is likely already being printed!
+
+Please double-check everything before you order.
+
+Shipping Restrictions
+US addresses only for now 🇺🇸 (International coming... maybe!)
+
+← Back to Home
+© 2026 Priscilla — terms
