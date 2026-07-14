@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in to Petal Press</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+</head>
+<body style="margin:0;padding:0;background-color:#EDE7D0;font-family:system-ui,-apple-system,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#EDE7D0;padding:40px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:480px;background-color:#FAF7EE;border-radius:20px;overflow:hidden;box-shadow:0 4px 32px rgba(80,60,30,0.10);">
+
+          <!-- Header band -->
+          <tr>
+            <td style="background-color:#c5d07d;padding:28px 32px 24px;text-align:center;">
+              <div style="font-size:36px;line-height:1;margin-bottom:10px;">🌸</div>
+              <div style="font-family:'Fraunces',Georgia,serif;font-size:22px;font-weight:500;color:#2E2820;letter-spacing:0.01em;">
+                Petal Press
+              </div>
+              <div style="font-family:system-ui,sans-serif;font-size:11px;color:#4a4030;letter-spacing:0.12em;text-transform:uppercase;margin-top:4px;opacity:0.75;">
+                your flower diary
+              </div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:36px 36px 28px;">
+              <p style="font-family:'Fraunces',Georgia,serif;font-size:24px;color:#3D362D;margin:0 0 12px;line-height:1.3;">
+                Your garden awaits 🌿
+              </p>
+              <p style="font-size:15px;color:#7A7060;line-height:1.65;margin:0 0 28px;">
+                Here's your sign-in link for Petal Press. Tap the button below to open your flower collection — no password needed.
+              </p>
+
+              <!-- CTA button -->
+              <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 auto 28px;">
+                <tr>
+                  <td style="background-color:#c5d07d;border-radius:40px;padding:0;">
+                    <a href="{{ .ConfirmationURL }}"
+                       style="display:inline-block;padding:15px 36px;font-family:'Fraunces',Georgia,serif;font-style:italic;font-size:16px;color:#2E2820;text-decoration:none;letter-spacing:0.01em;white-space:nowrap;">
+                      open my garden →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size:12px;color:#B8AFA0;line-height:1.6;margin:0 0 6px;">
+                This link expires in 1 hour. If you didn't request this, you can safely ignore it — your garden is safe.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Decorative divider -->
+          <tr>
+            <td style="padding:0 36px;">
+              <div style="border-top:1px solid #E4DBC8;"></div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 36px 28px;text-align:center;">
+              <p style="font-size:11px;color:#C4BBA5;margin:0;letter-spacing:0.03em;">
+                🌸 🌷 🌼 &nbsp;·&nbsp; Petal Press &nbsp;·&nbsp; 🌻 🪷 🌺
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
