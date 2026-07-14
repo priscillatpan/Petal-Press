@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign in to Petal Press</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400&display=swap" rel="stylesheet" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400&display=swap');
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#FAF7EF;font-family:'Fraunces',Georgia,'Times New Roman',serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF7EF;padding:48px 16px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:440px;background-color:#FFFEF9;border:1px solid #E8DCC0;border-radius:16px;overflow:hidden;">
+          <tr>
+            <td align="center" style="padding:44px 40px 32px 40px;">
+              <div style="font-size:40px;line-height:1;color:#c5d07d;margin-bottom:20px;">✿</div>
+              <h1 style="margin:0;font-size:26px;font-weight:400;color:#2C2721;letter-spacing:-0.02em;line-height:1.15;font-family:'Fraunces',Georgia,'Times New Roman',serif;">
+                Welcome to Petal Press
+              </h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 40px;">
+              <div style="border-top:1px solid #EDE6D0;"></div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:36px 40px 12px 40px;text-align:center;">
+              <p style="margin:0 0 32px 0;font-size:15px;color:#736959;font-family:'Fraunces',Georgia,'Times New Roman',serif;line-height:1.7;">
+                Click below to open your garden.<br/>This link expires in 1 hour and can only be used once.
+              </p>
+              <a href="{{ .ConfirmationURL }}"
+                 style="display:inline-block;padding:15px 36px;background-color:#c5d07d;color:#3D362D;text-decoration:none;border-radius:10px;font-size:15px;font-family:'Fraunces',Georgia,'Times New Roman',serif;letter-spacing:0.01em;">
+                Open my garden →
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px 40px 40px 40px;text-align:center;">
+              <p style="margin:0;font-size:12px;color:#C4BBA5;font-family:'Fraunces',Georgia,'Times New Roman',serif;line-height:1.7;">
+                If you didn't request this, you can safely ignore it.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
