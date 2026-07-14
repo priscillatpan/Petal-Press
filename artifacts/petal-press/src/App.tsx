@@ -14,6 +14,7 @@ import CaptureFlow from "@/pages/CaptureFlow";
 import BouquetView from "@/pages/BouquetView";
 import Welcome from "@/pages/Welcome";
 import SignIn from "@/pages/SignIn";
+import Onboarding from "@/pages/Onboarding";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/signin" component={SignIn} />
       <Route path="/waitlist" component={Welcome} />
+      <Route path="/onboarding" component={Onboarding} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/demo">
         {() => <DemoGardenProvider><Home hideCapture /></DemoGardenProvider>}
