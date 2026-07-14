@@ -121,7 +121,7 @@ export default function Home({ hideCapture = false }: { hideCapture?: boolean })
           </span>
         </div>
 
-        {!loading && (
+        {!loading && flowers.length > 0 && (
           <div className="space-y-2">
             {/* Segmented toggle */}
             <div
@@ -200,6 +200,34 @@ export default function Home({ hideCapture = false }: { hideCapture?: boolean })
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
           </div>
+        ) : flowers.length === 0 && !hideCapture ? (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="flex flex-col items-center justify-center text-center px-6 pt-16 pb-32"
+          >
+            <div className="text-6xl mb-6 select-none" style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }}>
+              🌸
+            </div>
+            <h2 style={{ fontFamily: 'Fraunces, serif', fontSize: '26px', color: '#3D362D', marginBottom: '10px', lineHeight: 1.25 }}>
+              Welcome to Petal Press
+            </h2>
+            <p style={{ fontSize: '14px', color: '#9A8F7F', lineHeight: 1.6, maxWidth: '240px', marginBottom: '28px' }}>
+              Your garden is empty. Press your first flower to start your collection.
+            </p>
+            <Link href="/capture">
+              <button
+                className="flex items-center gap-2.5 h-14 px-6 rounded-full active:scale-95 transition-transform"
+                style={{ backgroundColor: '#c5d07d', boxShadow: '0 4px 20px rgba(197,208,125,0.55)' }}
+              >
+                <FlowerIcon size={22} color="#3D362D" />
+                <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: '15px', color: '#3D362D' }}>
+                  add your first flower
+                </span>
+              </button>
+            </Link>
+          </motion.div>
         ) : (
           <motion.div
             key={`${viewMode}-${themeFilter}-${sortMode}`}
