@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { motion } from "framer-motion";
 import { FlowerIcon } from "@/components/FlowerIcon";
 import { useAuth } from "@/context/AuthContext";
@@ -74,8 +74,8 @@ export default function Welcome() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.4 }}
         >
-          <a
-            href="/"
+          <Link
+            href="/signin"
             style={{
               fontSize: "13px",
               color: "#9A8F7F",
@@ -84,7 +84,7 @@ export default function Welcome() {
             }}
           >
             Already have an account? Sign in →
-          </a>
+          </Link>
         </motion.div>
       </div>
 
