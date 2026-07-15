@@ -8,8 +8,8 @@ const rawPort = process.env.PORT;
 const port = rawPort && !Number.isNaN(Number(rawPort)) ? Number(rawPort) : 3000;
 
 // On Replit, BASE_PATH is injected by the workspace proxy.
-// On external hosts (Vercel, Netlify, etc.) the app is served from root.
-const basePath = process.env.BASE_PATH ?? "/";
+// On external hosts (Vercel, Netlify, etc.) the app is always at root.
+const basePath = process.env.NODE_ENV === "production" ? "/" : (process.env.BASE_PATH ?? "/");
 
 export default defineConfig({
   base: basePath,
