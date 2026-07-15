@@ -1,6 +1,6 @@
 const PLANTNET_API = "https://my-api.plantnet.org/v2/identify/all";
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
 
   if (req.method !== "POST") {
@@ -16,17 +16,11 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  let body = "";
-  for await (const chunk of req) body += chunk;
-
-  let imageBase64;
-  try {
-    const parsed = JSON.parse(body);
-    if (!parsed.image) throw new Error("missing image");
-    imageBase64 = parsed.image;
-  } catch {
+  // Vercel pre-parses JSON bodies — req.body is already an object
+  const imageBase64 = req.body?.image;
+  if (!imageBase64) {
     res.statusCode = 400;
-    res.end(JSON.stringify({ error: "Invalid request body" }));
+    res.end(JSON.stringify({ error: "No image provided" }));
     return;
   }
 
@@ -67,3 +61,12 @@ module.exports = async function handler(req, res) {
     res.end(JSON.stringify({ error: "Failed to identify plant" }));
   }
 }
+
+module.exports = handler;
+module.exports.config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "8mb",
+    },
+  },
+};
