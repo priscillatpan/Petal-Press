@@ -1,8 +1,6 @@
-import type { IncomingMessage, ServerResponse } from "http";
-
 const PLANTNET_API = "https://my-api.plantnet.org/v2/identify/all";
 
-export default async function handler(req: IncomingMessage, res: ServerResponse) {
+module.exports = async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
 
   if (req.method !== "POST") {
@@ -21,9 +19,9 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   let body = "";
   for await (const chunk of req) body += chunk;
 
-  let imageBase64: string;
+  let imageBase64;
   try {
-    const parsed = JSON.parse(body) as { image?: string };
+    const parsed = JSON.parse(body);
     if (!parsed.image) throw new Error("missing image");
     imageBase64 = parsed.image;
   } catch {
@@ -53,17 +51,7 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       return;
     }
 
-    const data = await response.json() as {
-      results: Array<{
-        score: number;
-        species: {
-          scientificNameWithoutAuthor: string;
-          commonNames: string[];
-          family: { scientificNameWithoutAuthor: string };
-        };
-      }>;
-    };
-
+    const data = await response.json();
     const results = (data.results || []).slice(0, 5).map(r => ({
       score: Math.round(r.score * 100),
       scientificName: r.species.scientificNameWithoutAuthor,
