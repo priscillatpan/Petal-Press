@@ -22,7 +22,7 @@ const cell = {
   show: { opacity: 1, scale: 1, transition: { type: "spring" as const, stiffness: 220, damping: 20 } },
 };
 
-export default function Home() {
+export default function Home({ hideCapture = false }: { hideCapture?: boolean }) {
   const { flowers, loading } = useGarden();
   const { signOut, user } = useAuth();
   const [seasonFilter, setSeasonFilter] = useState<SeasonFilter>(null);
@@ -209,7 +209,7 @@ export default function Home() {
         )}
       </main>
 
-      <Link href="/capture" style={{ display: 'block' }}>
+      {!hideCapture && <Link href="/capture" style={{ display: 'block' }}>
         {/* FAB pill button */}
         <div
           className="fixed z-20 active:scale-95 transition-all"
@@ -238,7 +238,7 @@ export default function Home() {
             </span>
           </button>
         </div>
-      </Link>
+      </Link>}
     </div>
   );
 }

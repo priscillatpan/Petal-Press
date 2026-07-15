@@ -4,13 +4,17 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { GardenProvider } from "@/context/GardenContext";
+import { DemoGardenProvider } from "@/context/DemoGardenProvider";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
+import Landing from "@/pages/Landing";
+import Privacy from "@/pages/Privacy";
 import Home from "@/pages/Home";
 import EntryCard from "@/pages/EntryCard";
 import CaptureFlow from "@/pages/CaptureFlow";
 import BouquetView from "@/pages/BouquetView";
 import Welcome from "@/pages/Welcome";
 import SignIn from "@/pages/SignIn";
+import Onboarding from "@/pages/Onboarding";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
@@ -20,7 +24,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    if (!authLoading && !user) setLocation("/");
+    if (!authLoading && !user) setLocation("/signin");
   }, [user, authLoading, setLocation]);
 
   if (authLoading) {
@@ -40,8 +44,15 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={SignIn} />
+      <Route path="/" component={Welcome} />
+      <Route path="/app" component={Landing} />
+      <Route path="/signin" component={SignIn} />
       <Route path="/waitlist" component={Welcome} />
+      <Route path="/onboarding" component={Onboarding} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/demo">
+        {() => <DemoGardenProvider><Home hideCapture /></DemoGardenProvider>}
+      </Route>
       <Route path="/garden">
         {() => <ProtectedRoute><Home /></ProtectedRoute>}
       </Route>
@@ -71,7 +82,7 @@ function App() {
                 style={{ maxWidth: 430 }}
                 id="mobile-shell"
               >
-                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "") || undefined}>
                   <Router />
                 </WouterRouter>
               </div>
