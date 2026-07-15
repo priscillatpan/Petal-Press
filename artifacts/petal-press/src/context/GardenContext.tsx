@@ -47,6 +47,7 @@ function rowToFlower(row: FlowerRow): Flower {
     nativeStatus: row.native_status as NativeStatus,
     imageUrl: urls[0] ?? "",
     imageUrls: urls,
+    createdAt: row.created_at,
   };
 }
 

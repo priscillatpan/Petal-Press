@@ -13,4 +13,5 @@ export type Flower = {
   nativeStatus: NativeStatus;
   imageUrl: string;
   imageUrls: string[];
+  createdAt?: string;
 };
