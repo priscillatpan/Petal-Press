@@ -5,13 +5,27 @@ import { useGarden } from "@/context/useGarden";
 import { useAuth } from "@/context/AuthContext";
 import { FlowerIcon } from "@/components/FlowerIcon";
 import { BlobFrame } from "@/components/BlobFrame";
-import { getSeasonFromDate, SEASON_LABELS, type Season } from "@/data/season";
 
 const GHOST_SLOTS = 3;
 
-type SeasonFilter = Season | null;
+type Theme = "love" | "hope" | "friendship" | "mystery" | "joy";
+type ThemeFilter = Theme | null;
 
-const SEASONS: Season[] = ['spring', 'summer', 'fall', 'winter'];
+const THEMES: { id: Theme; label: string; keywords: string[] }[] = [
+  { id: "love",       label: "💛 love",       keywords: ["love", "romance", "passion", "devotion", "affection", "adoration", "desire", "heart"] },
+  { id: "hope",       label: "🌱 hope",       keywords: ["hope", "new beginning", "consolation", "anticipation", "rebirth", "renewal", "healing", "purity", "innocence"] },
+  { id: "friendship", label: "🤝 friendship", keywords: ["friendship", "loyalty", "constancy", "remembrance", "trust", "faithful", "gratitude", "support"] },
+  { id: "mystery",    label: "🌙 mystery",    keywords: ["magic", "enchant", "intrigue", "secret", "sorrow", "melancholy", "mystery", "caution", "beware", "grief"] },
+  { id: "joy",        label: "✨ joy",        keywords: ["joy", "happiness", "cheerful", "delight", "bright", "sunshine", "warmth", "celebration", "prosperity"] },
+];
+
+function deriveTheme(meaning: string): Theme | null {
+  const lower = meaning.toLowerCase();
+  for (const theme of THEMES) {
+    if (theme.keywords.some(k => lower.includes(k))) return theme.id;
+  }
+  return null;
+}
 
 const container = {
   hidden: { opacity: 0 },
@@ -25,16 +39,17 @@ const cell = {
 export default function Home({ hideCapture = false }: { hideCapture?: boolean }) {
   const { flowers, loading } = useGarden();
   const { signOut, user } = useAuth();
-  const [seasonFilter, setSeasonFilter] = useState<SeasonFilter>(null);
-  const seasonsPresent = useMemo(() => {
-    const set = new Set(flowers.map(f => getSeasonFromDate(f.datePressed)));
-    return SEASONS.filter(s => set.has(s));
+  const [themeFilter, setThemeFilter] = useState<ThemeFilter>(null);
+
+  const themesPresent = useMemo(() => {
+    const set = new Set(flowers.map(f => deriveTheme(f.meaning)));
+    return THEMES.filter(t => set.has(t.id));
   }, [flowers]);
 
   const filtered = useMemo(() => {
-    if (!seasonFilter) return flowers;
-    return flowers.filter(f => getSeasonFromDate(f.datePressed) === seasonFilter);
-  }, [flowers, seasonFilter]);
+    if (!themeFilter) return flowers;
+    return flowers.filter(f => deriveTheme(f.meaning) === themeFilter);
+  }, [flowers, themeFilter]);
 
   const ghostCount = GHOST_SLOTS;
 
@@ -83,34 +98,34 @@ export default function Home({ hideCapture = false }: { hideCapture?: boolean })
           {loading ? 'Loading your pressings…' : 'What flowers will you discover today?'}
         </p>
 
-        {!loading && seasonsPresent.length > 0 && (
+        {!loading && themesPresent.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-0.5 scrollbar-none">
             <button
-              onClick={() => setSeasonFilter(null)}
+              onClick={() => setThemeFilter(null)}
               className="shrink-0 h-7 px-3 rounded-full text-xs font-medium border transition-colors"
               style={{
-                backgroundColor: seasonFilter === null ? '#c5d07d' : 'transparent',
-                color: seasonFilter === null ? '#3D362D' : '#9A8F7F',
-                borderColor: seasonFilter === null ? '#c5d07d' : '#D4CBB3',
+                backgroundColor: themeFilter === null ? '#c5d07d' : 'transparent',
+                color: themeFilter === null ? '#3D362D' : '#9A8F7F',
+                borderColor: themeFilter === null ? '#c5d07d' : '#D4CBB3',
               }}
               data-testid="filter-all"
             >
               All
             </button>
-            {SEASONS.map(s => (
+            {THEMES.map(t => (
               <button
-                key={s}
-                onClick={() => setSeasonFilter(seasonFilter === s ? null : s)}
+                key={t.id}
+                onClick={() => setThemeFilter(themeFilter === t.id ? null : t.id)}
                 className="shrink-0 h-7 px-3 rounded-full text-xs font-medium border transition-colors"
                 style={{
-                  backgroundColor: seasonFilter === s ? '#c5d07d' : 'transparent',
-                  color: seasonFilter === s ? '#3D362D' : '#9A8F7F',
-                  borderColor: seasonFilter === s ? '#c5d07d' : '#D4CBB3',
-                  opacity: seasonsPresent.includes(s) ? 1 : 0.4,
+                  backgroundColor: themeFilter === t.id ? '#c5d07d' : 'transparent',
+                  color: themeFilter === t.id ? '#3D362D' : '#9A8F7F',
+                  borderColor: themeFilter === t.id ? '#c5d07d' : '#D4CBB3',
+                  opacity: themesPresent.some(p => p.id === t.id) ? 1 : 0.35,
                 }}
-                data-testid={`filter-${s}`}
+                data-testid={`filter-${t.id}`}
               >
-                {SEASON_LABELS[s]}
+                {t.label}
               </button>
             ))}
           </div>
