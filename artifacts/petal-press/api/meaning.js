@@ -2,15 +2,6 @@ import { createClient } from "@supabase/supabase-js";
 
 const OPENAI_API = "https://api.openai.com/v1/chat/completions";
 
-type Req = {
-  method: string;
-  body: { commonName?: string; scientificName?: string; family?: string };
-};
-type Res = {
-  status: (n: number) => { json: (o: unknown) => void };
-  json: (o: unknown) => void;
-};
-
 function getSupabase() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_ANON_KEY;
@@ -18,7 +9,7 @@ function getSupabase() {
   return createClient(url, key);
 }
 
-export default async function handler(req: Req, res: Res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -85,12 +76,10 @@ The meaning should be evocative and drawn from Victorian flower language or cult
       return res.status(response.status).json({ error: "AI meaning generation failed" });
     }
 
-    const data = await response.json() as {
-      choices: Array<{ message: { content: string } }>;
-    };
+    const data = await response.json();
 
     const text = data.choices?.[0]?.message?.content?.trim() ?? "";
-    const parsed = JSON.parse(text) as { meaning: string; nickname: string };
+    const parsed = JSON.parse(text);
 
     // 2. Save to the shared cache so future lookups of this species are free
     if (supabase && cacheKey) {
