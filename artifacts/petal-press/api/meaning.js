@@ -1,12 +1,10 @@
-import { createClient } from "@supabase/supabase-js";
-
 const OPENAI_API = "https://api.openai.com/v1/chat/completions";
 
-function getSupabase() {
+function supabaseConfig() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_ANON_KEY;
   if (!url || !key) return null;
-  return createClient(url, key);
+  return { url: url.replace(/\/$/, ""), key };
 }
 
 export default async function handler(req, res) {
@@ -25,19 +23,20 @@ export default async function handler(req, res) {
   }
 
   const cacheKey = (scientificName || commonName || "").trim().toLowerCase();
-  const supabase = getSupabase();
+  const sb = supabaseConfig();
 
   // 1. Check the shared cache first — avoids paying for species we've already looked up
-  if (supabase && cacheKey) {
+  if (sb && cacheKey) {
     try {
-      const { data } = await supabase
-        .from("flower_meanings")
-        .select("meaning, nickname")
-        .eq("scientific_name", cacheKey)
-        .maybeSingle();
-
-      if (data) {
-        return res.json({ meaning: data.meaning, nickname: data.nickname });
+      const cacheRes = await fetch(
+        `${sb.url}/rest/v1/flower_meanings?scientific_name=eq.${encodeURIComponent(cacheKey)}&select=meaning,nickname&limit=1`,
+        { headers: { apikey: sb.key, Authorization: `Bearer ${sb.key}` } }
+      );
+      if (cacheRes.ok) {
+        const rows = await cacheRes.json();
+        if (rows[0]) {
+          return res.json({ meaning: rows[0].meaning, nickname: rows[0].nickname });
+        }
       }
     } catch (err) {
       console.error("Cache lookup failed, continuing to AI:", err);
@@ -82,13 +81,22 @@ The meaning should be evocative and drawn from Victorian flower language or cult
     const parsed = JSON.parse(text);
 
     // 2. Save to the shared cache so future lookups of this species are free
-    if (supabase && cacheKey) {
+    if (sb && cacheKey) {
       try {
-        await supabase.from("flower_meanings").upsert({
-          scientific_name: cacheKey,
-          common_name: commonName || null,
-          meaning: parsed.meaning,
-          nickname: parsed.nickname,
+        await fetch(`${sb.url}/rest/v1/flower_meanings?on_conflict=scientific_name`, {
+          method: "POST",
+          headers: {
+            apikey: sb.key,
+            Authorization: `Bearer ${sb.key}`,
+            "Content-Type": "application/json",
+            Prefer: "resolution=merge-duplicates",
+          },
+          body: JSON.stringify({
+            scientific_name: cacheKey,
+            common_name: commonName || null,
+            meaning: parsed.meaning,
+            nickname: parsed.nickname,
+          }),
         });
       } catch (err) {
         console.error("Failed to write cache entry:", err);
