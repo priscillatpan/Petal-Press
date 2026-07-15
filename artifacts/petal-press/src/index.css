@@ -126,3 +126,17 @@
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+
+@keyframes fall {
+  0%   { transform: translateY(-60px) rotate(0deg);   opacity: 0; }
+  8%   { opacity: 0.5; }
+  92%  { opacity: 0.5; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+
+.fall-1 { animation: fall 14s linear infinite; }
+.fall-2 { animation: fall 18s linear infinite; }
+.fall-3 { animation: fall 22s linear infinite; }
+.fall-4 { animation: fall 16s linear infinite; }
+.fall-5 { animation: fall 20s linear infinite; }
+.fall-6 { animation: fall 25s linear infinite; }
