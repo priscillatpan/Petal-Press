@@ -3,7 +3,11 @@
   "outputDirectory": "artifacts/petal-press/dist",
   "installCommand": "pnpm install",
   "framework": null,
-  "ignoreCommand": "exit 1",
+  "functions": {
+    "api/identify.js": {
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
     { "source": "/:path*", "destination": "/index.html" }
   ]
