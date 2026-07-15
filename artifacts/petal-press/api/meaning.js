@@ -1,3 +1,5 @@
+import { rateLimit } from "./_rateLimit.js";
+
 const OPENAI_API = "https://api.openai.com/v1/chat/completions";
 
 function supabaseConfig() {
@@ -10,6 +12,12 @@ function supabaseConfig() {
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const { limited, retryAfter } = rateLimit(req, { max: 15, windowMs: 60_000 });
+  if (limited) {
+    res.setHeader("Retry-After", String(retryAfter));
+    return res.status(429).json({ error: "Too many requests — please wait a moment and try again." });
   }
 
   const apiKey = process.env.OPENAI_API_KEY;

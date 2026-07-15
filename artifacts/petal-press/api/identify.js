@@ -1,3 +1,5 @@
+import { rateLimit } from "./_rateLimit.js";
+
 const PLANTNET_API = "https://my-api.plantnet.org/v2/identify/all";
 
 export default async function handler(req, res) {
@@ -6,6 +8,14 @@ export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.statusCode = 405;
     res.end(JSON.stringify({ error: "Method not allowed" }));
+    return;
+  }
+
+  const { limited, retryAfter } = rateLimit(req, { max: 8, windowMs: 60_000 });
+  if (limited) {
+    res.setHeader("Retry-After", String(retryAfter));
+    res.statusCode = 429;
+    res.end(JSON.stringify({ error: "Too many requests — please wait a moment and try again." }));
     return;
   }
 
