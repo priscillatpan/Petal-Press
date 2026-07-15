@@ -108,12 +108,12 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     if (!supabase) { setFlowers((prev) => [...prev, flower]); return; }
     const userId = await getCurrentUserId();
     const row = { ...flowerToRow(flower), ...(userId ? { user_id: userId } : {}) };
-    const { error } = await supabase.from("flowers").insert(row);
+    const { data, error } = await supabase.from("flowers").insert(row).select().single();
     if (error) {
       console.error("Failed to save flower:", error.message);
       throw error;
     }
-    setFlowers((prev) => [...prev, flower]);
+    setFlowers((prev) => [...prev, data ? rowToFlower(data as FlowerRow) : flower]);
   };
 
   const addPhotoToFlower = async (id: string, imageUrl: string) => {
