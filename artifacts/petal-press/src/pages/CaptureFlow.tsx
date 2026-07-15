@@ -49,7 +49,6 @@ function FlowerVideo({ videoRef, size = 240 }: { videoRef: React.RefObject<HTMLV
 export default function CaptureFlow() {
   const [, setLocation] = useLocation();
   const { flowers, addFlower, addPhotoToFlower } = useGarden();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const selectedFileRef = useRef<File | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -290,6 +289,8 @@ export default function CaptureFlow() {
       f => f.latinName.toLowerCase() === latinName.toLowerCase()
     );
 
+    let targetId = existing?.id ?? "";
+
     try {
       if (existing) {
         if (finalImageUrl) {
@@ -311,14 +312,14 @@ export default function CaptureFlow() {
           imageUrls: finalImageUrl ? [finalImageUrl] : [],
         };
         await addFlower(newFlower);
+        targetId = newFlower.id;
+        // Clear any active theme filter so the new entry isn't hidden
+        // behind a stale filter selection when returning to the garden.
+        sessionStorage.removeItem("garden-theme");
       }
 
       setSaving(false);
-      if (existing) {
-        setLocation(`/flower/${existing.id}`);
-      } else {
-        setLocation("/garden");
-      }
+      setLocation(`/flower/${targetId}`);
     } catch {
       setSaving(false);
     }
@@ -326,24 +327,14 @@ export default function CaptureFlow() {
 
   return (
     <div className="bg-background flex flex-col" style={{ minHeight: "100dvh" }}>
-      {/* Camera input — opens rear camera directly */}
-      <input
-        id="flower-photo-input"
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        className="sr-only"
-        onChange={handleFileChange}
-        data-testid="input-file"
-      />
-      {/* Library input — no capture attribute, opens photo picker */}
+      {/* Library input — no capture attribute, opens Camera/Photo Library/Files picker */}
       <input
         id="flower-library-input"
         type="file"
         accept="image/*"
         className="sr-only"
         onChange={handleFileChange}
+        data-testid="input-file"
       />
 
       {/* Topbar */}
@@ -466,7 +457,7 @@ export default function CaptureFlow() {
               {/* Fallback: file picker (no camera access) */}
               {cameraFailed && (
                 <label
-                  htmlFor="flower-photo-input"
+                  htmlFor="flower-library-input"
                   className={`w-full aspect-[3/4] max-h-[52vh] border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-4 transition-all cursor-pointer active:scale-[0.98] ${
                     fileReceived
                       ? "border-primary/60 bg-primary/10"
