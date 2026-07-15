@@ -1,6 +1,6 @@
 const PLANTNET_API = "https://my-api.plantnet.org/v2/identify/all";
 
-async function handler(req, res) {
+export default async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
 
   if (req.method !== "POST") {
@@ -62,8 +62,7 @@ async function handler(req, res) {
   }
 }
 
-module.exports = handler;
-module.exports.config = {
+export const config = {
   api: {
     bodyParser: {
       sizeLimit: "8mb",
