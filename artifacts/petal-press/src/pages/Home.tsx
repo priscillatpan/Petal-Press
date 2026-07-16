@@ -311,6 +311,26 @@ export default function Home({ hideCapture = false }: { hideCapture?: boolean })
         )}
       </main>
 
+      <div className="text-center pt-6 pb-2">
+        <p style={{ fontSize: '11px', color: '#C4BBA5' }}>
+          made with love by{" "}
+          <a
+            href="https://www.instagram.com/priscilla.png/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#9A8F7F', textDecoration: 'underline', textUnderlineOffset: '3px' }}
+          >
+            priscilla
+          </a>
+          {" — "}
+          <Link href="/privacy">
+            <span style={{ color: '#9A8F7F', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+              privacy
+            </span>
+          </Link>
+        </p>
+      </div>
+
       {!hideCapture && (
         <Link href="/capture" style={{ display: 'block' }}>
           <div

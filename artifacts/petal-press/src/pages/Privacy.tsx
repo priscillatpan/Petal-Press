@@ -60,12 +60,19 @@ export default function Privacy() {
           <h2 style={{ fontFamily: "Fraunces, serif", fontSize: "17px", color: "#3D362D", marginBottom: "8px", marginTop: "28px" }}>
             Contact
           </h2>
-          <p>
+          <p style={{ marginBottom: "12px" }}>
             Questions? Reach out on{" "}
             <a href="https://www.instagram.com/priscilla.png/" target="_blank" rel="noopener noreferrer"
               style={{ color: "#9A8F7F", textDecoration: "underline" }}>
               Instagram
             </a>.
+          </p>
+          <p>
+            Have feedback or ideas for Petal Press?{" "}
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSch3qW2MH3fR3YlQvCke5tldhLsTTnNf8j0If2mlPSBaXNImQ/viewform" target="_blank" rel="noopener noreferrer"
+              style={{ color: "#9A8F7F", textDecoration: "underline" }}>
+              Share it here
+            </a>{" "}— I'd love to hear it.
           </p>
         </div>
       </div>
