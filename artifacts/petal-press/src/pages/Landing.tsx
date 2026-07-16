@@ -1,5 +1,7 @@
-import { Link } from "wouter";
+import { useEffect } from "react";
+import { Link, useLocation } from "wouter";
 import { FlowerIcon } from "@/components/FlowerIcon";
+import { useAuth } from "@/context/AuthContext";
 
 const FLOATERS = [
   { symbol: "💐", size: 26, left: "4%",  cls: "fall-3", delay: "0s",    opacity: 0.50 },
@@ -20,6 +22,13 @@ const SCALE = 250 / 390;
 const IFRAME_H = 520;
 
 export default function Landing() {
+  const { user, authLoading } = useAuth();
+  const [, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (!authLoading && user) setLocation("/garden");
+  }, [user, authLoading, setLocation]);
+
   return (
     <div style={{
       height: "100dvh", overflow: "hidden",

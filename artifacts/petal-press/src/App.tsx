@@ -59,7 +59,7 @@ function Router() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Switch>
-        <Route path="/" component={Welcome} />
+        <Route path="/" component={Landing} />
         <Route path="/app" component={Landing} />
         <Route path="/signin" component={SignIn} />
         <Route path="/waitlist" component={Welcome} />
