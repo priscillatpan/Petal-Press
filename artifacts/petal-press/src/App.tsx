@@ -18,6 +18,7 @@ const BouquetView = lazy(() => import("@/pages/BouquetView"));
 const Welcome = lazy(() => import("@/pages/Welcome"));
 const SignIn = lazy(() => import("@/pages/SignIn"));
 const Onboarding = lazy(() => import("@/pages/Onboarding"));
+const Admin = lazy(() => import("@/pages/Admin"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 
 const queryClient = new QueryClient();
@@ -79,6 +80,9 @@ function Router() {
         </Route>
         <Route path="/bouquet">
           {() => <ProtectedRoute><BouquetView /></ProtectedRoute>}
+        </Route>
+        <Route path="/admin">
+          {() => <ProtectedRoute><Admin /></ProtectedRoute>}
         </Route>
         <Route component={NotFound} />
       </Switch>
