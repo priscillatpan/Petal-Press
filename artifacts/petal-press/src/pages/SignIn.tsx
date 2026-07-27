@@ -8,10 +8,13 @@ type Stage = "input" | "sent" | "error";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
   const [stage, setStage] = useState<Stage>("input");
   const [errorMsg, setErrorMsg] = useState("");
+  const [codeError, setCodeError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn, user, authLoading } = useAuth();
+  const [verifying, setVerifying] = useState(false);
+  const { signIn, verifyOtp, user, authLoading } = useAuth();
   const [, setLocation] = useLocation();
 
   useEffect(() => {
@@ -31,6 +34,21 @@ export default function SignIn() {
       setStage("error");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleVerify(e: React.FormEvent) {
+    e.preventDefault();
+    if (!code.trim() || verifying) return;
+    setVerifying(true);
+    setCodeError("");
+    try {
+      await verifyOtp(email.trim(), code.trim());
+      // useAuth's onAuthStateChange picks up the new session; the effect above redirects.
+    } catch (err) {
+      setCodeError(err instanceof Error ? err.message : "That code didn't work — check it and try again.");
+    } finally {
+      setVerifying(false);
     }
   }
 
@@ -68,7 +86,7 @@ export default function SignIn() {
             Welcome to Petal Press
           </h1>
           <p style={{ fontSize: "14px", color: "#736959", lineHeight: 1.6, maxWidth: 280, margin: "0 auto" }}>
-            Enter your email to sign in or create an account — we'll send you a link.
+            Enter your email to sign in or create an account — we'll send you a code.
           </p>
         </motion.div>
 
@@ -163,12 +181,65 @@ export default function SignIn() {
                 Check your email
               </p>
               <p style={{ fontSize: "13px", color: "#736959", lineHeight: 1.65 }}>
-                We sent a magic link to{" "}
+                We sent a code to{" "}
                 <strong style={{ color: "#2C2721" }}>{email}</strong>.
-                Tap it to open your garden.
+                Enter it below.
               </p>
+
+              <form onSubmit={handleVerify} className="w-full flex flex-col gap-3">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  value={code}
+                  onChange={e => { setCode(e.target.value); if (codeError) setCodeError(""); }}
+                  placeholder="6-digit code"
+                  autoFocus
+                  style={{
+                    width: "100%",
+                    padding: "13px 16px",
+                    fontSize: "15px",
+                    textAlign: "center",
+                    letterSpacing: "0.3em",
+                    color: "#2C2721",
+                    backgroundColor: "#FFF9ED",
+                    border: codeError ? "1.5px solid #c97b6a" : "1.5px solid #D4CBB3",
+                    borderRadius: "12px",
+                    outline: "none",
+                    fontFamily: "system-ui, sans-serif",
+                    boxSizing: "border-box",
+                  }}
+                />
+
+                {codeError && (
+                  <p style={{ fontSize: "12px", color: "#c97b6a", textAlign: "left", marginTop: -4 }}>
+                    {codeError}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={verifying || !code.trim()}
+                  style={{
+                    width: "100%",
+                    padding: "13px",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                    letterSpacing: "0.01em",
+                    color: "#3D362D",
+                    backgroundColor: verifying || !code.trim() ? "#D4CBB3" : "#c5d07d",
+                    border: "none",
+                    borderRadius: "12px",
+                    cursor: verifying || !code.trim() ? "default" : "pointer",
+                    fontFamily: "system-ui, sans-serif",
+                  }}
+                >
+                  {verifying ? "Checking…" : "Continue"}
+                </button>
+              </form>
+
               <button
-                onClick={() => { setStage("input"); setEmail(""); }}
+                onClick={() => { setStage("input"); setEmail(""); setCode(""); setCodeError(""); }}
                 style={{
                   fontSize: "12px",
                   color: "#9A8F7F",

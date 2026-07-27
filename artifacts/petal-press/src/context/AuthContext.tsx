@@ -7,6 +7,7 @@ type AuthContextType = {
   session: Session | null;
   authLoading: boolean;
   signIn: (email: string) => Promise<void>;
+  verifyOtp: (email: string, token: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
 
@@ -45,13 +46,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   };
 
+  const verifyOtp = async (email: string, token: string) => {
+    if (!supabase) throw new Error("Auth not available");
+    const { error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
+    if (error) throw error;
+  };
+
   const signOut = async () => {
     if (!supabase) return;
     await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, authLoading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, authLoading, signIn, verifyOtp, signOut }}>
       {children}
     </AuthContext.Provider>
   );
