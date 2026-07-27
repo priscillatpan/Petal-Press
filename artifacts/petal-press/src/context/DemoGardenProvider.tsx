@@ -11,6 +11,7 @@ export function DemoGardenProvider({ children }: { children: ReactNode }) {
         addFlower: async () => {},
         addPhotoToFlower: async () => {},
         updateFlower: async () => {},
+        deleteFlower: async () => {},
       }}
     >
       {children}

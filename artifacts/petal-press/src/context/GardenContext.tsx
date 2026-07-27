@@ -9,6 +9,7 @@ type GardenContextType = {
   addFlower: (flower: Flower) => Promise<void>;
   addPhotoToFlower: (id: string, imageUrl: string) => Promise<void>;
   updateFlower: (id: string, updates: Partial<Flower>) => Promise<void>;
+  deleteFlower: (id: string) => Promise<void>;
 };
 
 export const GardenContext = createContext<GardenContextType | undefined>(undefined);
@@ -165,8 +166,21 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     setFlowers((prev) => prev.map((f) => (f.id === id ? { ...f, ...updates } : f)));
   };
 
+  const deleteFlower = async (id: string) => {
+    if (!supabase) {
+      setFlowers((prev) => prev.filter((f) => f.id !== id));
+      return;
+    }
+    const { error } = await supabase.from("flowers").delete().eq("id", id);
+    if (error) {
+      console.error("Failed to delete flower:", error.message);
+      throw error;
+    }
+    setFlowers((prev) => prev.filter((f) => f.id !== id));
+  };
+
   return (
-    <GardenContext.Provider value={{ flowers, loading, addFlower, addPhotoToFlower, updateFlower }}>
+    <GardenContext.Provider value={{ flowers, loading, addFlower, addPhotoToFlower, updateFlower, deleteFlower }}>
       {children}
     </GardenContext.Provider>
   );

@@ -7,8 +7,9 @@ import { BlobFrame } from "@/components/BlobFrame";
 import { useGarden } from "@/context/useGarden";
 import { Flower } from "@/data/types";
 import { getNativeStatus } from "@/data/nativeStatus";
-import { supabase } from "@/lib/supabase";
 import { lookupFloriography } from "@/data/floriography";
+import { uploadFlowerImage } from "@/lib/uploadFlowerImage";
+import { FlowerBurst } from "@/components/FlowerBurst";
 
 type Candidate = { commonName: string; scientificName: string; score: number; family: string };
 type Step = 1 | 2 | 3 | 4;
@@ -58,6 +59,7 @@ export default function CaptureFlow() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [fileReceived, setFileReceived] = useState(false);
+  const [cameraRequested, setCameraRequested] = useState(false);
   const [cameraReady, setCameraReady] = useState(false);
   const [cameraFailed, setCameraFailed] = useState(false);
 
@@ -68,11 +70,13 @@ export default function CaptureFlow() {
   const [plantFamily, setPlantFamily] = useState("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
+  const [celebrationText, setCelebrationText] = useState<string | null>(null);
   const [generatingMeaning, setGeneratingMeaning] = useState(false);
   const resizedBlobRef = useRef<Blob | null>(null);
 
-  // Start rear camera on mount; stop when leaving step 1 or unmounting
+  // Start rear camera once the user opts into it; stop when leaving step 1 or unmounting
   useEffect(() => {
+    if (!cameraRequested) return;
     if (!navigator.mediaDevices?.getUserMedia) {
       setCameraFailed(true);
       return;
@@ -96,7 +100,7 @@ export default function CaptureFlow() {
       streamRef.current?.getTracks().forEach(t => t.stop());
       streamRef.current = null;
     };
-  }, []);
+  }, [cameraRequested]);
 
   // Stop camera the moment we leave step 1
   useEffect(() => {
@@ -131,27 +135,6 @@ export default function CaptureFlow() {
       streamRef.current = null;
       identifyPhoto(file);
     }, "image/jpeg", 0.92);
-  }
-
-  async function resizeFileToBlob(file: File, maxPx = 1200, quality = 0.82): Promise<Blob> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const url = URL.createObjectURL(file);
-      img.onload = () => {
-        URL.revokeObjectURL(url);
-        const canvas = document.createElement("canvas");
-        let w = img.naturalWidth, h = img.naturalHeight;
-        if (w > maxPx || h > maxPx) {
-          if (w > h) { h = Math.round((h / w) * maxPx); w = maxPx; }
-          else { w = Math.round((w / h) * maxPx); h = maxPx; }
-        }
-        canvas.width = w; canvas.height = h;
-        canvas.getContext("2d", { colorSpace: "srgb" })!.drawImage(img, 0, 0, w, h);
-        canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error("Resize failed")), "image/jpeg", quality);
-      };
-      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Image load failed")); };
-      img.src = url;
-    });
   }
 
   async function fileToJpegBase64(file: File): Promise<string> {
@@ -259,42 +242,28 @@ export default function CaptureFlow() {
   }
 
   async function handleSave() {
-    if (saving) return;
+    if (saving || !commonName.trim()) return;
     setSaving(true);
 
     // Upload photo — resize first so storage stays lean
-    let finalImageUrl = "";
     const file = selectedFileRef.current;
-    if (file && supabase) {
-      try {
-        const uploadBlob = await resizeFileToBlob(file).catch(() => file);
-        const path = `${Date.now()}.jpg`;
-        const { error: uploadError } = await supabase.storage
-          .from("flower-images")
-          .upload(path, uploadBlob, { contentType: "image/jpeg", upsert: false });
+    const finalImageUrl = file ? await uploadFlowerImage(file) : "";
 
-        if (uploadError) {
-          console.error("Image upload failed:", uploadError.message);
-        } else {
-          const { data } = supabase.storage.from("flower-images").getPublicUrl(path);
-          finalImageUrl = data.publicUrl;
-        }
-      } catch (err) {
-        console.error("Image processing failed:", err);
-      }
-    }
-
-    // Check if the same species already exists — if so, just add the photo
-    const existing = flowers.find(
-      f => f.latinName.toLowerCase() === latinName.toLowerCase()
-    );
+    // Same species already logged — group this photo under that entry instead of a duplicate.
+    // Only matches when a scientific name was actually given, so manual entries left blank
+    // don't all get merged into one another.
+    const existing = latinName.trim()
+      ? flowers.find(f => f.latinName.toLowerCase() === latinName.toLowerCase())
+      : undefined;
 
     let targetId = existing?.id ?? "";
+    let nextCelebrationText: string | null = null;
 
     try {
       if (existing) {
         if (finalImageUrl) {
           await addPhotoToFlower(existing.id, finalImageUrl);
+          nextCelebrationText = `Added a photo to ${existing.commonName}! 📸`;
         }
       } else {
         const newFlower: Flower = {
@@ -313,20 +282,46 @@ export default function CaptureFlow() {
         };
         await addFlower(newFlower);
         targetId = newFlower.id;
+        nextCelebrationText = `${commonName} pressed! 🌿`;
         // Clear any active theme filter so the new entry isn't hidden
         // behind a stale filter selection when returning to the garden.
         sessionStorage.removeItem("garden-theme");
       }
 
       setSaving(false);
-      setLocation(`/flower/${targetId}`);
+      setCelebrationText(nextCelebrationText);
+      setTimeout(() => setLocation(`/flower/${targetId}`), 1300);
     } catch {
       setSaving(false);
     }
   }
 
+  // Only true once the browser's camera permission was actually denied/unavailable —
+  // proactively choosing "library" from the idle screen skips straight to the native
+  // file picker instead (that tap is itself already a user gesture, no extra screen needed).
+  const showLibrary = cameraFailed;
+
   return (
     <div className="bg-background flex flex-col" style={{ minHeight: "100dvh" }}>
+      {/* Celebration on a successful press */}
+      {celebrationText && (
+        <>
+          <FlowerBurst />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 flex items-center justify-center pointer-events-none z-50 px-8"
+          >
+            <div className="bg-background border border-border rounded-2xl shadow-lg px-6 py-4 max-w-xs">
+              <p className="font-serif text-xl text-foreground text-center">
+                {celebrationText}
+              </p>
+            </div>
+          </motion.div>
+        </>
+      )}
+
       {/* Library input — no capture attribute, opens Camera/Photo Library/Files picker */}
       <input
         id="flower-library-input"
@@ -374,10 +369,14 @@ export default function CaptureFlow() {
             >
               <div className="text-center">
                 <h2 className="font-serif text-2xl text-foreground mb-1">
-                  {cameraFailed ? "What did you find?" : "Press a flower"}
+                  {showLibrary ? "What did you find?" : "Press a flower"}
                 </h2>
                 <p className="text-muted-foreground text-sm">
-                  {cameraFailed ? "Choose a photo from your walk" : "point at a flower · hold steady · capture"}
+                  {showLibrary
+                    ? "Choose a photo from your walk"
+                    : cameraRequested
+                    ? "point at a flower · hold steady · capture"
+                    : "take a photo, or choose one from your library"}
                 </p>
               </div>
 
@@ -397,8 +396,49 @@ export default function CaptureFlow() {
                 </div>
               )}
 
+              {/* Upfront choice: take a photo, or go straight to the library — no camera
+                  permission prompt until "Take a photo" is actually tapped */}
+              {!cameraRequested && !showLibrary && (
+                <div className="flex flex-col items-center gap-5">
+                  <div
+                    style={{ width: 260, height: 260, position: 'relative' }}
+                    data-testid="upload-area"
+                  >
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        backgroundColor: '#EDE5CC',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        ...flowerMaskStyle,
+                      }}
+                    >
+                      <FlowerIcon size={80} color="#C4B8A0" />
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setCameraRequested(true)}
+                    className="flex items-center gap-2.5 h-14 px-6 rounded-full active:scale-95 transition-transform"
+                    style={{ backgroundColor: '#c5d07d', boxShadow: '0 0 0 4px #FAF7EF, 0 0 0 6px #c5d07d' }}
+                  >
+                    <Camera className="w-5 h-5" style={{ color: '#3D362D' }} />
+                    <span className="font-medium" style={{ color: '#3D362D' }}>Take a photo</span>
+                  </button>
+
+                  <label
+                    htmlFor="flower-library-input"
+                    className="text-sm text-muted-foreground underline underline-offset-2 cursor-pointer active:opacity-60"
+                  >
+                    or choose from library
+                  </label>
+                </div>
+              )}
+
               {/* Live camera viewfinder through flower cutout */}
-              {!cameraFailed && (
+              {cameraRequested && !showLibrary && (
                 <div className="flex flex-col items-center gap-5">
                   {/* Flower-shaped viewfinder */}
                   <div
@@ -454,8 +494,8 @@ export default function CaptureFlow() {
                 </div>
               )}
 
-              {/* Fallback: file picker (no camera access) */}
-              {cameraFailed && (
+              {/* Library picker — same screen whether you chose it upfront or the camera failed */}
+              {showLibrary && (
                 <label
                   htmlFor="flower-library-input"
                   className={`w-full aspect-[3/4] max-h-[52vh] border-2 border-dashed rounded-3xl flex flex-col items-center justify-center gap-4 transition-all cursor-pointer active:scale-[0.98] ${
@@ -480,7 +520,7 @@ export default function CaptureFlow() {
                 </label>
               )}
 
-              {cameraFailed && (
+              {showLibrary && (
                 <p className="text-muted-foreground/60 text-xs text-center max-w-[240px]">
                   We'll send it to Pl@ntNet to identify the species automatically.
                 </p>
@@ -617,11 +657,29 @@ export default function CaptureFlow() {
               )}
 
               <div className="px-5 pt-5 space-y-5">
-                {/* Name block — matches EntryCard */}
+                {/* Name block — editable so a manual entry (no AI match) can still be named */}
                 <div>
-                  <p className="text-xs uppercase tracking-widest mb-0.5" style={{ color: '#9A8F7F' }}>Identified as</p>
-                  <h2 style={{ fontFamily: 'Fraunces, serif', fontSize: '28px', color: '#2C2721', lineHeight: 1.15 }}>{commonName}</h2>
-                  <p style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: '15px', color: '#736959' }}>{latinName}</p>
+                  <p className="text-xs uppercase tracking-widest mb-0.5" style={{ color: '#9A8F7F' }}>
+                    {commonName || latinName ? "Identified as" : "What did you find?"}
+                  </p>
+                  <input
+                    type="text"
+                    value={commonName}
+                    onChange={e => setCommonName(e.target.value)}
+                    placeholder="Common name…"
+                    className="w-full bg-transparent focus:outline-none placeholder:text-muted-foreground/40"
+                    style={{ fontFamily: 'Fraunces, serif', fontSize: '28px', color: '#2C2721', lineHeight: 1.15 }}
+                    data-testid="input-common-name"
+                  />
+                  <input
+                    type="text"
+                    value={latinName}
+                    onChange={e => setLatinName(e.target.value)}
+                    placeholder="Scientific name (optional)…"
+                    className="w-full bg-transparent focus:outline-none placeholder:text-muted-foreground/40"
+                    style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: '15px', color: '#736959' }}
+                    data-testid="input-latin-name"
+                  />
                 </div>
 
                 <div className="space-y-4">
@@ -703,12 +761,17 @@ export default function CaptureFlow() {
           >
             <button
               onClick={handleSave}
-              disabled={saving}
+              disabled={saving || !commonName.trim()}
               className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-sans text-base font-medium tracking-wide shadow-md shadow-primary/20 hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               data-testid="button-save-flower"
             >
               {saving ? "Pressing…" : "Press this flower"}
             </button>
+            {!commonName.trim() && (
+              <p className="text-xs text-center mt-2" style={{ color: '#9A8F7F' }}>
+                Give it a name to save
+              </p>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

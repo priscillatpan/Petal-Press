@@ -1,6 +1,7 @@
 {
   "buildCommand": "cd ../.. && pnpm install && pnpm --filter @workspace/petal-press run build",
   "outputDirectory": "dist",
+  "devCommand": "vite --config vite.config.ts --port $PORT",
   "framework": null,
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }

@@ -51,6 +51,15 @@ export default defineConfig({
     fs: {
       strict: true,
     },
+    // Local dev only: forwards /api/* to a `vercel dev` instance running the
+    // actual serverless functions (see api/*.js). No effect on production —
+    // Vercel itself serves /api/* directly there, this proxy never ships.
+    proxy: {
+      "/api": {
+        target: process.env.VITE_API_PROXY_TARGET ?? "http://localhost:3001",
+        changeOrigin: true,
+      },
+    },
   },
   preview: {
     port,
