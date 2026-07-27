@@ -193,7 +193,7 @@ export default function SignIn() {
                   autoComplete="one-time-code"
                   value={code}
                   onChange={e => { setCode(e.target.value); if (codeError) setCodeError(""); }}
-                  placeholder="6-digit code"
+                  placeholder="Sign-in code"
                   autoFocus
                   style={{
                     width: "100%",
